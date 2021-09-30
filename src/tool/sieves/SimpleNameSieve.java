@@ -6,9 +6,9 @@ package tool.sieves;
 
 import java.util.ArrayList;
 import java.util.List;
-import tool.MultiPassSieveNormalizer;
-import tool.util.Concept;
+
 import tool.util.Ling;
+import tool.util.Mention;
 import tool.util.Util;
 
 /**
@@ -17,14 +17,14 @@ import tool.util.Util;
  */
 public class SimpleNameSieve extends Sieve {
     
-    public static String apply(Concept concept) {
+    public static String apply(Mention concept) {
         List<String> namesForTransformation = getNamesForTransformation(concept);
         List<String> namesKnowledgeBase = transformName(namesForTransformation);
         String cui = Sieve.normalize(namesKnowledgeBase);
         return cui.equals("") ? SimpleNameSieve.normalize(concept.getName()) : cui;
     }     
     
-    public static List<String> getNamesForTransformation(Concept concept) {
+    public static List<String> getNamesForTransformation(Mention concept) {
         List<String> namesForTransformation = new ArrayList<>();
         namesForTransformation.add(concept.getName());
         if (!concept.getNameExpansion().equals(""))

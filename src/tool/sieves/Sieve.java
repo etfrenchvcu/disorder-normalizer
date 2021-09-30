@@ -4,16 +4,13 @@
  */
 package tool.sieves;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import tool.Main;
-import tool.MultiPassSieveNormalizer;
-import tool.util.AmbiguityResolution;
-import tool.util.Concept;
+
 import tool.util.Terminology;
-import tool.util.Util;
 
 /**
  *
@@ -22,18 +19,21 @@ import tool.util.Util;
 public abstract class Sieve {
     
     //state of this class
-    private static Terminology standardTerminology = new Terminology();    
+    private static Terminology standardTerminology = new Terminology(); 
+    private static Terminology trainingDataTerminology = new Terminology();
+
     public static void setStandardTerminology() throws IOException {
         standardTerminology.loadTerminology();
     }
+
     public static Terminology getStandardTerminology() {
         return standardTerminology;
     }
     
-    private static Terminology trainingDataTerminology = new Terminology();
-    public static void setTrainingDataTerminology() throws IOException {
-        trainingDataTerminology.loadTrainingDataTerminology(Main.training_data_dir);
-    }    
+    public static void setTrainingDataTerminology(File train_dir) throws IOException {
+        trainingDataTerminology.loadTrainingDataTerminology(train_dir);
+    }
+
     public static Terminology getTrainingDataTerminology() {
         return trainingDataTerminology;
     }        
@@ -85,6 +85,7 @@ public abstract class Sieve {
     //     return "";
     // }
 
+    // TODO: Revisit to make sure this is actually what I want to do
     // Updated: Only return unambiguous CUIs
     public static String normalize(List<String> namesKnowledgeBase) {
         int matches = 0;

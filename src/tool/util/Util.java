@@ -107,6 +107,8 @@ public class Util {
                     System.exit(1);
                 }
             }
+            in.close();
+            
             if (!new File(file.toString().replace(".concept", ".txt")).exists()) {
                 System.out.println("Input Data Exception --> Text data file for concept file: "+file.toString()+" is absent");
                 System.exit(1);

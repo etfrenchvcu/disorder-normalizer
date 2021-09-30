@@ -5,7 +5,7 @@
 package tool.sieves;
 
 import java.util.List;
-import tool.util.Ling;
+
 import tool.util.Terminology;
 import tool.util.Util;
 

@@ -6,12 +6,13 @@ package tool.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author
  */
-public class Concept {
+public class Mention {
     
     private String indexes;
     private String name;
@@ -25,13 +26,15 @@ public class Concept {
     private List<String> namesKnowledgeBase = new ArrayList<>();
     private List<String> stemmedNamesKnowledgeBase = new ArrayList<>();
     
-    public Concept(String name) {
+    public Mention(String name) {
         this.name = Ling.correctSpelling(name.toLowerCase().trim());
+        this.stemmedName = Ling.getStemmedPhrase(name);
     }
     
-    public Concept(String indexes, String name, String goldMeSHorSNOMEDCui, List<String> goldOMIMCuis) {
+    public Mention(String indexes, String name, String goldMeSHorSNOMEDCui, List<String> goldOMIMCuis) {
         this.indexes = indexes;
         this.name = Ling.correctSpelling(name.toLowerCase().trim());
+        this.stemmedName = Ling.getStemmedPhrase(name);
         this.goldMeSHorSNOMEDCui = goldMeSHorSNOMEDCui;
         this.goldOMIMCuis = goldOMIMCuis;
     }
@@ -52,8 +55,8 @@ public class Concept {
         return name;
     }
 
-    public void setNameExpansion(String text, Abbreviation abbreviationObject) {
-        nameExpansion = Abbreviation.getAbbreviationExpansion(abbreviationObject, text, name, indexes);        
+    public void setNameExpansion(String text, Map<String,String> abbreviationMap) {
+        nameExpansion = Abbreviation.getAbbreviationExpansion(abbreviationMap, text, name, indexes);        
     }
     
     public String getNameExpansion() {

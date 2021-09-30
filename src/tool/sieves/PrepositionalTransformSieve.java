@@ -6,8 +6,9 @@ package tool.sieves;
 
 import java.util.ArrayList;
 import java.util.List;
-import tool.util.Concept;
+
 import tool.util.Ling;
+import tool.util.Mention;
 import tool.util.Util;
 
 /**
@@ -16,19 +17,19 @@ import tool.util.Util;
  */
 public class PrepositionalTransformSieve extends Sieve {
     
-    public static String apply(Concept concept) {
+    public static String apply(Mention concept) {
         PrepositionalTransformSieve.init(concept);
         transformName(concept);
         return normalize(concept.getNamesKnowledgeBase());
     }
     
-    public static void init(Concept concept) {
+    public static void init(Mention concept) {
         concept.setNamesKnowledgeBase(concept.getName());
         if (!concept.getNameExpansion().equals(""))
             concept.setNamesKnowledgeBase(concept.getNameExpansion());
     }
            
-    private static void transformName(Concept concept) {
+    private static void transformName(Mention concept) {
         List<String> namesForTransformation = new ArrayList<>(concept.getNamesKnowledgeBase());
         List<String> transformedNames = new ArrayList<>();
         

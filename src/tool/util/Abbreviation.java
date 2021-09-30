@@ -8,11 +8,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import tool.util.Util;
 
 /**
  *
@@ -20,25 +18,26 @@ import tool.util.Util;
  */
 public class Abbreviation {
     
-    private static Map<String, List<String>> wikiAbbreviationExpansionListMap = new HashMap<>();    
+    private static Map<String, List<String>> wikiAbbreviationExpansionListMap = new HashMap<>();  
+    private Map<String, String> textAbbreviationExpansionMap = new HashMap<>();  
     
     //reads a file line by line
     //each line is double bar delimited containing an abbreviation and its expansion
     //stores all abbreviations in lowercase
     public static void setWikiAbbreviationExpansionMap(File file) throws IOException {
-        BufferedReader in = new BufferedReader(new FileReader(file));        
-        while (in.ready()) {
-            String s = in.readLine().trim();
+        BufferedReader input = new BufferedReader(new FileReader(file));        
+        while (input.ready()) {
+            String s = input.readLine().trim();
             String[] token = s.split("\\|\\|");
             token[0] = token[0].toLowerCase();
             wikiAbbreviationExpansionListMap = Util.setMap(wikiAbbreviationExpansionListMap, token[0], token[1].toLowerCase());
         }
+        input.close();
     }    
     public static Map<String, List<String>> getAbbreviationMap() {
         return wikiAbbreviationExpansionListMap;
     }    
- 
-    private Map<String, String> textAbbreviationExpansionMap = new HashMap<>();
+
     public static String getExpansionByHearstAlgorithm(String shortForm, String longForm) {
         int sIndex;
         int lIndex;
@@ -67,6 +66,7 @@ public class Abbreviation {
         
         return longForm;
     }    
+
     public static String getTentativeExpansion(String[] tokens, int i, int abbreviationLength) {
         String expansion = "";
         while (i >= 0 && abbreviationLength > 0) {
@@ -76,16 +76,25 @@ public class Abbreviation {
         }
         return expansion.trim();
     }    
-    private void setTextAbbreviationExpansionMap(String[] tokens, int abbreviationLength, String abbreviation, int expansionIndex) {
+
+    private static void setTextAbbreviationExpansionMap(Map<String, String> map, String[] tokens, int abbreviationLength, String abbreviation, int expansionIndex) {
         String expansion = getTentativeExpansion(tokens, expansionIndex, abbreviationLength);
         expansion = Ling.correctSpelling(getExpansionByHearstAlgorithm(abbreviation, expansion).toLowerCase()).trim();        
         if (!expansion.equals(""))
-            textAbbreviationExpansionMap.put(abbreviation, expansion);
-    }    
-    public void setTextAbbreviationExpansionMap (File file) throws IOException {
-        BufferedReader in = new BufferedReader(new FileReader(file));        
-        while (in.ready()) {
-            String s = in.readLine().trim().replaceAll("\\s+", " ");             
+        map.put(abbreviation, expansion);
+    }
+
+    /**
+     * 
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public static Map<String, String> getTextAbbreviationExpansionMapFromFile (File file) throws IOException {
+        Map<String, String> abbreviationMap = new HashMap<>();  
+        BufferedReader input = new BufferedReader(new FileReader(file));        
+        while (input.ready()) {
+            String s = input.readLine().trim().replaceAll("\\s+", " ");             
             String[] tokens = s.split("\\s");
             int size = tokens.length;
             for (int i = 0; i < size; i++) {
@@ -107,16 +116,20 @@ public class Abbreviation {
                         abbreviation.charAt(abbreviation.length()-1) == ';')
                     abbreviation = abbreviation.substring(0, abbreviation.length()-1);
                                 
-                if (textAbbreviationExpansionMap.containsKey(abbreviation) || textAbbreviationExpansionMap.containsKey(reversedAbbreviation))
+                if (abbreviationMap.containsKey(abbreviation) || abbreviationMap.containsKey(reversedAbbreviation))
                     continue;
 
                 int abbreviationLength = abbreviation.length();                
-                setTextAbbreviationExpansionMap(tokens, abbreviationLength, abbreviation, expansionIndex);
-                if (!textAbbreviationExpansionMap.containsKey(abbreviation))
-                    setTextAbbreviationExpansionMap(tokens, abbreviationLength, reversedAbbreviation, expansionIndex);
+                setTextAbbreviationExpansionMap(abbreviationMap, tokens, abbreviationLength, abbreviation, expansionIndex);
+                if (!abbreviationMap.containsKey(abbreviation))
+                    setTextAbbreviationExpansionMap(abbreviationMap, tokens, abbreviationLength, reversedAbbreviation, expansionIndex);
             }
         }
+        input.close();
+
+        return abbreviationMap;
     }
+
     public Map<String, String> getTextAbbreviationExpansionMap() {
         return textAbbreviationExpansionMap;
     }
@@ -150,8 +163,7 @@ public class Abbreviation {
         return returnExpansion;
     }
     
-    public static String getAbbreviationExpansion(Abbreviation abbreviationObject, String text, String string, String indexes) {
-        Map<String, String> shortForm_longForm_map = abbreviationObject.getTextAbbreviationExpansionMap();
+    public static String getAbbreviationExpansion(Map<String, String> shortForm_longForm_map, String text, String string, String indexes) {
         String[] stringTokens = string.split("\\s");
         if (stringTokens.length == 1 && stringTokens[0].length() == 1) 
             stringTokens[0] = getEntireAbbreviation(text, string, indexes.split("\\|"));

@@ -5,113 +5,47 @@
 package tool;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import tool.sieves.Sieve;
-import tool.util.Abbreviation;
-import tool.util.AmbiguityResolution;
-import tool.util.Concept;
-import tool.util.DocumentConcepts;
-import tool.util.Documents;
-import tool.util.Ling;
+
 import tool.util.Terminology;
 import tool.util.Util;
 
 /**
  *
- * @author 
+ * @author
  */
 public class Main {
-    
-    public static File training_data_dir;
-    public static File test_data_dir;
-    MultiPassSieveNormalizer multiPassSieve;
-    
-    public static File output_data_dir;
-    
-    /**
-     *
-     * @param args
-     * @throws IOException
-     */
-    public Main(String[] args) throws IOException {
-        init(args);
-    }
-    
-    /**
-     * 
-     * @param args
-     * @throws IOException
-     */
-    private void init(String[] args) throws IOException {
-        if (new File(args[0]).isDirectory())
-            training_data_dir = new File(args[0]);
-        else
-            Util.throwIllegalDirectoryException(args[0]);
-        if (new File(args[1]).isDirectory())
-            test_data_dir = new File(args[1]);
-        else
-            Util.throwIllegalDirectoryException(args[1]);
-        if (new File(args[2]).isFile())
-            Terminology.terminologyFile = new File(args[2]);
-        else
-            Util.throwIllegalFileException(args[2]);
-        
-        //set stopwords, correct spellings, and abbreviations data
-        boolean ncbi = test_data_dir.toString().contains("ncbi") ? true : false;
-        Ling.setSpellingCorrectionMap(ncbi ? new File("resources/ncbi-spell-check.txt") : new File("resources/semeval-spell-check.txt"));
-        Ling.setStopwordsList(new File("resources/stopwords.txt"));
-        Abbreviation.setWikiAbbreviationExpansionMap(ncbi ? new File("resources/ncbi-wiki-abbreviations.txt") : new File("resources/semeval-wiki-abbreviations.txt"));
-        Ling.setDigitToWordformMapAndReverse(new File("resources/number.txt"));
-        Ling.setSuffixMap(new File("resources/suffix.txt"));
-        Ling.setPrefixMap(new File("resources/prefix.txt"));
-        Ling.setAffixMap(new File("resources/affix.txt"));        
-        
-        //initialize normalizer flags
-        MultiPassSieveNormalizer.maxSieveLevel = Integer.parseInt(args[3]);
-    }
-        
-    /**
-     *
-     * @throws IOException
-     */
-    public void runMultiPassSieve() throws IOException {
-        Sieve.setStandardTerminology();
-        Sieve.setTrainingDataTerminology();
-        
-        List<DocumentConcepts> dataset = Documents.getDataSet();
-        for (DocumentConcepts concepts : dataset) {
-            
-            Map<String, List<String>> cuiNamesMap = new HashMap<>();
-            
-            for (Concept concept : concepts.getConcepts()) {
-                MultiPassSieveNormalizer.applyMultiPassSieve(concept);                
-                if (concept.getCui().equals(""))
-                    concept.setCui("CUI-less");
-                
-                cuiNamesMap = Util.setMap(cuiNamesMap, concept.getCui(), concept.getName());
-            }
-            AmbiguityResolution.start(concepts, cuiNamesMap);
-        }   
-    }
-    
     /**
      * Performs rule-based entity linking on given test set.
      * @param args
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
+        File training_data_dir = null;
+        File test_data_dir = null;
+        File output_data_dir = null;
+        int maxSieveLevel = 0;
+        MultiPassSieveNormalizer multiPassSieve;
+
+        // Parse input args
         if (args.length == 4) {
-            Main main = new Main(args);
-            //Logger.setLogFile(new FileOutputStream("log.txt"));
-            output_data_dir = new File(test_data_dir.toString().replace(test_data_dir.getName(), "output"));
-            output_data_dir.mkdirs();            
-            main.runMultiPassSieve();
-            Evaluation.computeAccuracy();
-            Evaluation.printResults();
+            if (new File(args[0]).isDirectory())
+                training_data_dir = new File(args[0]);
+            else
+                Util.throwIllegalDirectoryException(args[0]);
+            if (new File(args[1]).isDirectory()) {
+                test_data_dir = new File(args[1]);
+                output_data_dir = new File(test_data_dir.toString().replace(test_data_dir.getName(), "output"));
+                output_data_dir.mkdirs();   
+            } else
+                Util.throwIllegalDirectoryException(args[1]);
+            if (new File(args[2]).isFile())
+                // Terminology.terminologyFile = new File(args[2]);
+                Terminology standardTerminology = new Terminology(new File(args[2]));
+            else
+                Util.throwIllegalFileException(args[2]);
+
+            maxSieveLevel = Integer.parseInt(args[3]);
         }
         else {
             System.out.println("Usage: java tool.Main <training-data-dir> <test-data-dir> <terminology/ontology-file> max-sieve-level");
@@ -130,6 +64,11 @@ public class Main {
             System.out.println("---------------------");
             System.exit(1);
         }
+
+        multiPassSieve = new MultiPassSieveNormalizer(training_data_dir, test_data_dir, output_data_dir, maxSieveLevel);      
+        multiPassSieve.run();
+        Evaluation.computeAccuracy();
+        Evaluation.printResults();
     }
-       
+
 }

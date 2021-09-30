@@ -4,14 +4,14 @@
  */
 package tool;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import tool.util.Concept;
-import tool.util.DocumentConcepts;
+
+import tool.util.Document;
+import tool.util.Mention;
 import tool.util.Util;
 
 /**
@@ -37,7 +37,7 @@ public class Evaluation {
         fp++;
     }
     
-    public static void evaluateClassification(Concept concept, DocumentConcepts concepts) throws IOException {
+    public static void evaluateClassification(Mention concept, Document concepts) throws IOException {
         // Don't evaluate CUI-less 
         if(concept.getCui().equals("CUI-less"))
             return;
@@ -86,7 +86,7 @@ public class Evaluation {
         //Logger.writeLogFile((concepts.getFilename()+"\t"+concept.getIndexes()+"\t"+concept.getName()+"\t"+concept.getCui()+"\t"+concept.getGoldCui()));
     }
 
-    private static void printPred(Concept concept, String file) {
+    private static void printPred(Mention concept, String file) {
         String str = String.format("%s: %s #  %s (%s) ", file, concept.getGoldMeSHorSNOMEDCui(), concept.getName(), concept.getCui());
         // System.out.println(str);
     }

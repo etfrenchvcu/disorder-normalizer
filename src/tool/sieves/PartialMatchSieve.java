@@ -5,11 +5,10 @@
 package tool.sieves;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import tool.util.Concept;
+
 import tool.util.Ling;
+import tool.util.Mention;
 import tool.util.Terminology;
 import tool.util.Util;
 
@@ -19,7 +18,7 @@ import tool.util.Util;
  */
 public class PartialMatchSieve extends Sieve {    
     
-    public static String apply(Concept concept) {
+    public static String apply(Mention concept) {
         //init(concept);
         String name = concept.getNameExpansion().equals("") ? concept.getNameExpansion() : concept.getName();
         String[] nameTokens = name.split("\\s+");

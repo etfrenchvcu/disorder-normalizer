@@ -6,9 +6,9 @@ package tool.sieves;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import tool.util.Concept;
+
 import tool.util.Ling;
+import tool.util.Mention;
 import tool.util.Terminology;
 import tool.util.Util;
 
@@ -18,12 +18,12 @@ import tool.util.Util;
  */
 public class StemmingSieve extends Sieve {
     
-    public static String apply(Concept concept) {
+    public static String apply(Mention concept) {
         transformName(concept);
         return StemmingSieve.normalize(concept);
     }     
     
-    private static void transformName(Concept concept) {
+    private static void transformName(Mention concept) {
         List<String> namesForTransformation = new ArrayList<>(concept.getNamesKnowledgeBase());
         List<String> transformedNames = new ArrayList<>();        
         
@@ -34,7 +34,7 @@ public class StemmingSieve extends Sieve {
         concept.setStemmedNamesKnowledgeBase(transformedNames);   
     }    
 
-    public static String normalize(Concept concept) {
+    public static String normalize(Mention concept) {
         for (String name : concept.getStemmedNamesKnowledgeBase()) {
             String cui = StemmingSieve.exactMatchSieve(name);            
             if (!cui.equals(""))

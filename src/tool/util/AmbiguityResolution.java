@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import tool.Evaluation;
-import tool.Logger;
 import tool.sieves.Sieve;
 
 /**
@@ -18,8 +18,8 @@ import tool.sieves.Sieve;
  */
 public class AmbiguityResolution {
     
-    public static void start(DocumentConcepts concepts, Map<String, List<String>> cuiNamesMap) throws IOException {
-        for (Concept concept : concepts.getConcepts()) {
+    public static void start(Document concepts, Map<String, List<String>> cuiNamesMap) throws IOException {
+        for (Mention concept : concepts.getMentions()) {
             if (concept.getNormalizingSieve() != 1 || concept.getCui().equals("CUI-less")) {
                 Evaluation.evaluateClassification(concept, concepts);
                 Terminology.storeNormalizedConcept(concept);

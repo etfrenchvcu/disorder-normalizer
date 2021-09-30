@@ -5,11 +5,10 @@
 package tool.sieves;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import tool.util.Concept;
+
 import tool.util.Ling;
+import tool.util.Mention;
 import tool.util.Util;
 
 /**
@@ -18,12 +17,12 @@ import tool.util.Util;
  */
 public class AffixationSieve extends Sieve {
     
-    public static String apply(Concept concept) {
+    public static String apply(Mention concept) {
         transformName(concept);
         return normalize(concept.getNamesKnowledgeBase());
     }  
     
-    private static void transformName(Concept concept) {
+    private static void transformName(Mention concept) {
         List<String> namesForTransformation = new ArrayList<>(concept.getNamesKnowledgeBase());
         List<String> transformedNames = new ArrayList<>();
         

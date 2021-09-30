@@ -4,6 +4,15 @@
  */
 package tool;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import tool.sieves.AffixationSieve;
 import tool.sieves.CompoundPhraseSieve;
 import tool.sieves.DiseaseModifierSynonymsSieve;
@@ -15,8 +24,13 @@ import tool.sieves.Sieve;
 import tool.sieves.SimpleNameSieve;
 import tool.sieves.StemmingSieve;
 import tool.sieves.SymbolReplacementSieve;
-import tool.util.Concept;
+import tool.util.Abbreviation;
+import tool.util.AmbiguityResolution;
+import tool.util.Document;
+import tool.util.Ling;
+import tool.util.Mention;
 import tool.util.Terminology;
+import tool.util.Util;
 
 /**
  *
@@ -24,9 +38,89 @@ import tool.util.Terminology;
  */
 public class MultiPassSieveNormalizer {
      
-    public static int maxSieveLevel;    
+    int max_level;
+    File output_data_dir;
+    File test_data_dir;
+    File train_data_dir;
     
-    public static boolean pass(Concept concept, int currentSieveLevel) {
+    /**
+     * Initialize MultiPassSieveNormalizer and associated resources.
+     * @throws IOException
+     */
+    public MultiPassSieveNormalizer(File train_data_dir, File test_data_dir, File output_data_dir, int max_level) throws IOException {
+        this.max_level = max_level;
+        this.output_data_dir = output_data_dir;
+        this.test_data_dir = test_data_dir;
+        this.train_data_dir = train_data_dir;
+
+        // set stopwords, correct spellings, and abbreviations data
+        // TODO: Revisit this to make more general
+        boolean ncbi = test_data_dir.toString().contains("ncbi") ? true : false;
+        Ling.setSpellingCorrectionMap(ncbi ? new File("resources/ncbi-spell-check.txt") : new File("resources/semeval-spell-check.txt"));
+        Ling.setStopwordsList(new File("resources/stopwords.txt"));
+        Abbreviation.setWikiAbbreviationExpansionMap(ncbi ? new File("resources/ncbi-wiki-abbreviations.txt") : new File("resources/semeval-wiki-abbreviations.txt"));
+        Ling.setDigitToWordformMapAndReverse(new File("resources/number.txt"));
+        Ling.setSuffixMap(new File("resources/suffix.txt"));
+        Ling.setPrefixMap(new File("resources/prefix.txt"));
+        Ling.setAffixMap(new File("resources/affix.txt")); 
+    }
+
+    /**
+     * Runs the sieve algorithm over the input datasets.
+     * @throws IOException
+     */
+    public void run() throws IOException {
+        // What's this???
+        Sieve.setStandardTerminology();
+        Sieve.setTrainingDataTerminology(this.train_data_dir);
+
+        List<Document> test_data = getDataSet(this.test_data_dir);
+        for (Document concepts : test_data) {
+            Map<String, List<String>> cuiNamesMap = new HashMap<>();
+
+            for (Mention concept : concepts.getMentions()) {
+                applyMultiPassSieve(concept);
+                if (concept.getCui().equals(""))
+                    concept.setCui("CUI-less");
+
+                cuiNamesMap = Util.setMap(cuiNamesMap, concept.getCui(), concept.getName());
+            }
+            AmbiguityResolution.start(concepts, cuiNamesMap);
+        }
+    }
+
+    /**
+     * Creates a list of DocumentConcepts objects corresponding 1-1 with each file in the test directory
+     */
+    private List<Document> getDataSet(File dir) throws IOException {
+        List<Document> dataset = new ArrayList<>();
+        for (File file : dir.listFiles()) {
+            // Only interested in .concept files, ignore .txt note files
+            if (!file.toString().contains(".concept"))
+                continue;
+
+            File textFile = new File(file.toString().replace(".concept", ".txt"));
+            var abbreviationMap = Abbreviation.getTextAbbreviationExpansionMapFromFile(textFile); 
+            Document doc = new Document(textFile.getName(), Util.read(textFile));
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    line = line.trim();
+                    String[] tokens = line.split("\\|\\|");
+                    doc.addMention(tokens, abbreviationMap);
+                }
+            } catch (Exception e) {
+                System.out.println("ERROR: Failed to read " + file.toString());
+                throw e;
+            }
+            dataset.add(doc);
+        }
+        return dataset;
+    }
+
+    
+    
+    private boolean pass(Mention concept, int currentSieveLevel) {
         if (!concept.getCui().equals("")) {
             concept.setAlternateCuis(Sieve.getAlternateCuis(concept.getCui()));
             concept.setNormalizingSieveLevel(currentSieveLevel-1);
@@ -34,74 +128,76 @@ public class MultiPassSieveNormalizer {
             return false;
         }
         
-        if (currentSieveLevel > maxSieveLevel)
+        if (currentSieveLevel > this.max_level)
             return false;
         
         return true;
     }
         
-    //behavior of this class
-    public static void applyMultiPassSieve(Concept concept) {
+    /**
+     * Progressively apply sieve levels to a given Mention object.
+     * @param mention
+     */
+    private void applyMultiPassSieve(Mention mention) {
         int currentSieveLevel = 1;
         //match with names in training data
         //Sieve 1        
-        concept.setCui(Sieve.exactMatchSieve(concept.getName()));        
-        if (!pass(concept, ++currentSieveLevel))
+        mention.setCui(Sieve.exactMatchSieve(mention.getName()));        
+        if (!pass(mention, ++currentSieveLevel))
             return;
         
         //Sieve 2
-        concept.setCui(Sieve.exactMatchSieve(concept.getNameExpansion()));
-        if (!pass(concept, ++currentSieveLevel))
+        mention.setCui(Sieve.exactMatchSieve(mention.getNameExpansion()));
+        if (!pass(mention, ++currentSieveLevel))
             return;
 
         //Sieve 3
-        concept.setCui(PrepositionalTransformSieve.apply(concept));
-        if (!pass(concept, ++currentSieveLevel))
+        mention.setCui(PrepositionalTransformSieve.apply(mention));
+        if (!pass(mention, ++currentSieveLevel))
             return;
         
         //Sieve 4
-        concept.setCui(SymbolReplacementSieve.apply(concept));
-        if (!pass(concept, ++currentSieveLevel))
+        mention.setCui(SymbolReplacementSieve.apply(mention));
+        if (!pass(mention, ++currentSieveLevel))
             return;
         
         //Sieve 5
-        concept.setCui(HyphenationSieve.apply(concept));
-        if (!pass(concept, ++currentSieveLevel)) {            
+        mention.setCui(HyphenationSieve.apply(mention));
+        if (!pass(mention, ++currentSieveLevel)) {            
             return;  
         }
         
         //Sieve 6
-        concept.setCui(AffixationSieve.apply(concept));
-        if (!pass(concept, ++currentSieveLevel))
+        mention.setCui(AffixationSieve.apply(mention));
+        if (!pass(mention, ++currentSieveLevel))
             return;        
         
         //Sieve 7
-        concept.setCui(DiseaseModifierSynonymsSieve.apply(concept));
-        if (!pass(concept, ++currentSieveLevel)) {            
+        mention.setCui(DiseaseModifierSynonymsSieve.apply(mention));
+        if (!pass(mention, ++currentSieveLevel)) {            
             return;                  
         }
         
         //Sieve 8
-        concept.setCui(StemmingSieve.apply(concept));
-        if (!pass(concept, ++currentSieveLevel))
+        mention.setCui(StemmingSieve.apply(mention));
+        if (!pass(mention, ++currentSieveLevel))
             return;       
         
         //Sieve 9
-        concept.setCui(Main.test_data_dir.toString().contains("ncbi") ? CompoundPhraseSieve.applyNCBI(concept.getName()) : CompoundPhraseSieve.apply(concept.getName()));
-        if (!pass(concept, ++currentSieveLevel)) {            
+        mention.setCui(this.test_data_dir.toString().contains("ncbi") ? CompoundPhraseSieve.applyNCBI(mention.getName()) : CompoundPhraseSieve.apply(mention.getName()));
+        if (!pass(mention, ++currentSieveLevel)) {            
             return;         
         }
                 
         //Sieve 10
-        concept.setCui(SimpleNameSieve.apply(concept));
-        pass(concept, ++currentSieveLevel);
+        mention.setCui(SimpleNameSieve.apply(mention));
+        pass(mention, ++currentSieveLevel);
         --currentSieveLevel;
-        if (!concept.getCui().equals(""))
+        if (!mention.getCui().equals(""))
             return;                 
         //Sieve 10
-        concept.setCui(Main.test_data_dir.toString().contains("ncbi") ? PartialMatchNCBISieve.apply(concept) : PartialMatchSieve.apply(concept));
-        pass(concept, ++currentSieveLevel);        
-                
+        mention.setCui(this.test_data_dir.toString().contains("ncbi") ? PartialMatchNCBISieve.apply(mention) : PartialMatchSieve.apply(mention));
+        pass(mention, ++currentSieveLevel);       
     }
                     
 }

@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import tool.util.Util;
 
 /**
  *
@@ -30,6 +29,7 @@ public class Ling {
                 continue;
             stopwords = Util.setList(stopwords, s);
         }
+        in.close();
     }
     public static List<String> getStopwordsList() {
         return stopwords;
@@ -61,6 +61,7 @@ public class Ling {
             String value = tokens.length == 1 ? "" : tokens[1];
             spellingCorrectionMap.put(tokens[0], value);
         }
+        in.close();
     }
     public static Map<String, String> getSpellingCorrectionMap() {
         return spellingCorrectionMap;
@@ -123,6 +124,7 @@ public class Ling {
             digitToWordMap = Util.setMap(digitToWordMap, tokens[0], tokens[1]);
             wordToDigitMap.put(tokens[1], tokens[0]);
         }
+        in.close();
     }
     public static Map<String, List<String>> getDigitToWordMap() {
         return digitToWordMap;
@@ -154,6 +156,7 @@ public class Ling {
             else
                 suffixMap = Util.setMap(suffixMap, tokens[0], tokens[1]);
         }
+        in.close();
     }
     public static Map<String, List<String>> getSuffixMap() {
         return suffixMap;
@@ -182,6 +185,7 @@ public class Ling {
             String value = tokens.length == 1 ? "" : tokens[1];
             prefixMap.put(tokens[0], value);
         }
+        in.close();
     }
     public static Map<String, String> getPrefixMap() {
         return prefixMap;
@@ -206,6 +210,7 @@ public class Ling {
             String value = tokens.length == 1 ? "" : tokens[1];
             affixMap.put(tokens[0], value);
         }
+        in.close();
     }
     public static Map<String, String> getAffixMap() {
         return affixMap;

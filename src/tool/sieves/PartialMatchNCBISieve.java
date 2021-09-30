@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import tool.util.Concept;
+
 import tool.util.Ling;
+import tool.util.Mention;
 import tool.util.Terminology;
 import tool.util.Util;
 
@@ -19,7 +20,7 @@ import tool.util.Util;
  */
 public class PartialMatchNCBISieve {
     
-    public static String apply(Concept concept) {
+    public static String apply(Mention concept) {
         String name = concept.getName();
         String[] nameTokens = name.split("\\s+");
         return partialMatch(name, nameTokens);
