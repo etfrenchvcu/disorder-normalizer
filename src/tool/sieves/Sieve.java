@@ -75,12 +75,28 @@ public abstract class Sieve {
         return alternateCuis;
     } 
  
+    // Original implementation
+    // public static String normalize(List<String> namesKnowledgeBase) {
+    //     for (String name : namesKnowledgeBase) {
+    //         String cui = exactMatchSieve(name);            
+    //         if (!cui.equals(""))
+    //             return cui;
+    //     }
+    //     return "";
+    // }
+
+    // Updated: Only return unambiguous CUIs
     public static String normalize(List<String> namesKnowledgeBase) {
+        int matches = 0;
+        String cui = "";
         for (String name : namesKnowledgeBase) {
-            String cui = exactMatchSieve(name);            
+            cui = exactMatchSieve(name);            
             if (!cui.equals(""))
-                return cui;
+                // return cui;
+                matches++;
         }
+        if (matches==1)
+            return cui;
         return "";
     }
     

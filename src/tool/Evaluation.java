@@ -38,6 +38,10 @@ public class Evaluation {
     }
     
     public static void evaluateClassification(Concept concept, DocumentConcepts concepts) throws IOException {
+        // Don't evaluate CUI-less 
+        if(concept.getCui().equals("CUI-less"))
+            return;
+
         incrementTotal();
         if ((!concept.getGoldMeSHorSNOMEDCui().equals("") && concept.getGoldMeSHorSNOMEDCui().equals(concept.getCui())) ||
                 (!concept.getGoldOMIMCuis().isEmpty() && concept.getGoldOMIMCuis().contains(concept.getCui())))
@@ -51,6 +55,7 @@ public class Evaluation {
             }
             else {
                 incrementFP();
+                printPred(concept, concepts.getFilename());
             }
         }
         else if (concept.getAlternateCuis() != null && !concept.getAlternateCuis().isEmpty()) {
@@ -65,10 +70,12 @@ public class Evaluation {
             }
             else {
                 incrementFP();
+                printPred(concept, concepts.getFilename());
             }
         }
         else {
             incrementFP();
+            printPred(concept, concepts.getFilename());
         }
         
         //write output
@@ -77,6 +84,11 @@ public class Evaluation {
 
         //logger output
         //Logger.writeLogFile((concepts.getFilename()+"\t"+concept.getIndexes()+"\t"+concept.getName()+"\t"+concept.getCui()+"\t"+concept.getGoldCui()));
+    }
+
+    private static void printPred(Concept concept, String file) {
+        String str = String.format("%s: %s #  %s (%s) ", file, concept.getGoldMeSHorSNOMEDCui(), concept.getName(), concept.getCui());
+        // System.out.println(str);
     }
     
     public static void computeAccuracy() {

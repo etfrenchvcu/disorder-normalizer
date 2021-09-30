@@ -41,6 +41,11 @@ public class Main {
         init(args);
     }
     
+    /**
+     * 
+     * @param args
+     * @throws IOException
+     */
     private void init(String[] args) throws IOException {
         if (new File(args[0]).isDirectory())
             training_data_dir = new File(args[0]);
@@ -94,7 +99,7 @@ public class Main {
     }
     
     /**
-     *
+     * Performs rule-based entity linking on given test set.
      * @param args
      * @throws IOException
      */
