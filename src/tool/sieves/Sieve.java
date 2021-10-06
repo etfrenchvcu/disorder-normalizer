@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import tool.util.HashListMap;
 import tool.util.Terminology;
 
 /**
@@ -19,8 +20,8 @@ import tool.util.Terminology;
 public abstract class Sieve {
     
     //state of this class
-    private static Terminology standardTerminology = new Terminology(); 
-    private static Terminology trainingDataTerminology = new Terminology();
+    private static Terminology standardTerminology; 
+    private static Terminology trainingDataTerminology;
 
     public static void setStandardTerminology() throws IOException {
         standardTerminology.loadTerminology();
@@ -42,7 +43,7 @@ public abstract class Sieve {
         return nameToCuiListMap.containsKey(name) ? nameToCuiListMap.get(name) : null;
     }
     
-    public static String getTerminologyNameCui(Map<String, List<String>> nameToCuiListMap, String name) {
+    public static String getTerminologyNameCui(HashListMap nameToCuiListMap, String name) {
         return nameToCuiListMap.containsKey(name) && nameToCuiListMap.get(name).size() == 1 ? nameToCuiListMap.get(name).get(0) : "";        
     }
     
@@ -55,22 +56,22 @@ public abstract class Sieve {
         }
         
         //checks against names in training data
-        cui = getTerminologyNameCui(trainingDataTerminology.getNameToCuiListMap(), name);
+        cui = getTerminologyNameCui(trainingDataTerminology..nameToCuiListMap, name);
         if (!cui.equals("")) {
             return cui;       
         }
         
         //checks against names in dictionary
-        return getTerminologyNameCui(standardTerminology.getNameToCuiListMap(), name);               
+        return getTerminologyNameCui(standardTerminology..nameToCuiListMap, name);               
     }
 
     public static List<String> getAlternateCuis(String cui) {
         List<String> alternateCuis = new ArrayList<>();
-        if (trainingDataTerminology.getCuiAlternateCuiMap().containsKey(cui)) {
-            alternateCuis.addAll(trainingDataTerminology.getCuiAlternateCuiMap().get(cui));
+        if (trainingDataTerminology.cuiAlternateCuiMap.containsKey(cui)) {
+            alternateCuis.addAll(trainingDataTerminology.cuiAlternateCuiMap.get(cui));
         }
-        if (standardTerminology.getCuiAlternateCuiMap().containsKey(cui)) {
-            alternateCuis.addAll(standardTerminology.getCuiAlternateCuiMap().get(cui));
+        if (standardTerminology.cuiAlternateCuiMap.containsKey(cui)) {
+            alternateCuis.addAll(standardTerminology.cuiAlternateCuiMap.get(cui));
         }
         return alternateCuis;
     } 

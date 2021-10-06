@@ -29,8 +29,8 @@ public class AmbiguityResolution {
             String conceptName = concept.getName();
             String[] conceptNameTokens = conceptName.split("\\s+");
             
-            List<String> trainingDataCuis = Sieve.getTrainingDataTerminology().getNameToCuiListMap().containsKey(conceptName) ?
-                    Sieve.getTrainingDataTerminology().getNameToCuiListMap().get(conceptName) : null;
+            List<String> trainingDataCuis = Sieve.getTrainingDataTerminology().nameToCuiListMap.containsKey(conceptName) ?
+                    Sieve.getTrainingDataTerminology().nameToCuiListMap.get(conceptName) : null;
             if (trainingDataCuis == null || trainingDataCuis.size() == 1) {
                 Evaluation.evaluateClassification(concept, concepts);
                 Terminology.storeNormalizedConcept(concept);

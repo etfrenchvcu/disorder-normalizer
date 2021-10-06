@@ -25,6 +25,7 @@ public class Main {
         File test_data_dir = null;
         File output_data_dir = null;
         int maxSieveLevel = 0;
+        Terminology terminology = null;
         MultiPassSieveNormalizer multiPassSieve;
 
         // Parse input args
@@ -39,10 +40,11 @@ public class Main {
                 output_data_dir.mkdirs();   
             } else
                 Util.throwIllegalDirectoryException(args[1]);
-            if (new File(args[2]).isFile())
-                // Terminology.terminologyFile = new File(args[2]);
-                Terminology standardTerminology = new Terminology(new File(args[2]));
-            else
+            if (new File(args[2]).isFile()) {
+                // TODO: remove this later
+                boolean ncbi = test_data_dir.toString().contains("ncbi") ? true : false;
+                terminology = new Terminology(new File(args[2]), ncbi);
+            } else
                 Util.throwIllegalFileException(args[2]);
 
             maxSieveLevel = Integer.parseInt(args[3]);
@@ -65,7 +67,7 @@ public class Main {
             System.exit(1);
         }
 
-        multiPassSieve = new MultiPassSieveNormalizer(training_data_dir, test_data_dir, output_data_dir, maxSieveLevel);      
+        multiPassSieve = new MultiPassSieveNormalizer(training_data_dir, test_data_dir, output_data_dir, maxSieveLevel, terminology);      
         multiPassSieve.run();
         Evaluation.computeAccuracy();
         Evaluation.printResults();

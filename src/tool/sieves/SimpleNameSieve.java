@@ -65,7 +65,7 @@ public class SimpleNameSieve extends Sieve {
     }
     
     public static String normalize(String name) {
-        return Sieve.getTerminologyNameCui(Sieve.getTrainingDataTerminology().getSimpleNameToCuiListMap(), name);
+        return Sieve.getTerminologyNameCui(Sieve.getTrainingDataTerminology().simpleNameToCuiListMap, name);
     }
     
 }

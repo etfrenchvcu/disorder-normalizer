@@ -9,9 +9,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import tool.sieves.AffixationSieve;
 import tool.sieves.CompoundPhraseSieve;
@@ -25,8 +23,8 @@ import tool.sieves.SimpleNameSieve;
 import tool.sieves.StemmingSieve;
 import tool.sieves.SymbolReplacementSieve;
 import tool.util.Abbreviation;
-import tool.util.AmbiguityResolution;
 import tool.util.Document;
+import tool.util.HashListMap;
 import tool.util.Ling;
 import tool.util.Mention;
 import tool.util.Terminology;
@@ -42,14 +40,21 @@ public class MultiPassSieveNormalizer {
     File output_data_dir;
     File test_data_dir;
     File train_data_dir;
+    Terminology terminology;
     
-    /**
+    /***
      * Initialize MultiPassSieveNormalizer and associated resources.
+     * @param train_data_dir
+     * @param test_data_dir
+     * @param output_data_dir
+     * @param max_level
+     * @param terminology
      * @throws IOException
      */
-    public MultiPassSieveNormalizer(File train_data_dir, File test_data_dir, File output_data_dir, int max_level) throws IOException {
+    public MultiPassSieveNormalizer(File train_data_dir, File test_data_dir, File output_data_dir, int max_level, Terminology terminology) throws IOException {
         this.max_level = max_level;
         this.output_data_dir = output_data_dir;
+        this.terminology = terminology;
         this.test_data_dir = test_data_dir;
         this.train_data_dir = train_data_dir;
 
@@ -74,23 +79,25 @@ public class MultiPassSieveNormalizer {
         Sieve.setStandardTerminology();
         Sieve.setTrainingDataTerminology(this.train_data_dir);
 
+        // Apply sieve to test data.
         List<Document> test_data = getDataSet(this.test_data_dir);
         for (Document concepts : test_data) {
-            Map<String, List<String>> cuiNamesMap = new HashMap<>();
+            HashListMap cuiNamesMap = new HashListMap();
 
             for (Mention concept : concepts.getMentions()) {
                 applyMultiPassSieve(concept);
                 if (concept.getCui().equals(""))
                     concept.setCui("CUI-less");
 
-                cuiNamesMap = Util.setMap(cuiNamesMap, concept.getCui(), concept.getName());
+                cuiNamesMap.addKeyPair(concept.getCui(), concept.getName());
             }
-            AmbiguityResolution.start(concepts, cuiNamesMap);
+            //TODO
+            // AmbiguityResolution.start(concepts, cuiNamesMap);
         }
     }
 
     /**
-     * Creates a list of DocumentConcepts objects corresponding 1-1 with each file in the test directory
+     * Creates a list of Document objects corresponding 1-1 with each file in the given directory
      */
     private List<Document> getDataSet(File dir) throws IOException {
         List<Document> dataset = new ArrayList<>();

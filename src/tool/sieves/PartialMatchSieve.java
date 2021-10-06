@@ -37,12 +37,12 @@ public class PartialMatchSieve extends Sieve {
             List<String> candidatePhrases = null;
             int map = -1;
             
-            if (Sieve.getTrainingDataTerminology().getTokenToNameListMap().containsKey(phraseToken)) {
-                candidatePhrases = new ArrayList<>(Sieve.getTrainingDataTerminology().getTokenToNameListMap().get(phraseToken));
+            if (Sieve.getTrainingDataTerminology().tokenToNameListMap.containsKey(phraseToken)) {
+                candidatePhrases = new ArrayList<>(Sieve.getTrainingDataTerminology().tokenToNameListMap.get(phraseToken));
                 map = 2;
             }
-            else if (Sieve.getStandardTerminology().getTokenToNameListMap().containsKey(phraseToken)) {
-                candidatePhrases = new ArrayList<>(Sieve.getStandardTerminology().getTokenToNameListMap().get(phraseToken));
+            else if (Sieve.getStandardTerminology().tokenToNameListMap.containsKey(phraseToken)) {
+                candidatePhrases = new ArrayList<>(Sieve.getStandardTerminology().tokenToNameListMap.get(phraseToken));
                 map = 3;
             }
             
@@ -51,8 +51,8 @@ public class PartialMatchSieve extends Sieve {
                         
             candidatePhrases.removeAll(prevPartialMatchedPhrases);
             
-            if (map == 2 && candidatePhrases.isEmpty() && Sieve.getStandardTerminology().getTokenToNameListMap().containsKey(phraseToken)) {
-                candidatePhrases = new ArrayList<>(Sieve.getStandardTerminology().getTokenToNameListMap().get(phraseToken));
+            if (map == 2 && candidatePhrases.isEmpty() && Sieve.getStandardTerminology().tokenToNameListMap.containsKey(phraseToken)) {
+                candidatePhrases = new ArrayList<>(Sieve.getStandardTerminology().tokenToNameListMap.get(phraseToken));
                 map = 3;                
             }            
             
@@ -67,7 +67,7 @@ public class PartialMatchSieve extends Sieve {
             if (!Ling.exactTokenMatch(candidatePhrase, phrase))
                 continue;
 
-            String cui = terminology.getNameToCuiListMap().get(candidatePhrase).get(0);
+            String cui = terminology.nameToCuiListMap.get(candidatePhrase).get(0);
             cuiList = Util.setList(cuiList, cui);
         }              
         return cuiList;

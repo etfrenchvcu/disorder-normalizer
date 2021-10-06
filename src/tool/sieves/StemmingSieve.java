@@ -51,12 +51,12 @@ public class StemmingSieve extends Sieve {
             return cui;
         
         //checks against names in training data
-        cui = getTerminologyNameCui(Sieve.getTrainingDataTerminology().getStemmedNameToCuiListMap(), name);
+        cui = getTerminologyNameCui(Sieve.getTrainingDataTerminology().stemmedNameToCuiListMap, name);
         if (!cui.equals(""))
             return cui;        
         
         //checks against names in dictionary
-        cui = getTerminologyNameCui(Sieve.getStandardTerminology().getStemmedNameToCuiListMap(), name);       
+        cui = getTerminologyNameCui(Sieve.getStandardTerminology().stemmedNameToCuiListMap, name);       
         return cui;
     }    
     

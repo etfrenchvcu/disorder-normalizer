@@ -36,12 +36,12 @@ public class PartialMatchNCBISieve {
             List<String> candidatePhrases = null;
             int map = -1;
             
-            if (Sieve.getTrainingDataTerminology().getTokenToNameListMap().containsKey(phraseToken)) {
-                candidatePhrases = new ArrayList<>(Sieve.getTrainingDataTerminology().getTokenToNameListMap().get(phraseToken));
+            if (Sieve.getTrainingDataTerminology().tokenToNameListMap.containsKey(phraseToken)) {
+                candidatePhrases = new ArrayList<>(Sieve.getTrainingDataTerminology().tokenToNameListMap.get(phraseToken));
                 map = 2;
             }
-            else if (Sieve.getStandardTerminology().getTokenToNameListMap().containsKey(phraseToken)) {
-                candidatePhrases = new ArrayList<>(Sieve.getStandardTerminology().getTokenToNameListMap().get(phraseToken));
+            else if (Sieve.getStandardTerminology().tokenToNameListMap.containsKey(phraseToken)) {
+                candidatePhrases = new ArrayList<>(Sieve.getStandardTerminology().tokenToNameListMap.get(phraseToken));
                 map = 3;
             }
             
@@ -71,7 +71,7 @@ public class PartialMatchNCBISieve {
 
             int count = Ling.getMatchingTokensCount(phrase, candidatePhrase);
             int length = candidatePhrase.split("\\s+").length;
-            String cui = terminology.getNameToCuiListMap().get(candidatePhrase).get(0);
+            String cui = terminology.nameToCuiListMap.get(candidatePhrase).get(0);
 
             if (cuiCandidateMatchingTokensCountMap.containsKey(cui)) {
                 int oldCount = cuiCandidateMatchingTokensCountMap.get(cui);

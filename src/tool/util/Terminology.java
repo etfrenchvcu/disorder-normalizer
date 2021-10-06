@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import tool.Main;
 import tool.sieves.CompoundPhraseSieve;
 import tool.sieves.SimpleNameSieve;
 
@@ -23,14 +22,15 @@ import tool.sieves.SimpleNameSieve;
  */
 public class Terminology {
 
-    private HashListMap tokenToNameListMap;
-    private HashListMap nameToCuiListMap;
-    private HashListMap simpleNameToCuiListMap;
-    private HashListMap compoundNameToCuiListMap;
-    private HashListMap cuiToNameListMap;
-    private HashListMap stemmedNameToCuiListMap;
-    private HashListMap cuiToStemmedNameListMap;
-    private HashListMap cuiAlternateCuiMap;
+    public boolean ncbi;
+    public HashListMap tokenToNameListMap;
+    public HashListMap nameToCuiListMap;
+    public HashListMap simpleNameToCuiListMap;
+    public HashListMap compoundNameToCuiListMap;
+    public HashListMap cuiToNameListMap;
+    public HashListMap stemmedNameToCuiListMap;
+    public HashListMap cuiToStemmedNameListMap;
+    public HashListMap cuiAlternateCuiMap;
     public static Map<String, HashListMap> cuiNameFileListMap;
 
     /**
@@ -38,7 +38,9 @@ public class Terminology {
      * @param file
      * @throws IOException
      */
-    public Terminology(File file) throws IOException {
+    public Terminology(File file, boolean ncbi) throws IOException {
+        this.ncbi = ncbi;
+
         // Initialize maps
         tokenToNameListMap = new HashListMap();
         nameToCuiListMap = new HashListMap();
@@ -56,8 +58,9 @@ public class Terminology {
     /**
      * Process terminology file and load maps.
      * @param file
+     * @throws IOException
      */
-    private void loadTerminologyFile(File file) {
+    private void loadTerminologyFile(File file) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -73,7 +76,7 @@ public class Terminology {
                 String[] names = token[1].toLowerCase().split("\\|");
 
                 for (String name : names)
-                    loadMaps(name, cui);
+                loadConceptMaps(name, cui);
             }
         }
     }
@@ -82,9 +85,8 @@ public class Terminology {
      * TODO: Not all of these need to be loaded depending on the max_sieve_level
      * @param name
      * @param cui
-     * @param ncbi
      */
-    private void loadConceptMaps(String name, String cui, boolean ncbi) {
+    private void loadConceptMaps(String name, String cui) {
         nameToCuiListMap.addKeyPair(name, cui);
         cuiToNameListMap.addKeyPair(cui, name);
 
@@ -114,46 +116,13 @@ public class Terminology {
         }
     }
 
-    public Map<String, List<String>> getTokenToNameListMap() {
-        return tokenToNameListMap;
-    }
-
-    public Map<String, List<String>> getNameToCuiListMap() {
-        return nameToCuiListMap;
-    }
-
-    public Map<String, List<String>> getSimpleNameToCuiListMap() {
-        return simpleNameToCuiListMap;
-    }
-
-    public Map<String, List<String>> getCompoundNameToCuiListMap() {
-        return compoundNameToCuiListMap;
-    }
-
     public void setCompoundNameToCuiListMap(String name, String cui) {
-        compoundNameToCuiListMap = Util.setMap(compoundNameToCuiListMap, name, cui);
+        compoundNameToCuiListMap.addKeyPair(name, cui);
     }
 
-    public Map<String, List<String>> getCuiToNameListMap() {
-        return cuiToNameListMap;
-    }
-
-    public Map<String, List<String>> getStemmedNameToCuiListMap() {
-        return stemmedNameToCuiListMap;
-    }
-
-    public Map<String, List<String>> getCuiToStemmedNameListMap() {
-        return cuiToStemmedNameListMap;
-    }
-
-    public Map<String, List<String>> getCuiAlternateCuiMap() {
-        return cuiAlternateCuiMap;
-    }
-
-    private static String get_preferredID_set_altID(String[] identifiers) {
+    private String get_preferredID_set_altID(String[] identifiers) {
         String preferredID = "";
         boolean set = false;
-        List<String> altIDs = new ArrayList<>();
 
         for (int i = 0; i < identifiers.length; i++) {
             if (identifiers[i].contains("OMIM"))
@@ -165,11 +134,7 @@ public class Terminology {
                 set = true;
                 continue;
             }
-            altIDs.add(identifiers[i]);
-        }
-
-        if (!altIDs.isEmpty()) {
-            cuiAlternateCuiMap.put(preferredID, altIDs);
+            cuiAlternateCuiMap.addKeyPair(preferredID, identifiers[i]);
         }
 
         return preferredID;
@@ -178,14 +143,14 @@ public class Terminology {
     private void setOMIM(String cuis, String MeSHorSNOMEDcuis, String conceptName) {
         if (MeSHorSNOMEDcuis.equals("")) {
             cuis = cuis.replaceAll("OMIM:", "");
-            loadMaps(conceptName, cuis);
+            loadConceptMaps(conceptName, cuis);
         } else {
             String[] cuis_arr = cuis.split("\\|");
             for (String cui : cuis_arr) {
                 if (!cui.contains("OMIM"))
                     continue;
                 cui = cui.split(":")[1];
-                cuiAlternateCuiMap = Util.setMap(cuiAlternateCuiMap, MeSHorSNOMEDcuis, cui);
+                cuiAlternateCuiMap.addKeyPair(MeSHorSNOMEDcuis, cui);
             }
         }
     }
@@ -226,27 +191,27 @@ public class Terminology {
                     String[] cuis = tokens[4].contains("+") ? tokens[4].split("\\+") : tokens[4].split("\\|");
                     String MeSHorSNOMEDcuis = getMeSHorSNOMEDCuis(cuis);
                     if (!MeSHorSNOMEDcuis.equals(""))
-                        loadMaps(conceptName, MeSHorSNOMEDcuis);
+                        loadConceptMaps(conceptName, MeSHorSNOMEDcuis);
                     setOMIM(tokens[4], MeSHorSNOMEDcuis, conceptName);
                     String cui = !MeSHorSNOMEDcuis.equals("") ? MeSHorSNOMEDcuis : tokens[4].replaceAll("OMIM:", "");
 
                     cuiNamesMap = Util.setMap(cuiNamesMap, cui, conceptName);
 
                     // -------------remove-------------------------------
-                    Map<String, List<String>> nameFileListMap = cuiNameFileListMap.get(MeSHorSNOMEDcuis);
+                    HashListMap nameFileListMap = cuiNameFileListMap.get(MeSHorSNOMEDcuis);
                     if (nameFileListMap == null)
-                        cuiNameFileListMap.put(MeSHorSNOMEDcuis, nameFileListMap = new HashMap<>());
-                    nameFileListMap = Util.setMap(nameFileListMap, conceptName, tokens[0]);
+                        cuiNameFileListMap.put(MeSHorSNOMEDcuis, nameFileListMap = new HashListMap());
+                    nameFileListMap.addKeyPair(conceptName, tokens[0]);
                     // -------------remove-------------------------------
 
                     List<String> simpleConceptNames = SimpleNameSieve
                             .getTerminologySimpleNames(conceptName.split("\\s+"));
                     for (String simpleConceptName : simpleConceptNames)
-                        simpleNameToCuiListMap = Util.setMap(simpleNameToCuiListMap, simpleConceptName, cui);
+                        simpleNameToCuiListMap.addKeyPair(simpleConceptName, cui);
 
                 }
             }
-            if (Main.training_data_dir.toString().contains("ncbi"))
+            if (ncbi)
                 continue;
             for (String cui : cuiNamesMap.keySet()) {
                 List<String> names = cuiNamesMap.get(cui);

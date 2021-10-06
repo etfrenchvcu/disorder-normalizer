@@ -13,6 +13,15 @@ public class HashListMap {
     }
 
     /**
+     * Return the list of strings associated with the given key
+     * @param key
+     * @return
+     */
+    public List<String> get(String key) {
+        return map.get(key);
+    }
+
+    /**
      * Safely appends a value to the list corresponding to the given key.
      * 
      * @param key
@@ -26,6 +35,15 @@ public class HashListMap {
             values.add(value);
             map.put(key, values);
         }
+    }
+
+    /**
+     * Checks if HashListMap contains the given key
+     * @param key
+     * @return
+     */
+    public boolean containsKey(String key) {
+        return map.containsKey(key);
     }
 
     /**

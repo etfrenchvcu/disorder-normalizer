@@ -33,19 +33,19 @@ public class CompoundPhraseSieve extends Sieve {
                         
             String cui2 = exactMatchSieve(name.replace(phrase, replacement2));
             if (!cui1.equals("") && !cui2.equals("")) {
-                return Sieve.getTrainingDataTerminology().getCuiToNameListMap().containsKey(cui2+"|"+cui1) ? cui2+"|"+cui1 : cui1+"|"+cui2;
+                return Sieve.getTrainingDataTerminology().cuiToNameListMap.containsKey(cui2+"|"+cui1) ? cui2+"|"+cui1 : cui1+"|"+cui2;
             }
         }
         return "";        
     }
     
     public static String apply(String name) {
-        String cui = getTerminologyNameCui(Sieve.getTrainingDataTerminology().getCompoundNameToCuiListMap(), name);
+        String cui = getTerminologyNameCui(Sieve.getTrainingDataTerminology().compoundNameToCuiListMap, name);
         if (!cui.equals("")) {
             return cui;
         }
         
-        return getTerminologyNameCui(Sieve.getStandardTerminology().getCompoundNameToCuiListMap(), name);   
+        return getTerminologyNameCui(Sieve.getStandardTerminology().compoundNameToCuiListMap, name);   
     }
     
     public static void setCompoundNameTerminology(Terminology terminology, String conceptName, String[] conceptNameTokens, String cui) {
