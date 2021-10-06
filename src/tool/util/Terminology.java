@@ -34,11 +34,11 @@ public class Terminology {
     public static Map<String, HashListMap> cuiNameFileListMap;
 
     /**
-     * Initializes Terminology object from a file. Maps each CUI to multiple names/synonyms.
-     * @param file
-     * @throws IOException
+     * Initializes Terminology object from either a single terminology.txt file or a training data directory. Maps each CUI to multiple names/synonyms.
+     * @param path
+     * @throws Exception
      */
-    public Terminology(File file, boolean ncbi) throws IOException {
+    public Terminology(File path, boolean ncbi) throws Exception {
         this.ncbi = ncbi;
 
         // Initialize maps
@@ -52,7 +52,12 @@ public class Terminology {
         cuiAlternateCuiMap = new HashListMap();
         cuiNameFileListMap = new HashMap<>();
 
-        loadTerminologyFile(file);
+        if (path.isFile()) 
+            loadTerminologyFile(path);
+        else if (path.isDirectory()) 
+            loadTrainingDataTerminology(path);
+        else
+            throw new Exception("Given path is neither file nor directory: " + path.toString());
     }
 
     /**
@@ -242,34 +247,4 @@ public class Terminology {
             }
         }
     }
-
-    private static Map<String, List<String>> normalizedNameToCuiListMap = new HashMap<>();
-
-    public static void setNormalizedNameToCuiListMap(String name, String cui) {
-        normalizedNameToCuiListMap = Util.setMap(normalizedNameToCuiListMap, name, cui);
-    }
-
-    public static Map<String, List<String>> getNormalizedNameToCuiListMap() {
-        return normalizedNameToCuiListMap;
-    }
-
-    private static Map<String, List<String>> stemmedNormalizedNameToCuiListMap = new HashMap<>();
-
-    public static void setStemmedNormalizedNameToCuiListMap(String stemmedName, String cui) {
-        stemmedNormalizedNameToCuiListMap = Util.setMap(stemmedNormalizedNameToCuiListMap, stemmedName, cui);
-    }
-
-    public static Map<String, List<String>> getStemmedNormalizedNameToCuiListMap() {
-        return stemmedNormalizedNameToCuiListMap;
-    }
-
-    public static void storeNormalizedConcept(Mention concept) {
-        setNormalizedNameToCuiListMap(
-                concept.getNormalizingSieve() == 2 ? concept.getNameExpansion() : concept.getName(), concept.getCui());
-        setStemmedNormalizedNameToCuiListMap(
-                concept.getNormalizingSieve() == 2 ? Ling.getStemmedPhrase(concept.getNameExpansion())
-                        : concept.getStemmedName(),
-                concept.getCui());
-    }
-
 }

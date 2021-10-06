@@ -5,7 +5,6 @@
 package tool;
 
 import java.io.File;
-import java.io.IOException;
 
 import tool.util.Terminology;
 import tool.util.Util;
@@ -18,14 +17,14 @@ public class Main {
     /**
      * Performs rule-based entity linking on given test set.
      * @param args
-     * @throws IOException
+     * @throws Exception
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         File training_data_dir = null;
         File test_data_dir = null;
         File output_data_dir = null;
         int maxSieveLevel = 0;
-        Terminology terminology = null;
+        Terminology standardTerminology = null;
         MultiPassSieveNormalizer multiPassSieve;
 
         // Parse input args
@@ -43,7 +42,7 @@ public class Main {
             if (new File(args[2]).isFile()) {
                 // TODO: remove this later
                 boolean ncbi = test_data_dir.toString().contains("ncbi") ? true : false;
-                terminology = new Terminology(new File(args[2]), ncbi);
+                standardTerminology = new Terminology(new File(args[2]), ncbi);
             } else
                 Util.throwIllegalFileException(args[2]);
 
@@ -67,7 +66,7 @@ public class Main {
             System.exit(1);
         }
 
-        multiPassSieve = new MultiPassSieveNormalizer(training_data_dir, test_data_dir, output_data_dir, maxSieveLevel, terminology);      
+        multiPassSieve = new MultiPassSieveNormalizer(training_data_dir, test_data_dir, output_data_dir, maxSieveLevel, standardTerminology);      
         multiPassSieve.run();
         Evaluation.computeAccuracy();
         Evaluation.printResults();

@@ -1,63 +1,76 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package tool.sieves;
+// /*
+//  * To change this template, choose Tools | Templates
+//  * and open the template in the editor.
+//  */
+// package tool.sieves;
 
-import java.util.ArrayList;
-import java.util.List;
+// import java.util.ArrayList;
+// import java.util.List;
 
-import tool.util.Ling;
-import tool.util.Mention;
-import tool.util.Terminology;
-import tool.util.Util;
+// import tool.util.HashListMap;
+// import tool.util.Ling;
+// import tool.util.Mention;
+// import tool.util.Terminology;
+// import tool.util.Util;
 
-/**
- *
- * @author
- */
-public class StemmingSieve extends Sieve {
+// /**
+//  *
+//  * @author
+//  */
+// public class StemmingSieve extends Sieve {
     
-    public static String apply(Mention concept) {
-        transformName(concept);
-        return StemmingSieve.normalize(concept);
-    }     
-    
-    private static void transformName(Mention concept) {
-        List<String> namesForTransformation = new ArrayList<>(concept.getNamesKnowledgeBase());
-        List<String> transformedNames = new ArrayList<>();        
-        
-        for (String nameForTransformation : namesForTransformation) {
-            transformedNames = Util.setList(transformedNames, Ling.getStemmedPhrase(nameForTransformation));
-        }
-        
-        concept.setStemmedNamesKnowledgeBase(transformedNames);   
-    }    
+//     HashListMap stemmedNormalizedNameToCuiListMap;
 
-    public static String normalize(Mention concept) {
-        for (String name : concept.getStemmedNamesKnowledgeBase()) {
-            String cui = StemmingSieve.exactMatchSieve(name);            
-            if (!cui.equals(""))
-                return cui;
-        }
-        return "";
-    }    
+//     /**
+//      * Constructor. Calls abstract constructor.
+//      * @param standardTerminology
+//      * @param trainTerminology
+//      */
+//     public StemmingSieve(Terminology standardTerminology, Terminology trainTerminology) {
+//         super(standardTerminology, trainTerminology);
+//         stemmedNormalizedNameToCuiListMap = new HashListMap();
+//     }
+
+//     public String apply(Mention concept) {
+//         transformName(concept);
+//         return normalize(concept);
+//     }     
     
-    public static String exactMatchSieve(String name) {
-        String cui = "";
-        //checks against names normalized by multi-pass sieve
-        cui = getTerminologyNameCui(Terminology.getStemmedNormalizedNameToCuiListMap(), name);
-        if (!cui.equals(""))
-            return cui;
+//     private void transformName(Mention concept) {
+//         List<String> namesForTransformation = new ArrayList<>(concept.getNamesKnowledgeBase());
+//         List<String> transformedNames = new ArrayList<>();        
         
-        //checks against names in training data
-        cui = getTerminologyNameCui(Sieve.getTrainingDataTerminology().stemmedNameToCuiListMap, name);
-        if (!cui.equals(""))
-            return cui;        
+//         for (String nameForTransformation : namesForTransformation) {
+//             transformedNames = Util.setList(transformedNames, Ling.getStemmedPhrase(nameForTransformation));
+//         }
         
-        //checks against names in dictionary
-        cui = getTerminologyNameCui(Sieve.getStandardTerminology().stemmedNameToCuiListMap, name);       
-        return cui;
-    }    
+//         concept.setStemmedNamesKnowledgeBase(transformedNames);   
+//     }    
+
+//     public String normalize(Mention concept) {
+//         for (String name : concept.getStemmedNamesKnowledgeBase()) {
+//             String cui = exactStemmedMatchSieve(name);            
+//             if (!cui.equals(""))
+//                 return cui;
+//         }
+//         return "";
+//     }    
     
-}
+//     public String exactStemmedMatchSieve(String name) {
+//         String cui = "";
+//         //checks against names normalized by multi-pass sieve
+//         cui = getTerminologyNameCui(stemmedNormalizedNameToCuiListMap, name);
+//         if (!cui.equals(""))
+//             return cui;
+        
+//         //checks against names in training data
+//         cui = getTerminologyNameCui(trainTerminology.stemmedNameToCuiListMap, name);
+//         if (!cui.equals(""))
+//             return cui;        
+        
+//         //checks against names in dictionary
+//         cui = getTerminologyNameCui(standardTerminology.stemmedNameToCuiListMap, name);       
+//         return cui;
+//     }    
+    
+// }

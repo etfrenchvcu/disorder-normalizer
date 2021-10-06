@@ -18,27 +18,23 @@ import tool.util.Terminology;
  * @author
  */
 public abstract class Sieve {
-    
-    //state of this class
-    private static Terminology standardTerminology; 
-    private static Terminology trainingDataTerminology;
 
-    public static void setStandardTerminology() throws IOException {
-        standardTerminology.loadTerminology();
+    Terminology standardTerminology; 
+    Terminology trainTerminology;
+    HashListMap normalizedNameToCuiListMap;
+
+    /**
+     * Abstract constructor.
+     * @param standardTerminology
+     * @param trainTerminology
+     * @param normalizedNameToCuiListMap
+     */
+    public Sieve(Terminology standardTerminology, Terminology trainTerminology, HashListMap normalizedNameToCuiListMap) {
+        this.standardTerminology = standardTerminology;
+        this.trainTerminology = trainTerminology;
+        this.normalizedNameToCuiListMap = normalizedNameToCuiListMap;
     }
 
-    public static Terminology getStandardTerminology() {
-        return standardTerminology;
-    }
-    
-    public static void setTrainingDataTerminology(File train_dir) throws IOException {
-        trainingDataTerminology.loadTrainingDataTerminology(train_dir);
-    }
-
-    public static Terminology getTrainingDataTerminology() {
-        return trainingDataTerminology;
-    }        
-    
     public static List<String> getTerminologyNameCuis(Map<String, List<String>> nameToCuiListMap, String name) {
         return nameToCuiListMap.containsKey(name) ? nameToCuiListMap.get(name) : null;
     }
@@ -47,28 +43,28 @@ public abstract class Sieve {
         return nameToCuiListMap.containsKey(name) && nameToCuiListMap.get(name).size() == 1 ? nameToCuiListMap.get(name).get(0) : "";        
     }
     
-    public static String exactMatchSieve(String name) {
+    public String exactMatch(String name) {
         String cui = "";
         //checks against names normalized by multi-pass sieve
-        cui = getTerminologyNameCui(Terminology.getNormalizedNameToCuiListMap(), name);
+        cui = getTerminologyNameCui(normalizedNameToCuiListMap , name);
         if (!cui.equals("")) {
             return cui;
         }
         
         //checks against names in training data
-        cui = getTerminologyNameCui(trainingDataTerminology..nameToCuiListMap, name);
+        cui = getTerminologyNameCui(trainTerminology.nameToCuiListMap, name);
         if (!cui.equals("")) {
             return cui;       
         }
         
         //checks against names in dictionary
-        return getTerminologyNameCui(standardTerminology..nameToCuiListMap, name);               
+        return getTerminologyNameCui(standardTerminology.nameToCuiListMap, name);               
     }
 
-    public static List<String> getAlternateCuis(String cui) {
+    public List<String> getAlternateCuis(String cui) {
         List<String> alternateCuis = new ArrayList<>();
-        if (trainingDataTerminology.cuiAlternateCuiMap.containsKey(cui)) {
-            alternateCuis.addAll(trainingDataTerminology.cuiAlternateCuiMap.get(cui));
+        if (trainTerminology.cuiAlternateCuiMap.containsKey(cui)) {
+            alternateCuis.addAll(trainTerminology.cuiAlternateCuiMap.get(cui));
         }
         if (standardTerminology.cuiAlternateCuiMap.containsKey(cui)) {
             alternateCuis.addAll(standardTerminology.cuiAlternateCuiMap.get(cui));
@@ -92,7 +88,7 @@ public abstract class Sieve {
         int matches = 0;
         String cui = "";
         for (String name : namesKnowledgeBase) {
-            cui = exactMatchSieve(name);            
+            cui = exactMatch(name);            
             if (!cui.equals(""))
                 // return cui;
                 matches++;
