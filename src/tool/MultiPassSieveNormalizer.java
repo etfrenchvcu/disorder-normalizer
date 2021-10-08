@@ -29,26 +29,27 @@ public class MultiPassSieveNormalizer {
      
     boolean ncbi;
     int max_level;
-    File output_data_dir;
+    Evaluation eval;
     File test_data_dir;
     File train_data_dir;
     HashListMap normalizedNameToCuiListMap;
     HashListMap stemmedNormalizedNameToCuiListMap;
     Terminology standardTerminology;
+    Terminology trainTerminology;
     ArrayList<Sieve> sieves;
     
     /***
      * Initialize MultiPassSieveNormalizer and associated resources.
      * @param train_data_dir
      * @param test_data_dir
-     * @param output_data_dir
+     * @param eval
      * @param max_level
      * @param standardTerminology
-     * @throws IOException
+     * @throws Exception
      */
-    public MultiPassSieveNormalizer(File train_data_dir, File test_data_dir, File output_data_dir, int max_level, Terminology standardTerminology) throws IOException {
+    public MultiPassSieveNormalizer(File train_data_dir, File test_data_dir, Evaluation eval, int max_level, Terminology standardTerminology) throws Exception {
         this.max_level = max_level;
-        this.output_data_dir = output_data_dir;
+        this.eval = eval;
         this.standardTerminology = standardTerminology;
         this.test_data_dir = test_data_dir;
         this.train_data_dir = train_data_dir;
@@ -66,6 +67,9 @@ public class MultiPassSieveNormalizer {
         Ling.setSuffixMap(new File("resources/suffix.txt"));
         Ling.setPrefixMap(new File("resources/prefix.txt"));
         Ling.setAffixMap(new File("resources/affix.txt")); 
+
+        // Load training data terminology
+        trainTerminology = new Terminology(train_data_dir, ncbi);
     }
 
     private ArrayList<Sieve> initializeSieves(Terminology trainTerminology) {
@@ -81,26 +85,22 @@ public class MultiPassSieveNormalizer {
      * @throws Exception
      */
     public void run() throws Exception {
-        // Load training data terminology
-        Terminology trainTerminology = new Terminology(train_data_dir, ncbi);
-
         // Initialize sieves
         sieves = initializeSieves(trainTerminology);
 
         // Apply sieve to test data.
         List<Document> test_data = getDataSet(this.test_data_dir);
-        for (Document concepts : test_data) {
+        for (Document document : test_data) {
             HashListMap cuiNamesMap = new HashListMap();
 
-            for (Mention concept : concepts.getMentions()) {
-                applyMultiPassSieve(concept);
-                if (concept.getCui().equals(""))
-                    concept.setCui("CUI-less");
+            for (Mention mention : document.mentions) {
+                applyMultiPassSieve(mention);
+                if (mention.cui.equals(""))
+                    mention.cui = "CUI-less";
 
-                cuiNamesMap.addKeyPair(concept.getCui(), concept.getName());
+                cuiNamesMap.addKeyPair(mention.cui, mention.name);
             }
-            //TODO
-            // AmbiguityResolution.start(concepts, cuiNamesMap);
+            resolveAmbiguity(document, cuiNamesMap);
         }
     }
 
@@ -133,20 +133,55 @@ public class MultiPassSieveNormalizer {
         return dataset;
     }
 
+    /**
+     * If the CUI was annotated on a compound mention (multiple CUIs on a single annotation), add all the CUIs on the shared annotation.
+     * @param cui
+     * @return
+     */
+    public List<String> getAlternateCuis(String cui) {
+        List<String> alternateCuis = new ArrayList<>();
+        if (trainTerminology.cuiAlternateCuiMap.containsKey(cui)) {
+            alternateCuis.addAll(trainTerminology.cuiAlternateCuiMap.get(cui));
+        }
+        if (standardTerminology.cuiAlternateCuiMap.containsKey(cui)) {
+            alternateCuis.addAll(standardTerminology.cuiAlternateCuiMap.get(cui));
+        }
+        return alternateCuis;
+    }
     
-    
-    private boolean pass(Mention concept, int currentSieveLevel) {
-        if (!concept.getCui().equals("")) {
-            concept.setAlternateCuis(Sieve.getAlternateCuis(concept.getCui()));
-            concept.setNormalizingSieveLevel(currentSieveLevel-1);
-            //Terminology.storeNormalizedConcept(concept);
-            return false;
+    /**
+     * Checks if we should continue (pass) to the next sieve.
+     * @param mention
+     * @param level
+     * @return
+     */
+    private boolean checkNormalized(Mention mention, int level) {
+        boolean normalized = false;
+        if (!mention.cui.equals("")) {
+            // TODO: Don't always return the list of alternate CUIs if there's another option
+
+            // Find alternate CUIs (from compound annotations).
+            List<String> alternateCuis = new ArrayList<>();
+            if (trainTerminology.cuiAlternateCuiMap.containsKey(mention.cui)) {
+                alternateCuis.addAll(trainTerminology.cuiAlternateCuiMap.get(mention.cui));
+            }
+            if (standardTerminology.cuiAlternateCuiMap.containsKey(mention.cui)) {
+                alternateCuis.addAll(standardTerminology.cuiAlternateCuiMap.get(mention.cui));
+            }
+
+            // Set alternate CUIs on the mention
+            //TODO: make sure these are distinct and !="" upstream
+            mention.alternateCuis = alternateCuis;
+
+            // Set the sieve level at which the mention was normalized
+            mention.setNormalizingSieveLevel(level-1);
+
+            //TODO?:Terminology.storeNormalizedConcept(concept);
+
+            normalized = true;
         }
         
-        if (currentSieveLevel > this.max_level)
-            return false;
-        
-        return true;
+        return normalized;
     }
         
     /**
@@ -154,14 +189,25 @@ public class MultiPassSieveNormalizer {
      * @param mention
      */
     private void applyMultiPassSieve(Mention mention) {
-        int currentSieveLevel = 1;
-        //match with names in training data
-        //Sieve 1        
-        mention.setCui(Sieve.exactMatch(mention.getName()));        
-        if (!pass(mention, ++currentSieveLevel))
-            return;
+        int level = 1;
+        for (var sieve : sieves) {
+            mention.cui = sieve.apply(mention);
+
+            // Drop out if we successfully normalize the mention
+            if(checkNormalized(mention, level))
+                return;
+
+            // Increment sieve level and iterate
+            level++;
+        }
+
         
-        // TODO: Commenting out sieves >1 temporarily
+        // //match with names in training data
+        // //Sieve 1        
+        // mention.cui = Sieve.exactMatch(mention.name);
+        // if (!pass(mention, ++currentSieveLevel))
+        //     return;
+        
         // //Sieve 2
         // mention.setCui(Sieve.exactMatchSieve(mention.getNameExpansion()));
         // if (!pass(mention, ++currentSieveLevel))
@@ -216,11 +262,58 @@ public class MultiPassSieveNormalizer {
         // pass(mention, ++currentSieveLevel);       
     }
 
-    // This was only used in AmbiguityResolution.java, which doesn't seem to be used anywhere
-    // public static void storeNormalizedConcept(Mention concept) {
-    //     String normalizedName = concept.getNormalizingSieve() == 2 ? concept.getNameExpansion() : concept.getName();
-    //     String stemmedNormalizedName = concept.getNormalizingSieve() == 2 ? Ling.getStemmedPhrase(concept.getNameExpansion()) : concept.getStemmedName();
-    //     normalizedNameToCuiListMap.addKeyPair(normalizedName, concept.getCui());
-    //     stemmedNormalizedNameToCuiListMap.addKeyPair(stemmedNormalizedName, concept.getCui());
-    // }
+    /**
+     * Add normalized mention to a dictionary for reference normalizing other mentions
+     * @param mention
+     */
+    public void storeNormalizedConcept(Mention mention) {
+        //TODO: what is this???
+        String normalizedName = mention.getNormalizingSieve() == 2 ? mention.getNameExpansion() : mention.name;
+        String stemmedNormalizedName = mention.getNormalizingSieve() == 2 ? Ling.getStemmedPhrase(mention.getNameExpansion()) : mention.getStemmedName();
+
+        normalizedNameToCuiListMap.addKeyPair(normalizedName, mention.cui);
+        stemmedNormalizedNameToCuiListMap.addKeyPair(stemmedNormalizedName, mention.cui);
+    }
+
+    private void resolveAmbiguity(Document document, HashListMap cuiNamesMap) throws IOException {
+        for (Mention mention : document.mentions) {
+            if (mention.getNormalizingSieve() != 1 || mention.cui.equals("CUI-less")) {
+                eval.evaluateClassification(mention, document);
+                storeNormalizedConcept(mention);
+                continue;          
+            }
+            
+            String[] conceptNameTokens = mention.name.split("\\s+");
+            
+            // Get matches from train data
+            List<String> trainingDataCuis = trainTerminology.nameToCuiListMap.get(mention.name);
+            if (trainingDataCuis == null || trainingDataCuis.size() == 1) {
+                eval.evaluateClassification(mention, document);
+                storeNormalizedConcept(mention);
+                continue;
+            }
+            
+            if (conceptNameTokens.length > 1) 
+                mention.cui = "CUI-less";
+            else {                
+                int countCUIMatch = 0;
+                for (String cui : trainingDataCuis) {
+                    List<String> names = cuiNamesMap.containsKey(cui) ? cuiNamesMap.get(cui) : new ArrayList<String>();
+                    for (String name : names) {
+                        String[] nameTokens = name.split("\\s+");
+                        if (nameTokens.length == 1)
+                            continue;
+                        if (name.matches(mention.name+" .*")) {
+                            countCUIMatch++;
+                        }
+                    }
+                }
+                if (countCUIMatch > 0) 
+                    mention.cui = "CUI-less";
+                else
+                    storeNormalizedConcept(mention);
+            }
+            eval.evaluateClassification(mention, document);
+        }
+    }
 }

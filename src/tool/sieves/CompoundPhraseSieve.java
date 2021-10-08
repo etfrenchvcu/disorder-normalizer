@@ -55,34 +55,5 @@
 //         }
         
 //         return getTerminologyNameCui(standardTerminology.compoundNameToCuiListMap, name);   
-//     }
-    
-//     public void setCompoundNameTerminology(Terminology terminology, String conceptName, String[] conceptNameTokens, String cui) {
-//         if (conceptName.contains("and/or")) {
-//             List<Integer> indexes = Util.getTokenIndexes(conceptNameTokens, "and/or");
-//             if (indexes.size() == 1) {
-//                 int index = indexes.get(0);                
-//                 if (conceptName.matches("[a-zA-Z]+, [a-zA-Z]+ and/or [a-zA-Z]+.*")) {
-//                     String replacement1 = conceptNameTokens[index-2].replace(",", "");
-//                     String replacement2 = conceptNameTokens[index-1];
-//                     String replacement3 = conceptNameTokens[index+1];
-//                     String phrase = replacement1+", "+replacement2+" "+conceptNameTokens[index]+" "+replacement3;        
-                    
-//                     terminology.setCompoundNameToCuiListMap(conceptName.replace(phrase, replacement1), cui);
-//                     terminology.setCompoundNameToCuiListMap(conceptName.replace(phrase, replacement2), cui);
-//                     terminology.setCompoundNameToCuiListMap(conceptName.replace(phrase, replacement3), cui);
-//                 }
-//                 else {
-//                     String replacement1 = conceptNameTokens[index-1];
-//                     String replacement2 = conceptNameTokens.length-1 == index+2 ? 
-//                             conceptNameTokens[index+1]+" "+conceptNameTokens[index+2] : 
-//                             conceptNameTokens[index+1];
-//                     String phrase = replacement1+" "+conceptNameTokens[index]+" "+replacement2;        
-//                     terminology.setCompoundNameToCuiListMap(conceptName.replace(phrase, replacement1), cui);
-//                     terminology.setCompoundNameToCuiListMap(conceptName.replace(phrase, replacement2), cui);
-//                 }
-//             }
-//         }
-//     }
-    
+//     }    
 // }

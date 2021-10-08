@@ -14,28 +14,16 @@ import java.util.Map;
  */
 public class Document {
     
-    private String filename;
-    private String text;
-    private List<Mention> mentions;
+    public String filename;
+    public String text;
+    public List<Mention> mentions;
     
     public Document(String filename, String text) {
         this.filename = filename;
         this.text = text;
         mentions = new ArrayList<>();
     }
-    
-    public String getFilename() {
-        return filename;
-    }
-    
-    public String getText() {
-        return text;
-    }
-        
-    public List<Mention> getMentions() {
-        return mentions;
-    }
-    
+
     /**
      * Adds a new mention to the list for this document.
      * @param tokens

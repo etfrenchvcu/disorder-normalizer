@@ -5,6 +5,7 @@
 package tool.sieves;
 
 import tool.util.HashListMap;
+import tool.util.Mention;
 import tool.util.Terminology;
 
 /**
@@ -23,5 +24,12 @@ public class ExactMatchSieve extends Sieve {
     public ExactMatchSieve(Terminology standardTerminology, Terminology trainTerminology,
             HashListMap normalizedNameToCuiListMap) {
         super(standardTerminology, trainTerminology, normalizedNameToCuiListMap);
+    }
+
+    /**
+     * Checks for an exact match in one of the dictionaries for the raw (spelling corrected) mention text.
+     */
+    public String apply(Mention mention) {
+        return exactMatch(mention.name);
     }
 }

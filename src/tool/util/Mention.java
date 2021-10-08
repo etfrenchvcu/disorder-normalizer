@@ -14,27 +14,26 @@ import java.util.Map;
  */
 public class Mention {
     
-    private String indexes;
-    private String name;
+    public String name;
+    public String cui;
+    public List<String> alternateCuis;
+
+    private String indexes;    
     private String nameExpansion;
-    private String stemmedName;
     private String goldMeSHorSNOMEDCui;  
     private List<String> goldOMIMCuis;
-    private String cui;
-    private List<String> alternateCuis;
     private int normalizingSieveLevel = 0;
     private List<String> namesKnowledgeBase = new ArrayList<>();
     private List<String> stemmedNamesKnowledgeBase = new ArrayList<>();
     
-    public Mention(String name) {
-        this.name = Ling.correctSpelling(name.toLowerCase().trim());
-        this.stemmedName = Ling.getStemmedPhrase(name);
-    }
+    // Don't think this is ever called...
+    // public Mention(String name) {
+    //     this.name = Ling.correctSpelling(name.toLowerCase().trim());
+    // }
     
     public Mention(String indexes, String name, String goldMeSHorSNOMEDCui, List<String> goldOMIMCuis) {
         this.indexes = indexes;
         this.name = Ling.correctSpelling(name.toLowerCase().trim());
-        this.stemmedName = Ling.getStemmedPhrase(name);
         this.goldMeSHorSNOMEDCui = goldMeSHorSNOMEDCui;
         this.goldOMIMCuis = goldOMIMCuis;
     }
@@ -45,10 +44,6 @@ public class Mention {
     
     public String getIndexes() {
         return indexes;
-    }
-    
-    public void setName(String name) {
-        this.name = Ling.correctSpelling(name.toLowerCase().trim());
     }
     
     public String getName() {
@@ -63,30 +58,8 @@ public class Mention {
         return nameExpansion;
     }
     
-    public void setStemmedName() {
-        stemmedName = Ling.getStemmedPhrase(name);
-    }
-    
     public String getStemmedName() {
-        return stemmedName;
-    }
-    
-    public void setCui(String cui) {
-        this.cui = cui;
-    }
-        
-    public String getCui() {
-        return cui;
-    }
-    
-    public void setAlternateCuis(List<String> alternateCuis) {
-        this.alternateCuis = new ArrayList<>();
-        for (String alternateCui : alternateCuis)
-            alternateCuis = Util.setList(this.alternateCuis, alternateCui);
-    }
-    
-    public List<String> getAlternateCuis() {
-        return alternateCuis;
+        return Ling.getStemmedPhrase(name);
     }
     
     public void setNormalizingSieveLevel(int sieveLevel) {

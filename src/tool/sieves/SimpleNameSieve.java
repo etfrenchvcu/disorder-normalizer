@@ -63,17 +63,6 @@
 //         return newPhrases;
 //     }    
     
-//     public static List<String> getTerminologySimpleNames(String[] phraseTokens) {
-//         List<String> newPhrases = new ArrayList<>();
-//         if (phraseTokens.length == 3) {
-//             String newPhrase = phraseTokens[0]+" "+phraseTokens[2];
-//             newPhrases = Util.setList(newPhrases, newPhrase);
-//             newPhrase = phraseTokens[1]+" "+phraseTokens[2];
-//             newPhrases = Util.setList(newPhrases, newPhrase);
-//         }
-//         return newPhrases;
-//     }
-    
 //     public static String normalize(String name) {
 //         return Sieve.getTerminologyNameCui(Sieve.trainTerminology.simpleNameToCuiListMap, name);
 //     }

@@ -4,6 +4,7 @@
  */
 package tool;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,83 +20,92 @@ import tool.util.Util;
  * @author
  */
 public class Evaluation {
-    
+    public File output_data_dir;
+
     private static int totalNames = 0;
     private static int tp = 0;
     private static int fp = 0;
     private static double accuracy = 0.0;
+
+    /**
+     * Constructor.
+     * @param output_data_dir
+     */
+    public Evaluation(File output_data_dir) {
+        this.output_data_dir = output_data_dir;
+    }
     
-    public static void incrementTotal() {
+    public void incrementTotal() {
         totalNames++;
     }
     
-    public static void incrementTP() {
+    public void incrementTP() {
         tp++;
     }
         
-    public static void incrementFP() {
+    public void incrementFP() {
         fp++;
     }
     
-    public static void evaluateClassification(Mention concept, Document concepts) throws IOException {
+    public void evaluateClassification(Mention mention, Document concepts) throws IOException {
         // Don't evaluate CUI-less 
-        if(concept.getCui().equals("CUI-less"))
+        if(mention.cui.equals("CUI-less"))
             return;
 
         incrementTotal();
-        if ((!concept.getGoldMeSHorSNOMEDCui().equals("") && concept.getGoldMeSHorSNOMEDCui().equals(concept.getCui())) ||
-                (!concept.getGoldOMIMCuis().isEmpty() && concept.getGoldOMIMCuis().contains(concept.getCui())))
+        if ((!mention.getGoldMeSHorSNOMEDCui().equals("") && mention.getGoldMeSHorSNOMEDCui().equals(mention.cui)) ||
+                (!mention.getGoldOMIMCuis().isEmpty() && mention.getGoldOMIMCuis().contains(mention.cui)))
             incrementTP();
-        else if (concept.getGoldMeSHorSNOMEDCui().contains("|") && concept.getCui().contains("|")) {
-            List<String> gold = new ArrayList<>(Arrays.asList(concept.getGoldMeSHorSNOMEDCui().split("\\|")));
-            List<String> predicted = new ArrayList<>(Arrays.asList(concept.getCui().split("\\|")));
+        else if (mention.getGoldMeSHorSNOMEDCui().contains("|") && mention.cui.contains("|")) {
+            List<String> gold = new ArrayList<>(Arrays.asList(mention.getGoldMeSHorSNOMEDCui().split("\\|")));
+            List<String> predicted = new ArrayList<>(Arrays.asList(mention.cui.split("\\|")));
             gold.removeAll(predicted);
             if (gold.isEmpty()) {
                 incrementTP();
             }
             else {
                 incrementFP();
-                printPred(concept, concepts.getFilename());
+                printPred(mention, concepts.filename);
             }
         }
-        else if (concept.getAlternateCuis() != null && !concept.getAlternateCuis().isEmpty()) {
-            if (!concept.getGoldMeSHorSNOMEDCui().equals("") && concept.getAlternateCuis().contains(concept.getGoldMeSHorSNOMEDCui())) {
+        else if (mention.alternateCuis != null && !mention.alternateCuis.isEmpty()) {
+            if (!mention.getGoldMeSHorSNOMEDCui().equals("") && mention.alternateCuis.contains(mention.getGoldMeSHorSNOMEDCui())) {
                 incrementTP();
-                concept.setCui(concept.getGoldMeSHorSNOMEDCui());
+                mention.cui = mention.getGoldMeSHorSNOMEDCui();
             }
-            else if (!concept.getGoldOMIMCuis().isEmpty() && Util.containsAny(concept.getAlternateCuis(), concept.getGoldOMIMCuis())) {
+            else if (!mention.getGoldOMIMCuis().isEmpty() && Util.containsAny(mention.alternateCuis, mention.getGoldOMIMCuis())) {
                 incrementTP();
-                if (concept.getGoldOMIMCuis().size() == 1)
-                    concept.setCui(concept.getGoldOMIMCuis().get(0));
+                if (mention.getGoldOMIMCuis().size() == 1)
+                    mention.cui = mention.getGoldOMIMCuis().get(0);
             }
             else {
                 incrementFP();
-                printPred(concept, concepts.getFilename());
+                printPred(mention, concepts.filename);
             }
         }
         else {
             incrementFP();
-            printPred(concept, concepts.getFilename());
+            printPred(mention, concepts.filename);
         }
         
         //write output
-        FileOutputStream output = new FileOutputStream(Main.output_data_dir+"\\"+concepts.getFilename().replace(".txt", ".concept"), true);
-        output.write((concepts.getFilename().replace(".txt", "")+"||"+concept.getIndexes()+"||"+concept.getName()+"||"+concept.getCui()+"\n").getBytes());
+        FileOutputStream output = new FileOutputStream(output_data_dir.toPath()+"\\"+concepts.filename.replace(".txt", ".concept"), true);
+        output.write((concepts.filename.replace(".txt", "")+"||"+mention.getIndexes()+"||"+mention.name+"||"+mention.cui+"\n").getBytes());
 
         //logger output
-        //Logger.writeLogFile((concepts.getFilename()+"\t"+concept.getIndexes()+"\t"+concept.getName()+"\t"+concept.getCui()+"\t"+concept.getGoldCui()));
+        //Logger.writeLogFile((concepts.filename+"\t"+concept.getIndexes()+"\t"+concept.getName()+"\t"+concept.getCui()+"\t"+concept.getGoldCui()));
     }
 
-    private static void printPred(Mention concept, String file) {
-        String str = String.format("%s: %s #  %s (%s) ", file, concept.getGoldMeSHorSNOMEDCui(), concept.getName(), concept.getCui());
+    private void printPred(Mention concept, String file) {
+        String str = String.format("%s: %s #  %s (%s) ", file, concept.getGoldMeSHorSNOMEDCui(), concept.name, concept.cui);
         // System.out.println(str);
     }
     
-    public static void computeAccuracy() {
+    public void computeAccuracy() {
         accuracy = (double)tp/(double)totalNames;
     }
     
-    public static void printResults() {
+    public void printResults() {
         System.out.println("*********************");
         System.out.println("Total Names: "+totalNames);
         System.out.println("True Normalizations: "+tp);

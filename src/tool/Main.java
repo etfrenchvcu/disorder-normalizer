@@ -66,10 +66,11 @@ public class Main {
             System.exit(1);
         }
 
-        multiPassSieve = new MultiPassSieveNormalizer(training_data_dir, test_data_dir, output_data_dir, maxSieveLevel, standardTerminology);      
+        Evaluation eval = new Evaluation(output_data_dir);
+        multiPassSieve = new MultiPassSieveNormalizer(training_data_dir, test_data_dir, eval, maxSieveLevel, standardTerminology);      
         multiPassSieve.run();
-        Evaluation.computeAccuracy();
-        Evaluation.printResults();
+        eval.computeAccuracy();
+        eval.printResults();
     }
 
 }

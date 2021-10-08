@@ -13,9 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import tool.sieves.CompoundPhraseSieve;
-import tool.sieves.SimpleNameSieve;
-
 /**
  *
  * @author
@@ -108,7 +105,7 @@ public class Terminology {
         }
 
         if (!ncbi) {
-            CompoundPhraseSieve.setCompoundNameTerminology(this, name, nameTokens, cui);
+            setCompoundNameTerminology(this, name, nameTokens, cui);
         } else if (cui.contains("|")) {
             nameToCuiListMap.remove(name);
             stemmedNameToCuiListMap.remove(stemmedName);
@@ -209,8 +206,7 @@ public class Terminology {
                     nameFileListMap.addKeyPair(conceptName, tokens[0]);
                     // -------------remove-------------------------------
 
-                    List<String> simpleConceptNames = SimpleNameSieve
-                            .getTerminologySimpleNames(conceptName.split("\\s+"));
+                    List<String> simpleConceptNames = getTerminologySimpleNames(conceptName.split("\\s+"));
                     for (String simpleConceptName : simpleConceptNames)
                         simpleNameToCuiListMap.addKeyPair(simpleConceptName, cui);
 
@@ -246,5 +242,44 @@ public class Terminology {
                 }
             }
         }
+    }
+
+    private void setCompoundNameTerminology(Terminology terminology, String conceptName, String[] conceptNameTokens, String cui) {
+        if (conceptName.contains("and/or")) {
+            List<Integer> indexes = Util.getTokenIndexes(conceptNameTokens, "and/or");
+            if (indexes.size() == 1) {
+                int index = indexes.get(0);                
+                if (conceptName.matches("[a-zA-Z]+, [a-zA-Z]+ and/or [a-zA-Z]+.*")) {
+                    String replacement1 = conceptNameTokens[index-2].replace(",", "");
+                    String replacement2 = conceptNameTokens[index-1];
+                    String replacement3 = conceptNameTokens[index+1];
+                    String phrase = replacement1+", "+replacement2+" "+conceptNameTokens[index]+" "+replacement3;        
+                    
+                    terminology.setCompoundNameToCuiListMap(conceptName.replace(phrase, replacement1), cui);
+                    terminology.setCompoundNameToCuiListMap(conceptName.replace(phrase, replacement2), cui);
+                    terminology.setCompoundNameToCuiListMap(conceptName.replace(phrase, replacement3), cui);
+                }
+                else {
+                    String replacement1 = conceptNameTokens[index-1];
+                    String replacement2 = conceptNameTokens.length-1 == index+2 ? 
+                            conceptNameTokens[index+1]+" "+conceptNameTokens[index+2] : 
+                            conceptNameTokens[index+1];
+                    String phrase = replacement1+" "+conceptNameTokens[index]+" "+replacement2;        
+                    terminology.setCompoundNameToCuiListMap(conceptName.replace(phrase, replacement1), cui);
+                    terminology.setCompoundNameToCuiListMap(conceptName.replace(phrase, replacement2), cui);
+                }
+            }
+        }
+    }
+
+    private List<String> getTerminologySimpleNames(String[] phraseTokens) {
+        List<String> newPhrases = new ArrayList<>();
+        if (phraseTokens.length == 3) {
+            String newPhrase = phraseTokens[0]+" "+phraseTokens[2];
+            newPhrases = Util.setList(newPhrases, newPhrase);
+            newPhrase = phraseTokens[1]+" "+phraseTokens[2];
+            newPhrases = Util.setList(newPhrases, newPhrase);
+        }
+        return newPhrases;
     }
 }
