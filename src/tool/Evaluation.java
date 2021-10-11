@@ -89,7 +89,7 @@ public class Evaluation {
         }
         
         //write output
-        FileOutputStream output = new FileOutputStream(output_data_dir.toPath()+"\\"+concepts.filename.replace(".txt", ".concept"), true);
+        FileOutputStream output = new FileOutputStream(output_data_dir.toPath()+"/"+concepts.filename.replace(".txt", ".concept"), true);
         output.write((concepts.filename.replace(".txt", "")+"||"+mention.getIndexes()+"||"+mention.name+"||"+mention.cui+"\n").getBytes());
 
         //logger output

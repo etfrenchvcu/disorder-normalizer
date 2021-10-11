@@ -20,6 +20,7 @@ public class Main {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
+        System.out.println("Starting run...");
         File training_data_dir = null;
         File test_data_dir = null;
         File output_data_dir = null;

@@ -9,10 +9,10 @@ import tool.util.Mention;
 import tool.util.Terminology;
 
 /**
- * Exact Match Sieve
+ * Abbreviation Expansion Sieve
  * @author
  */
-public class ExactMatchSieve extends Sieve {
+public class AbbreviationExpansionSieve extends Sieve {
 
     /**
      * Constructor. Calls abstract constructor.
@@ -21,15 +21,15 @@ public class ExactMatchSieve extends Sieve {
      * @param trainTerminology
      * @param normalizedNameToCuiListMap
      */
-    public ExactMatchSieve(Terminology standardTerminology, Terminology trainTerminology,
+    public AbbreviationExpansionSieve(Terminology standardTerminology, Terminology trainTerminology,
             HashListMap normalizedNameToCuiListMap) {
         super(standardTerminology, trainTerminology, normalizedNameToCuiListMap);
     }
 
     /**
-     * Checks for an exact match in one of the dictionaries for the raw (spelling corrected) mention text.
+     * Checks for an exact match in one of the dictionaries after expanding abbrevations in the mention text.
      */
     public String apply(Mention mention) {
-        return exactMatch(mention.name);
+        return exactMatch(mention.getNameExpansion());
     }
 }

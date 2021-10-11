@@ -11,15 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import tool.sieves.ExactMatchSieve;
-import tool.sieves.Sieve;
-import tool.util.Abbreviation;
-import tool.util.Document;
-import tool.util.HashListMap;
-import tool.util.Ling;
-import tool.util.Mention;
-import tool.util.Terminology;
-import tool.util.Util;
+import tool.sieves.*;
+import tool.util.*;
 
 /**
  *
@@ -76,7 +69,40 @@ public class MultiPassSieveNormalizer {
         ArrayList<Sieve> sieves = new ArrayList<Sieve>();
 
         sieves.add(new ExactMatchSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
+        sieves.add(new AbbreviationExpansionSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         //TODO: Add additional sieves
+
+        // //Sieve 3
+        // mention.setCui(PrepositionalTransformSieve.apply(mention));
+        
+        // //Sieve 4
+        // mention.setCui(SymbolReplacementSieve.apply(mention));
+        
+        // //Sieve 5
+        // mention.setCui(HyphenationSieve.apply(mention));
+        
+        // //Sieve 6
+        // mention.setCui(AffixationSieve.apply(mention));     
+        
+        // //Sieve 7
+        // mention.setCui(DiseaseModifierSynonymsSieve.apply(mention));
+        
+        // //Sieve 8
+        // mention.setCui(StemmingSieve.apply(mention));     
+        
+        // //Sieve 9
+        // mention.setCui(this.test_data_dir.toString().contains("ncbi") ? CompoundPhraseSieve.applyNCBI(mention.getName()) : CompoundPhraseSieve.apply(mention.getName()));
+                
+        // //Sieve 10
+        // mention.setCui(SimpleNameSieve.apply(mention));
+        // pass(mention, ++currentSieveLevel);
+        // --currentSieveLevel;
+        // if (!mention.getCui().equals(""))
+        //     return;                 
+        // //Sieve 10
+        // mention.setCui(this.test_data_dir.toString().contains("ncbi") ? PartialMatchNCBISieve.apply(mention) : PartialMatchSieve.apply(mention));
+        // pass(mention, ++currentSieveLevel);  
+
         return sieves;
     }
 
@@ -189,16 +215,12 @@ public class MultiPassSieveNormalizer {
      * @param mention
      */
     private void applyMultiPassSieve(Mention mention) {
-        int level = 1;
-        for (var sieve : sieves) {
-            mention.cui = sieve.apply(mention);
+        for (int i=0; i<max_level; i++) {
+            mention.cui = sieves.get(i).apply(mention);
 
             // Drop out if we successfully normalize the mention
-            if(checkNormalized(mention, level))
+            if(checkNormalized(mention, i+1))
                 return;
-
-            // Increment sieve level and iterate
-            level++;
         }
 
         
