@@ -1,5 +1,7 @@
 #!/bin/bash
-for i in `seq 1 2`;
+sh build.sh
+
+for i in `seq 1 3`;
 do
 	echo $i
 	java tool.Main ../ncbi-data/training ../ncbi-data/test ../ncbi-data/TERMINOLOGY.txt $i

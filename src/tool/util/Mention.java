@@ -16,26 +16,38 @@ public class Mention {
     
     public String name;
     public String cui;
+    public int normalizingSieveLevel;
     public List<String> alternateCuis;
+    // TODO: not convinced this needs to be on the mention object rather than local to the sieve instance.
+    public List<String> namePermutations;
 
     private String indexes;    
     private String nameExpansion;
     private String goldMeSHorSNOMEDCui;  
     private List<String> goldOMIMCuis;
-    private int normalizingSieveLevel = 0;
-    private List<String> namesKnowledgeBase = new ArrayList<>();
-    private List<String> stemmedNamesKnowledgeBase = new ArrayList<>();
     
-    // Don't think this is ever called...
-    // public Mention(String name) {
-    //     this.name = Ling.correctSpelling(name.toLowerCase().trim());
-    // }
+    private List<String> stemmedNamesKnowledgeBase = new ArrayList<>();
     
     public Mention(String indexes, String name, String goldMeSHorSNOMEDCui, List<String> goldOMIMCuis) {
         this.indexes = indexes;
         this.name = Ling.correctSpelling(name.toLowerCase().trim());
         this.goldMeSHorSNOMEDCui = goldMeSHorSNOMEDCui;
         this.goldOMIMCuis = goldOMIMCuis;
+        this.normalizingSieveLevel = 0;
+
+        // Initialize lists
+        namePermutations = new ArrayList<>();
+        addPermutation(this.name);
+    }
+
+    /**
+     * Adds a name to the list of name permutations if unique.
+     * @param name
+     */
+    public void addPermutation(String name) {
+        if(!namePermutations.contains(name)){
+            namePermutations.add(name);
+        }
     }
     
     public void setIndexes(String indexes) {
@@ -51,7 +63,8 @@ public class Mention {
     }
 
     public void setNameExpansion(String text, Map<String,String> abbreviationMap) {
-        nameExpansion = Abbreviation.getAbbreviationExpansion(abbreviationMap, text, name, indexes);        
+        nameExpansion = Abbreviation.getAbbreviationExpansion(abbreviationMap, text, name, indexes);
+        addPermutation(nameExpansion);
     }
     
     public String getNameExpansion() {
@@ -60,14 +73,6 @@ public class Mention {
     
     public String getStemmedName() {
         return Ling.getStemmedPhrase(name);
-    }
-    
-    public void setNormalizingSieveLevel(int sieveLevel) {
-        this.normalizingSieveLevel = sieveLevel;
-    }
-    
-    public int getNormalizingSieve() {
-        return normalizingSieveLevel;
     }
     
     public String getGoldMeSHorSNOMEDCui() {
@@ -83,22 +88,6 @@ public class Mention {
             return goldMeSHorSNOMEDCui;
         else 
             return goldOMIMCuis.size() == 1 ? goldOMIMCuis.get(0) : goldOMIMCuis.toString();
-    }
- 
-    public void reinitializeNamesKnowledgeBase() {
-        this.namesKnowledgeBase = new ArrayList<>();
-    }
-    
-    public void setNamesKnowledgeBase(String name) {
-        this.namesKnowledgeBase = Util.setList(this.namesKnowledgeBase, name);
-    }
-    
-    public void setNamesKnowledgeBase(List<String> namesList) {
-        this.namesKnowledgeBase = Util.addUnique(this.namesKnowledgeBase, namesList);
-    }
-    
-    public List<String> getNamesKnowledgeBase() {
-        return namesKnowledgeBase;
     }
 
     public void setStemmedNamesKnowledgeBase(List<String> namesList) {

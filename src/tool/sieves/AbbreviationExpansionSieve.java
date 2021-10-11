@@ -4,9 +4,7 @@
  */
 package tool.sieves;
 
-import tool.util.HashListMap;
-import tool.util.Mention;
-import tool.util.Terminology;
+import tool.util.*;
 
 /**
  * Abbreviation Expansion Sieve
@@ -28,6 +26,7 @@ public class AbbreviationExpansionSieve extends Sieve {
 
     /**
      * Checks for an exact match in one of the dictionaries after expanding abbrevations in the mention text.
+     * @param mention
      */
     public String apply(Mention mention) {
         return exactMatch(mention.getNameExpansion());

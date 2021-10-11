@@ -94,16 +94,7 @@ public class Ling {
             contentWordsList = Util.setList(contentWordsList, word);
         }
         return contentWordsList;
-    }
-    
-    public static final List<String> PREPOSITIONS = Arrays.asList("in", "with", "on", "of");
-    public static String getStringPreposition(String string) {
-        for (String preposition : Ling.PREPOSITIONS) {
-            if (string.contains(" "+preposition+" ")) 
-                return preposition;
-        }
-        return "";
-    }    
+    }   
     
     public static String getSubstring(String[] tokens, int begin, int end) {
         String substring = "";

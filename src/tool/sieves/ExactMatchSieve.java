@@ -4,9 +4,7 @@
  */
 package tool.sieves;
 
-import tool.util.HashListMap;
-import tool.util.Mention;
-import tool.util.Terminology;
+import tool.util.*;
 
 /**
  * Exact Match Sieve

@@ -1,97 +1,134 @@
-// /*
-//  * To change this template, choose Tools | Templates
-//  * and open the template in the editor.
-//  */
-// package tool.sieves;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package tool.sieves;
 
-// import java.util.ArrayList;
-// import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-// import tool.util.Ling;
-// import tool.util.Mention;
-// import tool.util.Terminology;
-// import tool.util.Util;
+import tool.util.*;
 
-// /**
-//  *
-//  * @author Jen
-//  */
-// public class PrepositionalTransformSieve extends Sieve {
-    
-//     /**
-//      * Constructor. Calls abstract constructor.
-//      * @param standardTerminology
-//      * @param trainTerminology
-//      */
-//     public PrepositionalTransformSieve(Terminology standardTerminology, Terminology trainTerminology) {
-//         super(standardTerminology, trainTerminology);
-//     }
+/**
+ * Prepositional Transform Sieve (subject <=> object conversion)
+ * @author Jen
+ */
+public class PrepositionalTransformSieve extends Sieve {
+    public final List<String> PREPOSITIONS = Arrays.asList("in", "with", "on", "of");
 
-//     public static String apply(Mention concept) {
-//         PrepositionalTransformSieve.init(concept);
-//         transformName(concept);
-//         return normalize(concept.getNamesKnowledgeBase());
-//     }
+    /**
+     * Constructor. Calls abstract constructor.
+     * 
+     * @param standardTerminology
+     * @param trainTerminology
+     * @param normalizedNameToCuiListMap
+     */
+    public PrepositionalTransformSieve(Terminology standardTerminology, Terminology trainTerminology,
+            HashListMap normalizedNameToCuiListMap) {
+        super(standardTerminology, trainTerminology, normalizedNameToCuiListMap);
+    }
+
+    /**
+     * Checks for an exact match in one of the dictionaries after permuting the mention text using different prepositions and converting subject/object.
+     * @param mention
+     */
+    public String apply(Mention mention) {
+        // Non-unique list of permutations of all names
+        List<String> allPermutations = new ArrayList<>();
+
+        for (String name : mention.namePermutations) {
+
+            // Check the name for a preposition.
+            String preposition = getPreposition(name);            
+            
+            if (!preposition.equals("")) {
+                // If phrase has a preposition, permutate prepositions and swap subject/objects.
+                var permutations = permutatePrepositions(preposition, name);
+                allPermutations.addAll(permutations);
+            }
+            else {
+                // If the phrase does not have a preposition, generate new phrases by inserting prepositions.
+                var permutations = insertPrepositionsInPhrase(name);
+                allPermutations.addAll(permutations);
+            }
+        }   
+
+        // Append unique permutations to the mention object.
+        for (var name : allPermutations) {
+            mention.addPermutation(name);
+        }
+
+        // Try to link permutations to a CUI in one of the dictionaries.
+        return normalize(mention.namePermutations);
+    }
+
+    /**
+     * Checks for a preposition in the given string.
+     * @param string
+     * @return
+     */
+    private String getPreposition(String string) {
+        for (String preposition : PREPOSITIONS) {
+            if (string.contains(" "+preposition+" ")) 
+                return preposition;
+        }
+        return "";
+    }
+
+    /**
+     * Returns a list of permutations of the given phrase created by trying all prepositions in PREPOSITIONS and swapping subject/objects in each permutation.
+     * @param existingPreposition
+     * @param phrase
+     * @return
+     */
+    private List<String> permutatePrepositions(String existingPreposition, String phrase) {
+        var permutations = new ArrayList<String>();
+        for (String preposition : PREPOSITIONS) {
+            String permutation = phrase.replace(" "+existingPreposition+" ", " "+preposition+" ").trim();
+            
+            // Add prepositional permutation.
+            permutations.add(permutation);
+
+            // Add prepositional permutation with subject and object swapped.
+            permutations.add(swapSubjectAndObject(preposition,permutation));
+        }
+        return permutations;
+    }
+
+    /**
+     * Naively transforms the given phrase removing the preposition and swapping the tokens after it with those before.
+     * @param prepositionInPhrase
+     * @param phraseTokens
+     * @return
+     */
+    private String swapSubjectAndObject(String prepositionInPhrase, String phrase) {
+        var phraseTokens = phrase.split("\\s+");
+        int prepositionTokenIndex = Util.getTokenIndex(phraseTokens, prepositionInPhrase);
+        return prepositionTokenIndex != -1 ? (Ling.getSubstring(phraseTokens, prepositionTokenIndex+1, phraseTokens.length)+" "+
+                Ling.getSubstring(phraseTokens, 0, prepositionTokenIndex)).trim() : "";
+    } 
     
-//     public static void init(Mention concept) {
-//         concept.setNamesKnowledgeBase(concept.getName());
-//         if (!concept.getNameExpansion().equals(""))
-//             concept.setNamesKnowledgeBase(concept.getNameExpansion());
-//     }
-           
-//     private static void transformName(Mention concept) {
-//         List<String> namesForTransformation = new ArrayList<>(concept.getNamesKnowledgeBase());
-//         List<String> transformedNames = new ArrayList<>();
-        
-//         for (String nameForTransformation : namesForTransformation) {
-//             String prepositionInName = Ling.getStringPreposition(nameForTransformation);            
-//             //if the phrase has a preposition, we:
-//             //1. create new phrases by substituting with other prepositions
-//             //2. removing the preposition in the phrase and swapping the surrounding parts of the string
-//             if (!prepositionInName.equals("")) {
-//                 transformedNames = Util.addUnique(transformedNames, substitutePrepositionsInPhrase(prepositionInName, nameForTransformation));
-//                 transformedNames = Util.setList(transformedNames, swapPhrasalSubjectAndObject(prepositionInName, nameForTransformation.split("\\s+")));
-//             }
-//             //if the phrase does not have a preposition, we:
-//             //generate new phrases by inserting prepositions,
-//             //1. near the beginning and 
-//             //2. near the end of the string.
-//             else {
-//                 transformedNames = Util.addUnique(transformedNames, insertPrepositionsInPhrase(nameForTransformation, nameForTransformation.split("\\s+")));
-//             }
-//         }   
-//         concept.setNamesKnowledgeBase(transformedNames);   
-//     }
+    /**
+     * Try to insert prepositions into a phrase by moving the first token to the end preceded by a preposition OR moving the last token to the
+     * beginning followed by a preposition.
+     * @param phrase
+     * @return
+     */
+    private List<String> insertPrepositionsInPhrase(String phrase) {
+        var phraseTokens = phrase.split("\\s+");
+        List<String> newPrepositionalPhrases = new ArrayList<>();
+        for (String preposition : PREPOSITIONS) {
+            //insert preposition near the end of the string
+            String newPrepositionalPhrase = (Ling.getSubstring(phraseTokens, 1, phraseTokens.length)+" "+preposition+" "+phraseTokens[0]).trim();
+            newPrepositionalPhrases = Util.setList(newPrepositionalPhrases, newPrepositionalPhrase);
+            //insert preposition near the beginning of the string
+            newPrepositionalPhrase = (phraseTokens[phraseTokens.length-1]+" "+preposition+" "+Ling.getSubstring(phraseTokens, 0, phraseTokens.length-1)).trim();
+            newPrepositionalPhrases = Util.setList(newPrepositionalPhrases, newPrepositionalPhrase);
+        }        
+        return newPrepositionalPhrases;
+    }        
     
-//     public static List<String> insertPrepositionsInPhrase(String phrase, String[] phraseTokens) {
-        
-//         List<String> newPrepositionalPhrases = new ArrayList<>();
-//         for (String preposition : Ling.PREPOSITIONS) {
-//             //insert preposition near the end of the string
-//             String newPrepositionalPhrase = (Ling.getSubstring(phraseTokens, 1, phraseTokens.length)+" "+preposition+" "+phraseTokens[0]).trim();
-//             newPrepositionalPhrases = Util.setList(newPrepositionalPhrases, newPrepositionalPhrase);
-//             //insert preposition near the beginning of the string
-//             newPrepositionalPhrase = (phraseTokens[phraseTokens.length-1]+" "+preposition+" "+Ling.getSubstring(phraseTokens, 0, phraseTokens.length-1)).trim();
-//             newPrepositionalPhrases = Util.setList(newPrepositionalPhrases, newPrepositionalPhrase);
-//         }        
-//         return newPrepositionalPhrases;
-//     }    
+       
     
-//     private static List<String> substitutePrepositionsInPhrase(String prepositionInPhrase, String phrase) {
-//         List<String> newPrepositionalPhrases = new ArrayList<>();
-//         for (String preposition : Ling.PREPOSITIONS) {
-//             if (preposition.equals(prepositionInPhrase))
-//                 continue;
-//             String newPrepositionalPhrase = (phrase.replace(" "+prepositionInPhrase+" ", " "+preposition+" ")).trim();
-//             newPrepositionalPhrases = Util.setList(newPrepositionalPhrases, newPrepositionalPhrase);
-//         }
-//         return newPrepositionalPhrases;
-//     }     
-    
-//     private static String swapPhrasalSubjectAndObject(String prepositionInPhrase, String[] phraseTokens) {
-//         int prepositionTokenIndex = Util.getTokenIndex(phraseTokens, prepositionInPhrase);
-//         return prepositionTokenIndex != -1 ? (Ling.getSubstring(phraseTokens, prepositionTokenIndex+1, phraseTokens.length)+" "+
-//                 Ling.getSubstring(phraseTokens, 0, prepositionTokenIndex)).trim() : "";
-//     }    
-    
-// }
+}

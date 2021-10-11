@@ -83,17 +83,25 @@ public abstract class Sieve {
     //     return "";
     // }
 
-    // TODO: Revisit to make sure this is actually what I want to do
-    // Updated: Only return unambiguous CUIs
-    public String normalize(List<String> namesKnowledgeBase) {
+    /**
+     * Check the list of name permutations for a match in one of the dictionaries.
+     * Currently only returns a CUI if there is exactly one match.
+     * @param namePermutations
+     * @return cui
+     */
+    public String normalize(List<String> namePermutations) {
         int matches = 0;
         String cui = "";
-        for (String name : namesKnowledgeBase) {
+
+        // Check each name permutation for a CUI match in the dictionary.
+        for (String name : namePermutations) {
             cui = exactMatch(name);            
             if (!cui.equals(""))
-                // return cui;
                 matches++;
         }
+
+        // Return only unambiguous CUIs.
+        //TODO: Check for exactly one distinct CUI rather than matches. Add permutations to the dictionary.
         if (matches==1)
             return cui;
         return "";
