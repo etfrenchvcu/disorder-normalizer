@@ -74,7 +74,7 @@ public class NumberReplacementSieve extends Sieve {
      * @param name
      * @return
      */
-    public List<String> replaceDigitsWithWords(String name) {
+    private List<String> replaceDigitsWithWords(String name) {
         List<String> permutations = new ArrayList<>();
         for (String digit : digitToWordMap.keySet()) {
             if (name.contains(digit)) {
@@ -100,7 +100,7 @@ public class NumberReplacementSieve extends Sieve {
      * @param name
      * @return
      */
-    public List<String> replaceWordsWithDigits(String name) {
+    private List<String> replaceWordsWithDigits(String name) {
         List<String> permutations = new ArrayList<>();
         for (String word : wordToDigitMap.keySet()) {
             if (name.contains(word)) {
@@ -123,7 +123,7 @@ public class NumberReplacementSieve extends Sieve {
      * @param name
      * @return
      */
-    public String simplifyName(String name) {
+    private String simplifyName(String name) {
         if (name.contains("and/or"))
             name = name.replaceAll("and/or", "and");
         if (name.contains("/"))
@@ -140,7 +140,7 @@ public class NumberReplacementSieve extends Sieve {
      * 
      * @throws IOException
      */
-    public void loadWordDigitMappings() throws IOException {
+    private void loadWordDigitMappings() throws IOException {
         // TODO: load from config???
         var file = new File("resources/number.txt");
         BufferedReader in = new BufferedReader(new FileReader(file));

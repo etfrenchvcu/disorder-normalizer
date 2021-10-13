@@ -4,13 +4,13 @@
  */
 package tool.sieves;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import tool.util.HashListMap;
 import tool.util.Mention;
 import tool.util.Terminology;
-import tool.util.Util;
 
 /**
  *

@@ -56,9 +56,6 @@ public class MultiPassSieveNormalizer {
         Ling.setSpellingCorrectionMap(ncbi ? new File("resources/ncbi-spell-check.txt") : new File("resources/semeval-spell-check.txt"));
         Ling.setStopwordsList(new File("resources/stopwords.txt"));
         Abbreviation.setWikiAbbreviationExpansionMap(ncbi ? new File("resources/ncbi-wiki-abbreviations.txt") : new File("resources/semeval-wiki-abbreviations.txt"));
-        Ling.setSuffixMap(new File("resources/suffix.txt"));
-        Ling.setPrefixMap(new File("resources/prefix.txt"));
-        Ling.setAffixMap(new File("resources/affix.txt"));
 
         // Load training data terminology
         trainTerminology = new Terminology(train_data_dir, ncbi);
@@ -72,9 +69,7 @@ public class MultiPassSieveNormalizer {
         sieves.add(new PrepositionalTransformSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         sieves.add(new NumberReplacementSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         sieves.add(new HyphenationSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
-        
-        // //Sieve 5
-        // mention.setCui(HyphenationSieve.apply(mention));
+        sieves.add(new AffixationSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         
         // //Sieve 6
         // mention.setCui(AffixationSieve.apply(mention));     

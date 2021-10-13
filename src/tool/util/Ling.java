@@ -110,70 +110,7 @@ public class Ling {
     public static final List<String> PLURAL_DISORDER_SYNONYMS = Arrays.asList("diseases", "disorders", "conditions", "syndromes", "symptoms",
             "abnormalities", "events", "episodes", "issues", "impairments");    
     
-    private static Map<String, List<String>> suffixMap = new HashMap<>();
-    private static Map<String, String> prefixMap = new HashMap<>();
-    public static final String AFFIX = "ganglioma|cancer";
-    private static Map<String, String> affixMap = new HashMap<>();
-    
-    public static void setSuffixMap(File file) throws IOException {
-        BufferedReader in = new BufferedReader(new FileReader(file));    
-        while (in.ready()) {
-            String s = in.readLine().trim();
-            String[] tokens = s.split("\\|\\|");
-            if (tokens.length == 1) {
-                List<String> values = suffixMap.get(tokens[0]);
-                if (values == null)
-                    suffixMap.put(tokens[0], values = new ArrayList<>());
-            }
-            else
-                suffixMap = Util.setMap(suffixMap, tokens[0], tokens[1]);
-        }
-        in.close();
-    }
-    public static Map<String, List<String>> getSuffixMap() {
-        return suffixMap;
-    }
-    public static String getSuffix(String str, int len) {
-        if (str.length() < len) {
-            return "";
-        }
-        return str.substring(str.length() - len);
-    }      
-    public static String getSuffix(String str) {
-        return suffixMap.containsKey(getSuffix(str, 10)) ? getSuffix(str, 10) :
-                suffixMap.containsKey(getSuffix(str, 7)) ? getSuffix(str, 7) : 
-                suffixMap.containsKey(getSuffix(str, 6)) ? getSuffix(str, 6) : 
-                suffixMap.containsKey(getSuffix(str, 5)) ? getSuffix(str, 5) : 
-                suffixMap.containsKey(getSuffix(str, 4)) ? getSuffix(str, 4) : 
-                suffixMap.containsKey(getSuffix(str, 3)) ? getSuffix(str, 3) : 
-                suffixMap.containsKey(getSuffix(str, 2)) ? getSuffix(str, 2) : ""; 
-    }
-    
-    public static void setPrefixMap(File file) throws IOException {
-        BufferedReader in = new BufferedReader(new FileReader(file));    
-        while (in.ready()) {
-            String s = in.readLine().trim();
-            String[] tokens = s.split("\\|\\|");
-            String value = tokens.length == 1 ? "" : tokens[1];
-            prefixMap.put(tokens[0], value);
-        }
-        in.close();
-    }
-    public static Map<String, String> getPrefixMap() {
-        return prefixMap;
-    }
-    public static String getPrefix(String str, int len) {
-        if (str.length() < len) {
-            return "";
-        }
-        return str.substring(0, len);
-    }    
-    public static String getPrefix(String str) {
-        return prefixMap.containsKey(getPrefix(str, 5)) ? getPrefix(str, 5) : 
-                prefixMap.containsKey(getPrefix(str, 4)) ? getPrefix(str, 4) : 
-                prefixMap.containsKey(getPrefix(str, 3)) ? getPrefix(str, 3) : "";            
-    }
-        
+
     public static void setAffixMap(File file) throws IOException {
         BufferedReader in = new BufferedReader(new FileReader(file));    
         while (in.ready()) {
