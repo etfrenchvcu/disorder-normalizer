@@ -55,9 +55,7 @@ public class PrepositionalTransformSieve extends Sieve {
         }   
 
         // Append unique permutations to the mention object.
-        for (var name : allPermutations) {
-            mention.addPermutation(name);
-        }
+        mention.addPermutationList(allPermutations);
 
         // Try to link permutations to a CUI in one of the dictionaries.
         return normalize(mention.namePermutations);

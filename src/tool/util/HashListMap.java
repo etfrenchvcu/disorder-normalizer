@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class HashListMap {
     Map<String, List<String>> map;
@@ -66,5 +67,13 @@ public class HashListMap {
             values.remove(value);
             map.put(key, values);
         }
+    }
+
+    /**
+     * Returns the set of keys in the map.
+     * @return Set<keys>
+     */
+    public Set<String> keySet() {
+        return map.keySet();
     }
 }

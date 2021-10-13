@@ -105,25 +105,6 @@ public class Ling {
         return substring;
     } 
     
-    private static Map<String, List<String>> digitToWordMap = new HashMap<>();
-    private static Map<String, String> wordToDigitMap = new HashMap<>();    
-    public static void setDigitToWordformMapAndReverse(File file) throws IOException {
-        BufferedReader in = new BufferedReader(new FileReader(file));    
-        while (in.ready()) {
-            String s = in.readLine().trim();
-            String[] tokens = s.split("\\|\\|");
-            digitToWordMap = Util.setMap(digitToWordMap, tokens[0], tokens[1]);
-            wordToDigitMap.put(tokens[1], tokens[0]);
-        }
-        in.close();
-    }
-    public static Map<String, List<String>> getDigitToWordMap() {
-        return digitToWordMap;
-    }
-    public static Map<String, String> getWordToDigitMap() {
-        return wordToDigitMap;
-    }
-    
     public static final List<String> SINGULAR_DISORDER_SYNONYMS = Arrays.asList("disease", "disorder", "condition", "syndrome", "symptom",
             "abnormality", "NOS", "event", "episode", "issue", "impairment");
     public static final List<String> PLURAL_DISORDER_SYNONYMS = Arrays.asList("diseases", "disorders", "conditions", "syndromes", "symptoms",

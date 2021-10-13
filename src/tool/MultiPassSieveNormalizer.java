@@ -56,7 +56,6 @@ public class MultiPassSieveNormalizer {
         Ling.setSpellingCorrectionMap(ncbi ? new File("resources/ncbi-spell-check.txt") : new File("resources/semeval-spell-check.txt"));
         Ling.setStopwordsList(new File("resources/stopwords.txt"));
         Abbreviation.setWikiAbbreviationExpansionMap(ncbi ? new File("resources/ncbi-wiki-abbreviations.txt") : new File("resources/semeval-wiki-abbreviations.txt"));
-        Ling.setDigitToWordformMapAndReverse(new File("resources/number.txt"));
         Ling.setSuffixMap(new File("resources/suffix.txt"));
         Ling.setPrefixMap(new File("resources/prefix.txt"));
         Ling.setAffixMap(new File("resources/affix.txt")); 
@@ -65,14 +64,15 @@ public class MultiPassSieveNormalizer {
         trainTerminology = new Terminology(train_data_dir, ncbi);
     }
 
-    private ArrayList<Sieve> initializeSieves(Terminology trainTerminology) {
+    private ArrayList<Sieve> initializeSieves(Terminology trainTerminology) throws IOException {
         ArrayList<Sieve> sieves = new ArrayList<Sieve>();
 
         sieves.add(new ExactMatchSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         sieves.add(new AbbreviationExpansionSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         sieves.add(new PrepositionalTransformSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
-        //TODO: Add additional sieves
+        sieves.add(new NumberReplacementSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         
+        //TODO: Add additional sieves        
         // //Sieve 4
         // mention.setCui(SymbolReplacementSieve.apply(mention));
         

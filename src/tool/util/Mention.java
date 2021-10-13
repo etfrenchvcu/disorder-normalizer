@@ -18,7 +18,6 @@ public class Mention {
     public String cui;
     public int normalizingSieveLevel;
     public List<String> alternateCuis;
-    // TODO: not convinced this needs to be on the mention object rather than local to the sieve instance.
     public List<String> namePermutations;
 
     private String indexes;    
@@ -47,6 +46,16 @@ public class Mention {
     public void addPermutation(String name) {
         if(!namePermutations.contains(name)){
             namePermutations.add(name);
+        }
+    }
+
+    /**
+     * Adds a list of name permutations to namePermutations.
+     * @param names
+     */
+    public void addPermutationList(List<String> names) {
+        for (var name : names) {
+            addPermutation(name);
         }
     }
     
