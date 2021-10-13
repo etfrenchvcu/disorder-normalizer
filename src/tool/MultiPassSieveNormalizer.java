@@ -58,7 +58,7 @@ public class MultiPassSieveNormalizer {
         Abbreviation.setWikiAbbreviationExpansionMap(ncbi ? new File("resources/ncbi-wiki-abbreviations.txt") : new File("resources/semeval-wiki-abbreviations.txt"));
         Ling.setSuffixMap(new File("resources/suffix.txt"));
         Ling.setPrefixMap(new File("resources/prefix.txt"));
-        Ling.setAffixMap(new File("resources/affix.txt")); 
+        Ling.setAffixMap(new File("resources/affix.txt"));
 
         // Load training data terminology
         trainTerminology = new Terminology(train_data_dir, ncbi);
@@ -71,10 +71,7 @@ public class MultiPassSieveNormalizer {
         sieves.add(new AbbreviationExpansionSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         sieves.add(new PrepositionalTransformSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         sieves.add(new NumberReplacementSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
-        
-        //TODO: Add additional sieves        
-        // //Sieve 4
-        // mention.setCui(SymbolReplacementSieve.apply(mention));
+        sieves.add(new HyphenationSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         
         // //Sieve 5
         // mention.setCui(HyphenationSieve.apply(mention));
@@ -118,7 +115,17 @@ public class MultiPassSieveNormalizer {
             HashListMap cuiNamesMap = new HashListMap();
 
             for (Mention mention : document.mentions) {
-                applyMultiPassSieve(mention);
+
+                // Progressively apply sieves until the mention is linked to a CUI.
+                for (int i=0; i<max_level; i++) {
+                    mention.cui = sieves.get(i).apply(mention);
+        
+                    // Drop out if we successfully normalize the mention
+                    // TODO: We can probably drop out if a CUI is ambiguous in normalize step.
+                    if(checkNormalized(mention, i+1))
+                        break;
+                }
+
                 if (mention.cui.equals(""))
                     mention.cui = "CUI-less";
 
@@ -209,21 +216,11 @@ public class MultiPassSieveNormalizer {
         return normalized;
     }
         
-    /**
-     * Progressively apply sieve levels to a given Mention object.
-     * @param mention
-     */
-    private void applyMultiPassSieve(Mention mention) {
-        for (int i=0; i<max_level; i++) {
-            mention.cui = sieves.get(i).apply(mention);
-
-            // Drop out if we successfully normalize the mention
-            // TODO: We can probably drop out if a CUI is ambiguous in normalize step.
-            if(checkNormalized(mention, i+1))
-                return;
-        }
-
-        
+    // /**
+    //  * Progressively apply sieve levels to a given Mention object.
+    //  * @param mention
+    //  */
+    // private void applyMultiPassSieve(Mention mention) {        
         // //match with names in training data
         // //Sieve 1        
         // mention.cui = Sieve.exactMatch(mention.name);
@@ -282,7 +279,7 @@ public class MultiPassSieveNormalizer {
         // //Sieve 10
         // mention.setCui(this.test_data_dir.toString().contains("ncbi") ? PartialMatchNCBISieve.apply(mention) : PartialMatchSieve.apply(mention));
         // pass(mention, ++currentSieveLevel);       
-    }
+    // }
 
     /**
      * Add normalized mention to a dictionary for reference normalizing other mentions

@@ -36,10 +36,10 @@ public abstract class Sieve {
     /**
      * Applies the sieve to the given string. Method must be implemented by classes extending Sieve.
      * Returns a CUI.
-     * @param name
+     * @param mention
      * @return cui
      */
-    public abstract String apply(Mention name);
+    public abstract String apply(Mention mention);
 
     public static List<String> getTerminologyNameCuis(Map<String, List<String>> nameToCuiListMap, String name) {
         var cui = nameToCuiListMap.containsKey(name) ? nameToCuiListMap.get(name) : null;
