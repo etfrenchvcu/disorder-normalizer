@@ -17,7 +17,6 @@ import tool.util.HashListMap;
 import tool.util.Ling;
 import tool.util.Mention;
 import tool.util.Terminology;
-import tool.util.Util;
 
 /**
  * Affixation Sieve.
@@ -29,7 +28,6 @@ public class AffixationSieve extends Sieve {
     private Map<String, String> affixMap;
     private Map<String, String> prefixMap;
     private HashListMap suffixMap;
-    private final String AFFIX = "ganglioma|cancer";
     private int maxSuffixLength;
     private int maxPrefixLength;
 
@@ -55,7 +53,7 @@ public class AffixationSieve extends Sieve {
         suffixMap = new HashListMap();
         loadSuffixMap();
         loadPrefixMap();
-        Ling.setAffixMap(new File("resources/affix.txt"));
+        loadAffixMap();
     }
 
     /**
@@ -70,8 +68,8 @@ public class AffixationSieve extends Sieve {
         for (String name : mention.namePermutations) {
             String[] nameTokens = name.split("\\s");
             allPermutations.addAll(suffixation(nameTokens, name));
-            allPermutations.addAll(prefixation(nameTokens, name));
-            // allPermutations.addAll(affixation(nameTokens, name));
+            allPermutations.add(prefixation(nameTokens, name));
+            allPermutations.add(affixation(nameTokens, name));
         }
 
         // Append unique permutations to the mention object.
@@ -116,7 +114,6 @@ public class AffixationSieve extends Sieve {
         // Build a list of all possible name permutations, appending one token at a
         // time, using all permutations of each token with a suffix.
         for (String token : nameTokens) {
-            // TODO: Should we find all suffixes for each token, rather than just longest?
             // Finds the longest suffix on the token in the suffixMap (returns NULL if none
             // found)
             String suffix = getSuffix(token);
@@ -146,8 +143,7 @@ public class AffixationSieve extends Sieve {
     }
 
     /**
-     * Replace any suffix found everywhere in the name. TODO: This doesn't seem like
-     * a good idea...
+     * Replace any suffix found everywhere in the name.
      * 
      * @param stringTokens
      * @param name
@@ -162,7 +158,7 @@ public class AffixationSieve extends Sieve {
 
             // Replace the suffix everywhere in the name (even if not used as a suffix)
             for (String alternativeSuffix : alternativeSuffixes) {
-                suffixatedPhrases.add(name.replaceAll(suffix, alternativeSuffix));
+                suffixatedPhrases.add(name.replaceAll(suffix, alternativeSuffix).trim());
             }
         }
         return suffixatedPhrases;
@@ -177,9 +173,9 @@ public class AffixationSieve extends Sieve {
      */
     private String getSuffix(String token) {
         String suffix;
-        var maxLength = Math.max(maxSuffixLength, token.length());
+        var length = Math.min(maxSuffixLength, token.length());
 
-        for (int i = maxLength; i >= 2; i--) {
+        for (int i = length; i >= 2; i--) {
             suffix = token.substring(token.length() - i);
             if (suffixMap.containsKey(suffix))
                 return suffix;
@@ -196,9 +192,9 @@ public class AffixationSieve extends Sieve {
      */
     public String getPrefix(String token) {
         String prefix;
-        var maxLength = Math.max(maxPrefixLength, token.length());
+        var length = Math.min(maxPrefixLength, token.length());
 
-        for (int i = maxLength; i >= 2; i--) {
+        for (int i = length; i >= 2; i--) {
             prefix = token.substring(0, i);
             if (prefixMap.containsKey(prefix))
                 return prefix;
@@ -226,19 +222,30 @@ public class AffixationSieve extends Sieve {
         return prefixedName.trim();
     }
 
-    private String affixation(String[] stringTokens, String string) {
-        String affixatedPhrase = "";
-        for (String stringToken : stringTokens) {
-            String affix = stringToken.matches(".*(" + AFFIX + ").*")
-                    ? (stringToken.contains(AFFIX.split("\\|")[0]) ? AFFIX.split("\\|")[0] : AFFIX.split("\\|")[1])
-                    : "";
-            String forAffixation = affix.equals("") ? "" : Ling.getAffixMap().get(affix);
-            affixatedPhrase = affixatedPhrase.equals("")
-                    ? (affix.equals("") ? stringToken : stringToken.replace(affix, forAffixation))
-                    : (affix.equals("") ? affixatedPhrase + " " + stringToken
-                            : affixatedPhrase + " " + stringToken.replace(affix, forAffixation));
+    /**
+     * Replace an affix in name.
+     * @param nameTokens
+     * @param name
+     * @return
+     */
+    private String affixation(String[] nameTokens, String name) {
+        String affixatedName = "";
+        for (String token : nameTokens) {
+            String nextToken = token;
+
+            // Check the token for an affix that can be replaced with an alternative.
+            for (var affix : affixMap.keySet()) {
+                if (token.contains(affix)) {
+                    var alternativeAffix = affixMap.get(affix);
+                    nextToken = token.replace(affix, alternativeAffix);
+                    break;
+                }
+            }
+
+            // Add next token, replace prefix if replacement is available.
+            affixatedName += " " + nextToken;
         }
-        return affixatedPhrase;
+        return affixatedName.trim();
     }
 
     // region Initialize maps
@@ -280,6 +287,23 @@ public class AffixationSieve extends Sieve {
 
             // Update maxPrefixLength if necessary.
             maxPrefixLength = Math.max(maxPrefixLength, tokens[0].length());
+        }
+        in.close();
+    }
+
+    /**
+     * Loads the affix map from file.
+     * 
+     * @throws IOException
+     */
+    private void loadAffixMap() throws IOException {
+        var file = new File("resources/affix.txt");
+        BufferedReader in = new BufferedReader(new FileReader(file));
+        while (in.ready()) {
+            String s = in.readLine().trim();
+            String[] tokens = s.split("\\|\\|");
+            String value = tokens.length == 1 ? "" : tokens[1];
+            affixMap.put(tokens[0], value);
         }
         in.close();
     }

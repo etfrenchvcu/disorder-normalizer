@@ -44,7 +44,8 @@ public class Mention {
      * @param name
      */
     public void addPermutation(String name) {
-        if(!namePermutations.contains(name)){
+        name = name.trim();
+        if(name != null && !name.isEmpty() && !namePermutations.contains(name)){
             namePermutations.add(name);
         }
     }

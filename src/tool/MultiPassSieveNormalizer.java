@@ -69,10 +69,7 @@ public class MultiPassSieveNormalizer {
         sieves.add(new PrepositionalTransformSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         sieves.add(new NumberReplacementSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         sieves.add(new HyphenationSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
-        sieves.add(new AffixationSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
-        
-        // //Sieve 6
-        // mention.setCui(AffixationSieve.apply(mention));     
+        sieves.add(new AffixationSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap)); 
         
         // //Sieve 7
         // mention.setCui(DiseaseModifierSynonymsSieve.apply(mention));

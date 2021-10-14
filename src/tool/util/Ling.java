@@ -110,21 +110,6 @@ public class Ling {
     public static final List<String> PLURAL_DISORDER_SYNONYMS = Arrays.asList("diseases", "disorders", "conditions", "syndromes", "symptoms",
             "abnormalities", "events", "episodes", "issues", "impairments");    
     
-
-    public static void setAffixMap(File file) throws IOException {
-        BufferedReader in = new BufferedReader(new FileReader(file));    
-        while (in.ready()) {
-            String s = in.readLine().trim();
-            String[] tokens = s.split("\\|\\|");
-            String value = tokens.length == 1 ? "" : tokens[1];
-            affixMap.put(tokens[0], value);
-        }
-        in.close();
-    }
-    public static Map<String, String> getAffixMap() {
-        return affixMap;
-    }    
-    
     public static boolean exactTokenMatch(String phrase1, String phrase2) {
         List<String> tokens = new ArrayList<>(Arrays.asList(phrase1.split("\\s+")));
         tokens.removeAll(new ArrayList<>(Arrays.asList(phrase2.split("\\s+"))));
