@@ -96,6 +96,7 @@ public class Ling {
         return contentWordsList;
     }   
     
+    //TODO: Use String.join(" ", nameTokens.subList(0, nameTokens.size() - 1)) instead
     public static String getSubstring(String[] tokens, int begin, int end) {
         String substring = "";
         for (int i = begin; i < end; i++) {
@@ -104,11 +105,6 @@ public class Ling {
         substring = substring.trim();
         return substring;
     } 
-    
-    public static final List<String> SINGULAR_DISORDER_SYNONYMS = Arrays.asList("disease", "disorder", "condition", "syndrome", "symptom",
-            "abnormality", "NOS", "event", "episode", "issue", "impairment");
-    public static final List<String> PLURAL_DISORDER_SYNONYMS = Arrays.asList("diseases", "disorders", "conditions", "syndromes", "symptoms",
-            "abnormalities", "events", "episodes", "issues", "impairments");    
     
     public static boolean exactTokenMatch(String phrase1, String phrase2) {
         List<String> tokens = new ArrayList<>(Arrays.asList(phrase1.split("\\s+")));
