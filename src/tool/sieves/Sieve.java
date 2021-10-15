@@ -38,8 +38,9 @@ public abstract class Sieve {
      * Returns a CUI.
      * @param mention
      * @return cui
+     * @throws Exception
      */
-    public abstract String apply(Mention mention);
+    public abstract String apply(Mention mention) throws Exception;
 
     public static List<String> getTerminologyNameCuis(Map<String, List<String>> nameToCuiListMap, String name) {
         var cui = nameToCuiListMap.containsKey(name) ? nameToCuiListMap.get(name) : null;

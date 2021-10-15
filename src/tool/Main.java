@@ -6,7 +6,6 @@ package tool;
 
 import java.io.File;
 
-import tool.util.Terminology;
 import tool.util.Util;
 
 /**
@@ -16,6 +15,7 @@ import tool.util.Util;
 public class Main {
     /**
      * Performs rule-based entity linking on given test set.
+     * 
      * @param args
      * @throws Exception
      */
@@ -25,7 +25,7 @@ public class Main {
         File test_data_dir = null;
         File output_data_dir = null;
         int maxSieveLevel = 0;
-        Terminology standardTerminology = null;
+        File standardTerminologyFile = null;
         MultiPassSieveNormalizer multiPassSieve;
 
         // Parse input args
@@ -37,20 +37,18 @@ public class Main {
             if (new File(args[1]).isDirectory()) {
                 test_data_dir = new File(args[1]);
                 output_data_dir = new File(test_data_dir.toString().replace(test_data_dir.getName(), "output"));
-                output_data_dir.mkdirs();   
+                output_data_dir.mkdirs();
             } else
                 Util.throwIllegalDirectoryException(args[1]);
             if (new File(args[2]).isFile()) {
-                // TODO: remove this later
-                boolean ncbi = test_data_dir.toString().contains("ncbi") ? true : false;
-                standardTerminology = new Terminology(new File(args[2]), ncbi);
+                standardTerminologyFile = new File(args[2]);
             } else
                 Util.throwIllegalFileException(args[2]);
 
             maxSieveLevel = Integer.parseInt(args[3]);
-        }
-        else {
-            System.out.println("Usage: java tool.Main <training-data-dir> <test-data-dir> <terminology/ontology-file> max-sieve-level");
+        } else {
+            System.out.println(
+                    "Usage: java tool.Main <training-data-dir> <test-data-dir> <terminology/ontology-file> max-sieve-level");
             System.out.println("---------------------");
             System.out.println("Sieve levels:");
             System.out.println("1 for exact match");
@@ -68,7 +66,8 @@ public class Main {
         }
 
         Evaluation eval = new Evaluation(output_data_dir);
-        multiPassSieve = new MultiPassSieveNormalizer(training_data_dir, test_data_dir, eval, maxSieveLevel, standardTerminology);      
+        multiPassSieve = new MultiPassSieveNormalizer(training_data_dir, test_data_dir, eval, maxSieveLevel,
+                standardTerminologyFile);
         multiPassSieve.run();
         eval.computeAccuracy();
         eval.printResults();

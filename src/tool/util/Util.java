@@ -25,12 +25,6 @@ public class Util {
         return list;
     }
     
-    public static <E> List<E> addUnique(List<E> list, List<E> newList) {
-        for (E value : newList)
-            list = setList(list, value);
-        return list;
-    }    
-    
     public static <E> Map<E,List<E>> setMap(Map<E,List<E>> keyValueListMap, E key, E value) {
         List<E> valueList = keyValueListMap.get(key);
         if (valueList == null)

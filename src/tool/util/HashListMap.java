@@ -15,6 +15,7 @@ public class HashListMap {
 
     /**
      * Return the list of strings associated with the given key
+     * 
      * @param key
      * @return
      */
@@ -29,17 +30,21 @@ public class HashListMap {
      * @param value
      */
     public void addKeyPair(String key, String value) {
-        var values = map.containsKey(key) ? map.get(key) : new ArrayList<String>();
+        // Key must have non-empty value.
+        if (key != null && !key.trim().equals("")) {
 
-        // Append value without duplication
-        if (!values.contains(value)) {
-            values.add(value);
-            map.put(key, values);
+            // Append value without duplication
+            var values = map.containsKey(key) ? map.get(key) : new ArrayList<String>();
+            if (!values.contains(value)) {
+                values.add(value);
+                map.put(key, values);
+            }
         }
     }
 
     /**
      * Checks if HashListMap contains the given key
+     * 
      * @param key
      * @return
      */
@@ -71,6 +76,7 @@ public class HashListMap {
 
     /**
      * Returns the set of keys in the map.
+     * 
      * @return Set<keys>
      */
     public Set<String> keySet() {

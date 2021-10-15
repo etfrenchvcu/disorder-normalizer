@@ -20,37 +20,9 @@ import java.util.Map;
  */
 public class Ling {
     
-    private static List<String> stopwords = new ArrayList<>();
-    public static void setStopwordsList(File file) throws IOException {
-        BufferedReader in = new BufferedReader(new FileReader(file));    
-        while (in.ready()) {
-            String s = in.readLine().trim();
-            if (s.equals(""))
-                continue;
-            stopwords = Util.setList(stopwords, s);
-        }
-        in.close();
-    }
-    public static List<String> getStopwordsList() {
-        return stopwords;
-    }
     
-    public static String getStemmedPhrase(String string) {
-        String stemmed_name = "";
-        String[] str_tokens = string.split("\\s");
-        for (String token : str_tokens) {
-            if (stopwords.contains(token)) {
-                stemmed_name += token + " ";
-                continue;
-            }
-            String stemmed_token = PorterStemmer.get_stem(token).trim();
-            if (stemmed_token.equals(""))
-                stemmed_token = token;
-            stemmed_name += stemmed_token + " ";
-        }
-        stemmed_name = stemmed_name.trim();
-        return stemmed_name;
-    }
+    
+    
     
     private static Map<String, String> spellingCorrectionMap = new HashMap<>();
     public static void setSpellingCorrectionMap(File file) throws IOException {
@@ -84,17 +56,7 @@ public class Ling {
             reversedString += string.charAt(i);
         }
         return reversedString;
-    }    
- 
-    public static List<String> getContentWordsList(String[] words) {
-        List<String> contentWordsList = new ArrayList<>();
-        for (String word : words) {
-            if (stopwords.contains(word))
-                continue;
-            contentWordsList = Util.setList(contentWordsList, word);
-        }
-        return contentWordsList;
-    }   
+    }      
     
     //TODO: Use String.join(" ", nameTokens.subList(0, nameTokens.size() - 1)) instead
     public static String getSubstring(String[] tokens, int begin, int end) {
@@ -112,10 +74,10 @@ public class Ling {
         return tokens.isEmpty() && phrase1.split("\\s+").length == phrase2.split("\\s+").length ? true : false;
     }
     
-    public static int getMatchingTokensCount(String phrase1, String phrase2) {
-        List<String> tokens = new ArrayList<>(Arrays.asList(phrase1.split("\\s+")));
-        tokens.retainAll(new ArrayList<>(Arrays.asList(phrase2.split("\\s+"))));
-        tokens.removeAll(Ling.stopwords);
-        return tokens.isEmpty() ? 0 : tokens.size();
-    }
+    // public static int getMatchingTokensCount(String phrase1, String phrase2) {
+    //     List<String> tokens = new ArrayList<>(Arrays.asList(phrase1.split("\\s+")));
+    //     tokens.retainAll(new ArrayList<>(Arrays.asList(phrase2.split("\\s+"))));
+    //     tokens.removeAll(Ling.stopwords);
+    //     return tokens.isEmpty() ? 0 : tokens.size();
+    // }
 }

@@ -19,7 +19,7 @@ import tool.util.*;
  * @author
  */
 public class MultiPassSieveNormalizer {
-     
+
     boolean ncbi;
     int max_level;
     Evaluation eval;
@@ -30,9 +30,11 @@ public class MultiPassSieveNormalizer {
     Terminology standardTerminology;
     Terminology trainTerminology;
     ArrayList<Sieve> sieves;
-    
+    List<String> stopwords;
+
     /***
      * Initialize MultiPassSieveNormalizer and associated resources.
+     * 
      * @param train_data_dir
      * @param test_data_dir
      * @param eval
@@ -40,82 +42,96 @@ public class MultiPassSieveNormalizer {
      * @param standardTerminology
      * @throws Exception
      */
-    public MultiPassSieveNormalizer(File train_data_dir, File test_data_dir, Evaluation eval, int max_level, Terminology standardTerminology) throws Exception {
+    public MultiPassSieveNormalizer(File train_data_dir, File test_data_dir, Evaluation eval, int max_level,
+            File standardTerminologyFile) throws Exception {
         this.max_level = max_level;
         this.eval = eval;
-        this.standardTerminology = standardTerminology;
         this.test_data_dir = test_data_dir;
         this.train_data_dir = train_data_dir;
 
         normalizedNameToCuiListMap = new HashListMap();
-        stemmedNormalizedNameToCuiListMap = new HashListMap();
 
         // set stopwords, correct spellings, and abbreviations data
         // TODO: Revisit this to make more general
         ncbi = test_data_dir.toString().contains("ncbi") ? true : false;
-        Ling.setSpellingCorrectionMap(ncbi ? new File("resources/ncbi-spell-check.txt") : new File("resources/semeval-spell-check.txt"));
-        Ling.setStopwordsList(new File("resources/stopwords.txt"));
-        Abbreviation.setWikiAbbreviationExpansionMap(ncbi ? new File("resources/ncbi-wiki-abbreviations.txt") : new File("resources/semeval-wiki-abbreviations.txt"));
+        Ling.setSpellingCorrectionMap(
+                ncbi ? new File("resources/ncbi-spell-check.txt") : new File("resources/semeval-spell-check.txt"));
 
         // Load training data terminology
-        trainTerminology = new Terminology(train_data_dir, ncbi);
+        stopwords = loadStopwords();
+        standardTerminology = new Terminology(standardTerminologyFile, ncbi, stopwords);
+        trainTerminology = new Terminology(train_data_dir, ncbi, stopwords);
     }
 
-    private ArrayList<Sieve> initializeSieves(Terminology trainTerminology) throws IOException {
+    private ArrayList<Sieve> initializeSieves() throws IOException {
         ArrayList<Sieve> sieves = new ArrayList<Sieve>();
 
         sieves.add(new ExactMatchSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
-        sieves.add(new AbbreviationExpansionSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
+        sieves.add(new AbbreviationExpansionSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap,
+                stopwords));
         sieves.add(new PrepositionalTransformSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         sieves.add(new NumberReplacementSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         sieves.add(new HyphenationSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         sieves.add(new AffixationSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         sieves.add(new DiseaseTermSynonymsSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
-        
-        // //Sieve 7
-        // mention.setCui(DiseaseModifierSynonymsSieve.apply(mention));
-        
+        sieves.add(new StemmingSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap,
+                new Stemmer(stopwords)));
+
         // //Sieve 8
-        // mention.setCui(StemmingSieve.apply(mention));     
-        
+        // mention.setCui(StemmingSieve.apply(mention));
+
         // //Sieve 9
-        // mention.setCui(this.test_data_dir.toString().contains("ncbi") ? CompoundPhraseSieve.applyNCBI(mention.getName()) : CompoundPhraseSieve.apply(mention.getName()));
-                
+        // mention.setCui(this.test_data_dir.toString().contains("ncbi") ?
+        // CompoundPhraseSieve.applyNCBI(mention.getName()) :
+        // CompoundPhraseSieve.apply(mention.getName()));
+
         // //Sieve 10
         // mention.setCui(SimpleNameSieve.apply(mention));
         // pass(mention, ++currentSieveLevel);
         // --currentSieveLevel;
         // if (!mention.getCui().equals(""))
-        //     return;                 
+        // return;
         // //Sieve 10
-        // mention.setCui(this.test_data_dir.toString().contains("ncbi") ? PartialMatchNCBISieve.apply(mention) : PartialMatchSieve.apply(mention));
-        // pass(mention, ++currentSieveLevel);  
+        // mention.setCui(this.test_data_dir.toString().contains("ncbi") ?
+        // PartialMatchNCBISieve.apply(mention) : PartialMatchSieve.apply(mention));
+        // pass(mention, ++currentSieveLevel);
 
         return sieves;
     }
 
     /**
      * Runs the sieve algorithm over the input datasets.
+     * 
      * @throws Exception
      */
     public void run() throws Exception {
         // Initialize sieves
-        sieves = initializeSieves(trainTerminology);
+        sieves = initializeSieves();
 
         // Apply sieve to test data.
         List<Document> test_data = getDataSet(this.test_data_dir);
-        for (Document document : test_data) {
+        for (Document doc : test_data) {
             HashListMap cuiNamesMap = new HashListMap();
 
-            for (Mention mention : document.mentions) {
+            for (Mention mention : doc.mentions) {
 
                 // Progressively apply sieves until the mention is linked to a CUI.
-                for (int i=0; i<max_level; i++) {
-                    mention.cui = sieves.get(i).apply(mention);
-        
+                for (int i = 0; i < max_level; i++) {
+
+                    if (sieves.get(i) instanceof AbbreviationExpansionSieve) {
+                        // Special case for abbreviation expansion sieve.
+                        AbbreviationExpansionSieve sieve = (AbbreviationExpansionSieve) sieves.get(i);
+                        mention.cui = sieve.apply(mention, doc);
+                    } else {
+                        // Default sieve apply.
+                        mention.cui = sieves.get(i).apply(mention);
+                    }
+
+                    // TODO: If abbreviation sieve, pass doc
+
                     // Drop out if we successfully normalize the mention
                     // TODO: We can probably drop out if a CUI is ambiguous in normalize step.
-                    if(checkNormalized(mention, i+1))
+                    if (checkNormalized(mention, i + 1))
                         break;
                 }
 
@@ -124,12 +140,13 @@ public class MultiPassSieveNormalizer {
 
                 cuiNamesMap.addKeyPair(mention.cui, mention.name);
             }
-            resolveAmbiguity(document, cuiNamesMap);
+            resolveAmbiguity(doc, cuiNamesMap);
         }
     }
 
     /**
-     * Creates a list of Document objects corresponding 1-1 with each file in the given directory
+     * Creates a list of Document objects corresponding 1-1 with each file in the
+     * given directory
      */
     private List<Document> getDataSet(File dir) throws IOException {
         List<Document> dataset = new ArrayList<>();
@@ -138,15 +155,15 @@ public class MultiPassSieveNormalizer {
             if (!file.toString().contains(".concept"))
                 continue;
 
-            File textFile = new File(file.toString().replace(".concept", ".txt"));
-            var abbreviationMap = Abbreviation.getTextAbbreviationExpansionMapFromFile(textFile); 
-            Document doc = new Document(textFile.getName(), Util.read(textFile));
+            File conceptFileAsTxt = new File(file.toString().replace(".concept", ".txt"));
+            Document doc = new Document(conceptFileAsTxt, Util.read(conceptFileAsTxt));
+
             try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     line = line.trim();
                     String[] tokens = line.split("\\|\\|");
-                    doc.addMention(tokens, abbreviationMap);
+                    doc.addMention(tokens);
                 }
             } catch (Exception e) {
                 System.out.println("ERROR: Failed to read " + file.toString());
@@ -158,7 +175,9 @@ public class MultiPassSieveNormalizer {
     }
 
     /**
-     * If the CUI was annotated on a compound mention (multiple CUIs on a single annotation), add all the CUIs on the shared annotation.
+     * If the CUI was annotated on a compound mention (multiple CUIs on a single
+     * annotation), add all the CUIs on the shared annotation.
+     * 
      * @param cui
      * @return
      */
@@ -172,9 +191,10 @@ public class MultiPassSieveNormalizer {
         }
         return alternateCuis;
     }
-    
+
     /**
      * Checks if we should continue (pass) to the next sieve.
+     * 
      * @param mention
      * @param level
      * @return
@@ -182,7 +202,8 @@ public class MultiPassSieveNormalizer {
     private boolean checkNormalized(Mention mention, int level) {
         boolean normalized = false;
         if (!mention.cui.equals("")) {
-            // TODO: Don't always return the list of alternate CUIs if there's another option
+            // TODO: Don't always return the list of alternate CUIs if there's another
+            // option
 
             // Find alternate CUIs (from compound annotations).
             List<String> alternateCuis = new ArrayList<>();
@@ -194,7 +215,7 @@ public class MultiPassSieveNormalizer {
             }
 
             // Set alternate CUIs on the mention
-            //TODO: make sure these are distinct and !="" upstream
+            // TODO: make sure these are distinct and !="" upstream
             mention.alternateCuis = alternateCuis;
 
             // Set the sieve level at which the mention was normalized.
@@ -205,86 +226,20 @@ public class MultiPassSieveNormalizer {
 
             normalized = true;
         }
-        
+
         return normalized;
     }
-        
-    // /**
-    //  * Progressively apply sieve levels to a given Mention object.
-    //  * @param mention
-    //  */
-    // private void applyMultiPassSieve(Mention mention) {        
-        // //match with names in training data
-        // //Sieve 1        
-        // mention.cui = Sieve.exactMatch(mention.name);
-        // if (!pass(mention, ++currentSieveLevel))
-        //     return;
-        
-        // //Sieve 2
-        // mention.setCui(Sieve.exactMatchSieve(mention.getNameExpansion()));
-        // if (!pass(mention, ++currentSieveLevel))
-        //     return;
-
-        // //Sieve 3
-        // mention.setCui(PrepositionalTransformSieve.apply(mention));
-        // if (!pass(mention, ++currentSieveLevel))
-        //     return;
-        
-        // //Sieve 4
-        // mention.setCui(SymbolReplacementSieve.apply(mention));
-        // if (!pass(mention, ++currentSieveLevel))
-        //     return;
-        
-        // //Sieve 5
-        // mention.setCui(HyphenationSieve.apply(mention));
-        // if (!pass(mention, ++currentSieveLevel)) {            
-        //     return;  
-        // }
-        
-        // //Sieve 6
-        // mention.setCui(AffixationSieve.apply(mention));
-        // if (!pass(mention, ++currentSieveLevel))
-        //     return;        
-        
-        // //Sieve 7
-        // mention.setCui(DiseaseModifierSynonymsSieve.apply(mention));
-        // if (!pass(mention, ++currentSieveLevel)) {            
-        //     return;                  
-        // }
-        
-        // //Sieve 8
-        // mention.setCui(StemmingSieve.apply(mention));
-        // if (!pass(mention, ++currentSieveLevel))
-        //     return;       
-        
-        // //Sieve 9
-        // mention.setCui(this.test_data_dir.toString().contains("ncbi") ? CompoundPhraseSieve.applyNCBI(mention.getName()) : CompoundPhraseSieve.apply(mention.getName()));
-        // if (!pass(mention, ++currentSieveLevel)) {            
-        //     return;         
-        // }
-                
-        // //Sieve 10
-        // mention.setCui(SimpleNameSieve.apply(mention));
-        // pass(mention, ++currentSieveLevel);
-        // --currentSieveLevel;
-        // if (!mention.getCui().equals(""))
-        //     return;                 
-        // //Sieve 10
-        // mention.setCui(this.test_data_dir.toString().contains("ncbi") ? PartialMatchNCBISieve.apply(mention) : PartialMatchSieve.apply(mention));
-        // pass(mention, ++currentSieveLevel);       
-    // }
 
     /**
-     * Add normalized mention to a dictionary for reference normalizing other mentions
+     * Add normalized mention to a dictionary for reference normalizing other
+     * mentions
+     * 
      * @param mention
      */
     public void storeNormalizedConcept(Mention mention) {
-        //TODO: what is this???
-        String normalizedName = mention.normalizingSieveLevel == 2 ? mention.getNameExpansion() : mention.name;
-        String stemmedNormalizedName = mention.normalizingSieveLevel == 2 ? Ling.getStemmedPhrase(mention.getNameExpansion()) : mention.getStemmedName();
-
-        normalizedNameToCuiListMap.addKeyPair(normalizedName, mention.cui);
-        stemmedNormalizedNameToCuiListMap.addKeyPair(stemmedNormalizedName, mention.cui);
+        // Store the normalized name and expansion.
+        normalizedNameToCuiListMap.addKeyPair(mention.name, mention.cui);
+        normalizedNameToCuiListMap.addKeyPair(mention.nameExpansion, mention.cui);
     }
 
     private void resolveAmbiguity(Document document, HashListMap cuiNamesMap) throws IOException {
@@ -292,11 +247,11 @@ public class MultiPassSieveNormalizer {
             if (mention.normalizingSieveLevel != 1 || mention.cui.equals("CUI-less")) {
                 eval.evaluateClassification(mention, document);
                 // storeNormalizedConcept(mention);
-                continue;          
+                continue;
             }
-            
+
             String[] conceptNameTokens = mention.name.split("\\s+");
-            
+
             // Get matches from train data
             List<String> trainingDataCuis = trainTerminology.nameToCuiListMap.get(mention.name);
             if (trainingDataCuis == null || trainingDataCuis.size() == 1) {
@@ -304,10 +259,10 @@ public class MultiPassSieveNormalizer {
                 // storeNormalizedConcept(mention);
                 continue;
             }
-            
-            if (conceptNameTokens.length > 1) 
+
+            if (conceptNameTokens.length > 1)
                 mention.cui = "CUI-less";
-            else {                
+            else {
                 int countCUIMatch = 0;
                 for (String cui : trainingDataCuis) {
                     List<String> names = cuiNamesMap.containsKey(cui) ? cuiNamesMap.get(cui) : new ArrayList<String>();
@@ -315,17 +270,35 @@ public class MultiPassSieveNormalizer {
                         String[] nameTokens = name.split("\\s+");
                         if (nameTokens.length == 1)
                             continue;
-                        if (name.matches(mention.name+" .*")) {
+                        if (name.matches(mention.name + " .*")) {
                             countCUIMatch++;
                         }
                     }
                 }
-                if (countCUIMatch > 0) 
+                if (countCUIMatch > 0)
                     mention.cui = "CUI-less";
                 // else
-                    // storeNormalizedConcept(mention);
+                // storeNormalizedConcept(mention);
             }
             eval.evaluateClassification(mention, document);
         }
+    }
+
+    /**
+     * Loads stopwords from file into a list.
+     * 
+     * @throws IOException
+     */
+    private static List<String> loadStopwords() throws IOException {
+        List<String> stopwords = new ArrayList<>();
+        var file = new File("resources/stopwords.txt");
+        BufferedReader in = new BufferedReader(new FileReader(file));
+        while (in.ready()) {
+            String s = in.readLine().trim();
+            if (!s.equals(""))
+                stopwords.add(s);
+        }
+        in.close();
+        return stopwords;
     }
 }

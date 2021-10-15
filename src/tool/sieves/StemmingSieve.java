@@ -1,76 +1,59 @@
-// /*
-//  * To change this template, choose Tools | Templates
-//  * and open the template in the editor.
-//  */
-// package tool.sieves;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package tool.sieves;
 
-// import java.util.ArrayList;
-// import java.util.List;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-// import tool.util.HashListMap;
-// import tool.util.Ling;
-// import tool.util.Mention;
-// import tool.util.Terminology;
-// import tool.util.Util;
+import tool.util.HashListMap;
+import tool.util.Mention;
+import tool.util.Stemmer;
+import tool.util.Terminology;
 
-// /**
-//  *
-//  * @author
-//  */
-// public class StemmingSieve extends Sieve {
-    
-//     HashListMap stemmedNormalizedNameToCuiListMap;
+/**
+ * Stemming Sieve.
+ * 
+ * @author
+ */
+public class StemmingSieve extends Sieve {
 
-//     /**
-//      * Constructor. Calls abstract constructor.
-//      * @param standardTerminology
-//      * @param trainTerminology
-//      */
-//     public StemmingSieve(Terminology standardTerminology, Terminology trainTerminology) {
-//         super(standardTerminology, trainTerminology);
-//         stemmedNormalizedNameToCuiListMap = new HashListMap();
-//     }
+    HashListMap stemmedNormalizedNameToCuiListMap;
+    Stemmer stemmer;
 
-//     public String apply(Mention concept) {
-//         transformName(concept);
-//         return normalize(concept);
-//     }     
-    
-//     private void transformName(Mention concept) {
-//         List<String> namesForTransformation = new ArrayList<>(concept.getNamesKnowledgeBase());
-//         List<String> transformedNames = new ArrayList<>();        
-        
-//         for (String nameForTransformation : namesForTransformation) {
-//             transformedNames = Util.setList(transformedNames, Ling.getStemmedPhrase(nameForTransformation));
-//         }
-        
-//         concept.setStemmedNamesKnowledgeBase(transformedNames);   
-//     }    
+    /**
+     * Constructor. Calls abstract constructor.
+     * 
+     * @param standardTerminology
+     * @param trainTerminology
+     * @param normalizedNameToCuiListMap
+     * @throws IOException
+     */
+    public StemmingSieve(Terminology standardTerminology, Terminology trainTerminology,
+            HashListMap normalizedNameToCuiListMap, Stemmer stemmer) throws IOException {
+        super(standardTerminology, trainTerminology, normalizedNameToCuiListMap);
+        this.stemmer = stemmer;
+    }
 
-//     public String normalize(Mention concept) {
-//         for (String name : concept.getStemmedNamesKnowledgeBase()) {
-//             String cui = exactStemmedMatchSieve(name);            
-//             if (!cui.equals(""))
-//                 return cui;
-//         }
-//         return "";
-//     }    
-    
-//     public String exactStemmedMatchSieve(String name) {
-//         String cui = "";
-//         //checks against names normalized by multi-pass sieve
-//         cui = getTerminologyNameCui(stemmedNormalizedNameToCuiListMap, name);
-//         if (!cui.equals(""))
-//             return cui;
-        
-//         //checks against names in training data
-//         cui = getTerminologyNameCui(trainTerminology.stemmedNameToCuiListMap, name);
-//         if (!cui.equals(""))
-//             return cui;        
-        
-//         //checks against names in dictionary
-//         cui = getTerminologyNameCui(standardTerminology.stemmedNameToCuiListMap, name);       
-//         return cui;
-//     }    
-    
-// }
+    /**
+     * Checks for an exact match in one of the dictionaries after stemming mention
+     * text.
+     * 
+     * @param mention
+     */
+    public String apply(Mention mention) {
+
+        List<String> stemmedPermutations = new ArrayList<>();
+
+        // Attempt to stem each name permutation.
+        for (String name : mention.namePermutations) {
+            stemmedPermutations.add(stemmer.stem(name));
+        }
+        mention.addPermutationList(stemmedPermutations);
+
+        // Try to link permutations to a CUI in one of the dictionaries.
+        return normalize(mention.namePermutations);
+    }
+}

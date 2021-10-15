@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import tool.util.HashListMap;
-import tool.util.Ling;
 import tool.util.Mention;
 import tool.util.Terminology;
 
@@ -48,9 +47,6 @@ public class AffixationSieve extends Sieve {
         maxPrefixLength = 0;
 
         // Initialize maps.
-        affixMap = new HashMap<>();
-        prefixMap = new HashMap<>();
-        suffixMap = new HashListMap();
         loadSuffixMap();
         loadPrefixMap();
         loadAffixMap();
@@ -255,6 +251,7 @@ public class AffixationSieve extends Sieve {
      * @throws IOException
      */
     private void loadSuffixMap() throws IOException {
+        suffixMap = new HashListMap();
         var file = new File("resources/suffix.txt");
         BufferedReader in = new BufferedReader(new FileReader(file));
         while (in.ready()) {
@@ -277,6 +274,7 @@ public class AffixationSieve extends Sieve {
      * @throws IOException
      */
     private void loadPrefixMap() throws IOException {
+        prefixMap = new HashMap<>();
         var file = new File("resources/prefix.txt");
         BufferedReader in = new BufferedReader(new FileReader(file));
         while (in.ready()) {
@@ -297,6 +295,7 @@ public class AffixationSieve extends Sieve {
      * @throws IOException
      */
     private void loadAffixMap() throws IOException {
+        affixMap = new HashMap<>();
         var file = new File("resources/affix.txt");
         BufferedReader in = new BufferedReader(new FileReader(file));
         while (in.ready()) {
