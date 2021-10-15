@@ -59,28 +59,7 @@ public class Mention {
             addPermutation(name);
         }
     }
-
-    public void setIndexes(String indexes) {
-        this.indexes = indexes;
-    }
-
-    public String getIndexes() {
-        return indexes;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    // public void setNameExpansion(String text, Map<String, String> abbreviationMap) {
-    //     nameExpansion = Abbreviation.getAbbreviationExpansion(abbreviationMap, text, name, indexes);
-    //     addPermutation(nameExpansion);
-    // }
-
-    // public String getNameExpansion() {
-    //     return nameExpansion;
-    // }
-
+    
     public String getGoldMeSHorSNOMEDCui() {
         return goldMeSHorSNOMEDCui;
     }

@@ -54,8 +54,7 @@ public class MultiPassSieveNormalizer {
         // set stopwords, correct spellings, and abbreviations data
         // TODO: Revisit this to make more general
         ncbi = test_data_dir.toString().contains("ncbi") ? true : false;
-        Ling.setSpellingCorrectionMap(
-                ncbi ? new File("resources/ncbi-spell-check.txt") : new File("resources/semeval-spell-check.txt"));
+        Ling.setSpellingCorrectionMap(new File("resources/spell-check.txt"));
 
         // Load training data terminology
         stopwords = loadStopwords();
@@ -76,24 +75,23 @@ public class MultiPassSieveNormalizer {
         sieves.add(new DiseaseTermSynonymsSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
         sieves.add(new StemmingSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap,
                 new Stemmer(stopwords)));
+        sieves.add(new CompoundPhraseSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
+        sieves.add(new PartialMatchSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap, stopwords));
 
-        // //Sieve 8
-        // mention.setCui(StemmingSieve.apply(mention));
-
-        // //Sieve 9
+        // Compound phrase sieve
         // mention.setCui(this.test_data_dir.toString().contains("ncbi") ?
-        // CompoundPhraseSieve.applyNCBI(mention.getName()) :
-        // CompoundPhraseSieve.apply(mention.getName()));
+        // CompoundPhraseSieve.applyNCBI(mention.getName())
+        // : CompoundPhraseSieve.apply(mention.getName()));
 
-        // //Sieve 10
+        // // Sieve 10
         // mention.setCui(SimpleNameSieve.apply(mention));
         // pass(mention, ++currentSieveLevel);
         // --currentSieveLevel;
         // if (!mention.getCui().equals(""))
-        // return;
-        // //Sieve 10
-        // mention.setCui(this.test_data_dir.toString().contains("ncbi") ?
-        // PartialMatchNCBISieve.apply(mention) : PartialMatchSieve.apply(mention));
+        //     return;
+        // // Sieve 10
+        // mention.setCui(this.test_data_dir.toString().contains("ncbi") ? PartialMatchNCBISieve.apply(mention)
+        //         : PartialMatchSieve.apply(mention));
         // pass(mention, ++currentSieveLevel);
 
         return sieves;

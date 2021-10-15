@@ -49,7 +49,8 @@ public class AbbreviationExpansionSieve extends Sieve {
      * @param mention
      */
     public String apply(Mention mention, Document doc) {
-        // This uses an expansion created from the corresponding annotation file.
+        // This uses an expansion created from the corresponding annotation file and the
+        // global abbreviation file.
         mention.nameExpansion = getAbbreviationExpansion(doc, mention);
 
         // Add abbreviation expansion to name permutation list.
@@ -222,7 +223,7 @@ public class AbbreviationExpansionSieve extends Sieve {
      */
     private HashListMap loadAbbreviationMap() throws IOException {
         var map = new HashListMap();
-        var file = new File("resources/ncbi-wiki-abbreviations.txt");
+        var file = new File("resources/abbreviations.txt");
         BufferedReader input = new BufferedReader(new FileReader(file));
         while (input.ready()) {
             String s = input.readLine().trim();

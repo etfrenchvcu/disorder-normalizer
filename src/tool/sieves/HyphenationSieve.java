@@ -13,7 +13,7 @@ import tool.util.Mention;
 import tool.util.Terminology;
 
 /**
- *
+ * Hyphenation Sieve.
  * @author
  */
 public class HyphenationSieve extends Sieve {

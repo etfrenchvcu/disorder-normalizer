@@ -40,6 +40,7 @@ public class Terminology {
      * @throws Exception
      */
     public Terminology(File path, boolean ncbi, List<String> stopwords) throws Exception {
+        //TODO: Get rid of NCBI variable.
         this.ncbi = ncbi;
         this.stopwords = stopwords;
         stemmer = new Stemmer(stopwords);
@@ -104,7 +105,8 @@ public class Terminology {
         stemmedNameToCuiListMap.addKeyPair(stemmedName, cui);
         cuiToStemmedNameListMap.addKeyPair(cui, stemmedName);
 
-        // Tokenize concept name and remove stopwords
+        // Create a hash map of names keyed on non-stop tokens they contain (used in
+        // PartialMatchSieve).
         String[] nameTokens = name.split("\\s");
         for (String token : nameTokens) {
             if (stopwords.contains(token))

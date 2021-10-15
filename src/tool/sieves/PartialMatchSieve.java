@@ -1,85 +1,116 @@
-// /*
-//  * To change this template, choose Tools | Templates
-//  * and open the template in the editor.
-//  */
-// package tool.sieves;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package tool.sieves;
 
-// import java.util.ArrayList;
-// import java.util.List;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-// import tool.util.Ling;
-// import tool.util.Mention;
-// import tool.util.Terminology;
-// import tool.util.Util;
+import tool.util.HashListMap;
+import tool.util.Mention;
+import tool.util.Terminology;
 
-// /**
-//  *
-//  * @author
-//  */
-// public class PartialMatchSieve extends Sieve {    
-    
-//     /**
-//      * Constructor. Calls abstract constructor.
-//      * @param standardTerminology
-//      * @param trainTerminology
-//      */
-//     public PartialMatchSieve(Terminology standardTerminology, Terminology trainTerminology) {
-//         super(standardTerminology, trainTerminology);
-//     }
+/**
+ * Partial Match Sieve.
+ * 
+ * @author
+ */
+public class PartialMatchSieve extends Sieve {
 
-//     public String apply(Mention concept) {
-//         //init(concept);
-//         String name = concept.getNameExpansion().equals("") ? concept.getNameExpansion() : concept.getName();
-//         String[] nameTokens = name.split("\\s+");
-//         List<String> cuiList = partialMatch(name, nameTokens);        
-//         return cuiList.size() == 1 ? cuiList.get(0) : "";
-//     }   
-    
-//     private List<String> partialMatch(String phrase, String[] phraseTokens) {
-        
-//         List<String> cuiList = new ArrayList<>();
-//         List<String> prevPartialMatchedPhrases = new ArrayList<>();
-                
-//         for (String phraseToken : phraseTokens) {
-//             if (Ling.getStopwordsList().contains(phraseToken))
-//                 continue;
-//             List<String> candidatePhrases = null;
-//             int map = -1;
-            
-//             if (trainTerminology.tokenToNameListMap.containsKey(phraseToken)) {
-//                 candidatePhrases = new ArrayList<>(trainTerminology.tokenToNameListMap.get(phraseToken));
-//                 map = 2;
-//             }
-//             else if (standardTerminology.tokenToNameListMap.containsKey(phraseToken)) {
-//                 candidatePhrases = new ArrayList<>(standardTerminology.tokenToNameListMap.get(phraseToken));
-//                 map = 3;
-//             }
-            
-//             if (candidatePhrases == null)
-//                 continue;
-                        
-//             candidatePhrases.removeAll(prevPartialMatchedPhrases);
-            
-//             if (map == 2 && candidatePhrases.isEmpty() && standardTerminology.tokenToNameListMap.containsKey(phraseToken)) {
-//                 candidatePhrases = new ArrayList<>(standardTerminology.tokenToNameListMap.get(phraseToken));
-//                 map = 3;                
-//             }            
-            
-//             cuiList = exactTokenMatchCondition(phrase, candidatePhrases, map == 2 ? trainTerminology : standardTerminology, cuiList);
-//             prevPartialMatchedPhrases = Util.addUnique(candidatePhrases, prevPartialMatchedPhrases);
-//         }        
-//         return cuiList;
-//     }    
-    
-//     public List<String> exactTokenMatchCondition(String phrase, List<String> candidatePhrases, Terminology terminology, List<String> cuiList) {
-//         for (String candidatePhrase : candidatePhrases) {
-//             if (!Ling.exactTokenMatch(candidatePhrase, phrase))
-//                 continue;
+    List<String> stopwords;
 
-//             String cui = terminology.nameToCuiListMap.get(candidatePhrase).get(0);
-//             cuiList = Util.setList(cuiList, cui);
-//         }              
-//         return cuiList;
-//     }
-            
-// }
+    /**
+     * Constructor. Calls abstract constructor.
+     * 
+     * @param standardTerminology
+     * @param trainTerminology
+     * @param normalizedNameToCuiListMap
+     * @param stopwords
+     * @throws IOException
+     */
+    public PartialMatchSieve(Terminology standardTerminology, Terminology trainTerminology,
+            HashListMap normalizedNameToCuiListMap, List<String> stopwords) {
+        super(standardTerminology, trainTerminology, normalizedNameToCuiListMap);
+
+        this.stopwords = stopwords;
+    }
+
+    /**
+     * Returns a CUI if exactly one distinct CUI is associated with the set of
+     * tokens in the name.
+     * 
+     * @param mention
+     */
+    public String apply(Mention mention) {
+        String name = mention.nameExpansion.equals("") ? mention.nameExpansion : mention.name;
+        var cuis = new HashMap<String, Integer>();
+
+        for (String token : name.split("\\s+")) {
+            // Skip stopwords.
+            if (!stopwords.contains(token)) {
+
+                // Add CUIs from trainTerminology.
+                if (trainTerminology.tokenToNameListMap.containsKey(token)) {
+                    addCUIsWithToken(token, trainTerminology, cuis);
+                }
+
+                // Add CUIs from standardTerminology.
+                if (standardTerminology.tokenToNameListMap.containsKey(token)) {
+                    addCUIsWithToken(token, standardTerminology, cuis);
+                }
+
+                // TODO: Add CUIs from normalizedNameToCuiListMap?
+            }
+        }
+
+        // return getBestMatchCui(cuis);
+        return cuis.keySet().size() == 1 ? cuis.keySet().iterator().next() : "";
+    }
+
+    /**
+     * Gets the CUI with the associated with the most tokens in the name.
+     * @param cuis
+     * @return
+     */
+    private String getBestMatchCui(HashMap<String, Integer> cuis) {
+        Map.Entry<String, Integer> bestMatch = null;
+
+        for (Map.Entry<String, Integer> entry : cuis.entrySet()) {
+            if (bestMatch == null || entry.getValue().compareTo(bestMatch.getValue()) > 0) {
+                // Initialize or when entry has most CUI hits.
+                bestMatch = entry;
+            } else if (entry.getValue().compareTo(bestMatch.getValue()) == 0
+                    && entry.getKey().length() < bestMatch.getKey().length()) {
+                // Same # CUI hits, but entry is shorter than previous best match.
+                bestMatch = entry;
+            }
+        }
+
+        return bestMatch == null ? "" : bestMatch.getKey();
+    }
+
+    /**
+     * Add CUIs to the list which correspond to a name in the terminology containing
+     * the given token.
+     * 
+     * @param token
+     * @param terminology
+     * @param cuis
+     */
+    private void addCUIsWithToken(String token, Terminology terminology, HashMap<String, Integer> cuis) {
+
+        for (var candidateName : terminology.tokenToNameListMap.get(token)) {
+            var cui = terminology.nameToCuiListMap.get(candidateName).get(0);
+
+            // Initialize map if necessary.
+            if (!cuis.keySet().contains(cui))
+                cuis.put(cui, 0);
+
+            // Increment cui count.
+            cuis.put(cui, cuis.get(cui) + 1);
+        }
+    }
+}
