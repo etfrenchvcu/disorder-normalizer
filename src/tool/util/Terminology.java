@@ -19,7 +19,6 @@ import java.util.Map;
  */
 public class Terminology {
 
-    public boolean ncbi;
     public Stemmer stemmer;
     List<String> stopwords;
     public HashListMap tokenToNameListMap;
@@ -39,14 +38,34 @@ public class Terminology {
      * @param path
      * @throws Exception
      */
-    public Terminology(File path, boolean ncbi, List<String> stopwords) throws Exception {
-        //TODO: Get rid of NCBI variable.
-        this.ncbi = ncbi;
+    public Terminology(File path, List<String> stopwords) throws Exception {
         this.stopwords = stopwords;
         stemmer = new Stemmer(stopwords);
+        initializeMaps();
+        
 
-        // Initialize maps
-        tokenToNameListMap = new HashListMap();
+        if (path.isFile())
+            loadTerminologyFile(path);
+        else if (path.isDirectory())
+            loadTrainingDataTerminology(path);
+        else
+            throw new Exception("Given path is neither file nor directory: " + path.toString());
+    }
+    
+    /**
+     * Dummy constructor for unit testing.
+     */
+    public Terminology(List<String> stopwords) {
+    	this.stopwords = stopwords;
+        stemmer = new Stemmer(stopwords);
+    	initializeMaps();
+    }
+    
+    /**
+     * Initialize maps in constructors.
+     */
+    private void initializeMaps() {
+    	tokenToNameListMap = new HashListMap();
         nameToCuiListMap = new HashListMap();
         simpleNameToCuiListMap = new HashListMap();
         compoundNameToCuiListMap = new HashListMap();
@@ -55,13 +74,6 @@ public class Terminology {
         cuiToStemmedNameListMap = new HashListMap();
         cuiAlternateCuiMap = new HashListMap();
         cuiNameFileListMap = new HashMap<>();
-
-        if (path.isFile())
-            loadTerminologyFile(path);
-        else if (path.isDirectory())
-            loadTrainingDataTerminology(path);
-        else
-            throw new Exception("Given path is neither file nor directory: " + path.toString());
     }
 
     /**
@@ -97,7 +109,7 @@ public class Terminology {
      * @param name
      * @param cui
      */
-    private void loadConceptMaps(String name, String cui) {
+    public void loadConceptMaps(String name, String cui) {
         nameToCuiListMap.addKeyPair(name, cui);
         cuiToNameListMap.addKeyPair(cui, name);
 
@@ -114,6 +126,8 @@ public class Terminology {
             tokenToNameListMap.addKeyPair(token, name);
         }
 
+        // TODO: Remove this.
+        var ncbi = true;
         if (!ncbi) {
             setCompoundNameTerminology(this, name, nameTokens, cui);
         } else if (cui.contains("|")) {
@@ -222,6 +236,9 @@ public class Terminology {
 
                 }
             }
+            
+            // TODO: Remove this.
+            var ncbi = true;
             if (ncbi)
                 continue;
             for (String cui : cuiNamesMap.keySet()) {

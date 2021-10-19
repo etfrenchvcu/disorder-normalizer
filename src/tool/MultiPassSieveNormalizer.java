@@ -52,14 +52,12 @@ public class MultiPassSieveNormalizer {
         normalizedNameToCuiListMap = new HashListMap();
 
         // set stopwords, correct spellings, and abbreviations data
-        // TODO: Revisit this to make more general
-        ncbi = test_data_dir.toString().contains("ncbi") ? true : false;
         Ling.setSpellingCorrectionMap(new File("resources/spell-check.txt"));
 
         // Load training data terminology
         stopwords = loadStopwords();
-        standardTerminology = new Terminology(standardTerminologyFile, ncbi, stopwords);
-        trainTerminology = new Terminology(train_data_dir, ncbi, stopwords);
+        standardTerminology = new Terminology(standardTerminologyFile, stopwords);
+        trainTerminology = new Terminology(train_data_dir, stopwords);
     }
 
     private ArrayList<Sieve> initializeSieves() throws IOException {

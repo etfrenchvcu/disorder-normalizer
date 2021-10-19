@@ -42,7 +42,7 @@ public class Document {
         String[] cuis = tokens[4].contains("+") ? tokens[4].split("\\+") : tokens[4].split("\\|");
         String MeSHorSNOMEDcuis = Terminology.getMeSHorSNOMEDCuis(cuis);
         List<String> OMIMcuis = Terminology.getOMIMCuis(cuis);
-        Mention mention = new Mention(tokens[1], tokens[3], MeSHorSNOMEDcuis, OMIMcuis);
+        Mention mention = new Mention(tokens[3], tokens[1], MeSHorSNOMEDcuis, OMIMcuis);
         mentions.add(mention);
     }
 

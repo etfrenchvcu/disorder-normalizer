@@ -25,7 +25,7 @@ public class Mention {
     private String goldMeSHorSNOMEDCui;
     private List<String> goldOMIMCuis;
 
-    public Mention(String indexes, String name, String goldMeSHorSNOMEDCui, List<String> goldOMIMCuis) {
+    public Mention(String name, String indexes, String goldMeSHorSNOMEDCui, List<String> goldOMIMCuis) {
         this.indexes = indexes;
         this.name = Ling.correctSpelling(name.toLowerCase().trim());
         this.goldMeSHorSNOMEDCui = goldMeSHorSNOMEDCui;
