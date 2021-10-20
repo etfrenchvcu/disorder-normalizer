@@ -21,122 +21,177 @@ import java.util.Map;
  */
 public class Document {
 
-    public String filename;
-    public String text;
-    public List<Mention> mentions;
-    public Map<String, String> abbreviationMap;
+	public String filename;
+	public String text;
+	public List<Mention> mentions;
+	public Map<String, String> abbreviationMap;
 
-    public Document(File file, String text) throws IOException {
-        this.filename = file.getName();
-        this.text = text;
-        mentions = new ArrayList<>();
-        abbreviationMap = getTextAbbreviationExpansionMapFromFile(file);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param annotationFile
+	 * @throws Exception
+	 */
+	public Document(File annotationFile) throws Exception {
+		this.filename = annotationFile.getName();
+		mentions = new ArrayList<>();
 
-    /**
-     * Adds a new mention to the list for this document.
-     * 
-     * @param tokens
-     */
-    public void addMention(String[] tokens) {
-        String[] cuis = tokens[4].contains("+") ? tokens[4].split("\\+") : tokens[4].split("\\|");
-        String MeSHorSNOMEDcuis = Terminology.getMeSHorSNOMEDCuis(cuis);
-        List<String> OMIMcuis = Terminology.getOMIMCuis(cuis);
-        Mention mention = new Mention(tokens[3], tokens[1], MeSHorSNOMEDcuis, OMIMcuis);
-        mentions.add(mention);
-    }
+		// Read corresponding .txt file.
+		var correspondingTxtFile = new File(annotationFile.toString().replace(".concept", ".txt"));
+		this.text = Util.read(correspondingTxtFile);
 
-    /**
-     * Loads text abbreviation map from annotation file.
-     * 
-     * @param file
-     * @return
-     * @throws IOException
-     */
-    private Map<String, String> getTextAbbreviationExpansionMapFromFile(File file) throws IOException {
-        Map<String, String> abbreviationMap = new HashMap<>();
-        BufferedReader input = new BufferedReader(new FileReader(file));
-        while (input.ready()) {
-            String s = input.readLine().trim().replaceAll("\\s+", " ");
-            String[] tokens = s.split("\\s");
-            int size = tokens.length;
-            for (int i = 0; i < size; i++) {
-                int expansionIndex = -1;
+		loadMentions(annotationFile);
+		abbreviationMap = getTextAbbreviationExpansionMapFromFile(correspondingTxtFile);
+	}
 
-                if (tokens[i].matches("\\(\\w+(\\-\\w+)?\\)(,|\\.)?") || tokens[i].matches("\\([A-Z]+(;|,|\\.)"))
-                    expansionIndex = i - 1;
-                else if (tokens[i].matches("[A-Z]+\\)"))
-                    expansionIndex = Util.firstIndexOf(tokens, i, "\\(");
+	/**
+	 * Dummy constructor for unit testing.
+	 */
+	public Document() {
+	}
 
-                if (expansionIndex == -1)
-                    continue;
+	/**
+	 * Loads mentions from annotation file.
+	 * 
+	 * @param annotationFile
+	 * @throws Exception
+	 */
+	private void loadMentions(File annotationFile) throws Exception {
+		try (BufferedReader br = new BufferedReader(new FileReader(annotationFile))) {
+			String line;
+			while ((line = br.readLine()) != null) {
+				line = line.trim();
+				String[] tokens = line.split("\\|\\|");
+				addMention(tokens);
+			}
+		} catch (Exception e) {
+			System.out.println("ERROR: Failed to read " + annotationFile.toString());
+			throw e;
+		}
+	}
 
-                String abbreviation = tokens[i].replace("(", "").replace(")", "").toLowerCase();
-                String reversedAbbreviation = Ling.reverse(abbreviation);
+	/**
+	 * Adds a new mention to the list for this document.
+	 * 
+	 * @param tokens
+	 */
+	public void addMention(String[] tokens) {
+		String[] cuis = tokens[4].contains("+") ? tokens[4].split("\\+") : tokens[4].split("\\|");
+		String MeSHorSNOMEDcuis = Terminology.getMeSHorSNOMEDCuis(cuis);
+		List<String> OMIMcuis = Terminology.getOMIMCuis(cuis);
+		Mention mention = new Mention(tokens[3], tokens[1], MeSHorSNOMEDcuis, OMIMcuis);
+		mentions.add(mention);
+	}
 
-                if (abbreviation.charAt(abbreviation.length() - 1) == ','
-                        || abbreviation.charAt(abbreviation.length() - 1) == '.'
-                        || abbreviation.charAt(abbreviation.length() - 1) == ';')
-                    abbreviation = abbreviation.substring(0, abbreviation.length() - 1);
+	/**
+	 * Checks for annotations mention a term and then provide an acronym in parens
+	 * i.e. "Myotonic dystrophy (DM)" and creates a dictionary for use within doc.
+	 * 
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	private Map<String, String> getTextAbbreviationExpansionMapFromFile(File file) throws IOException {
+		Map<String, String> abbreviationMap = new HashMap<>();
+		BufferedReader input = new BufferedReader(new FileReader(file));
+		while (input.ready()) {
+			String s = input.readLine().trim().replaceAll("\\s+", " ");
+			String[] tokens = s.split("\\s");
+			int size = tokens.length;
+			for (int i = 0; i < size; i++) {
+				int expansionIndex = -1;
 
-                if (abbreviationMap.containsKey(abbreviation) || abbreviationMap.containsKey(reversedAbbreviation))
-                    continue;
+				if (tokens[i].matches("\\(\\w+(\\-\\w+)?\\)(,|\\.)?") || tokens[i].matches("\\([A-Z]+(;|,|\\.)"))
+					expansionIndex = i - 1;
+				else if (tokens[i].matches("[A-Z]+\\)"))
+					expansionIndex = Util.firstIndexOf(tokens, i, "\\(");
 
-                int abbreviationLength = abbreviation.length();
-                setTextAbbreviationExpansionMap(abbreviationMap, tokens, abbreviationLength, abbreviation,
-                        expansionIndex);
-                if (!abbreviationMap.containsKey(abbreviation))
-                    setTextAbbreviationExpansionMap(abbreviationMap, tokens, abbreviationLength, reversedAbbreviation,
-                            expansionIndex);
-            }
-        }
-        input.close();
+				if (expansionIndex == -1)
+					continue;
 
-        return abbreviationMap;
-    }
+				// Remove parens and trailing punctuation.
+				String abbreviation = tokens[i].replace("(", "").replace(")", "").toLowerCase();
+				if (abbreviation.charAt(abbreviation.length() - 1) == ','
+						|| abbreviation.charAt(abbreviation.length() - 1) == '.'
+						|| abbreviation.charAt(abbreviation.length() - 1) == ';')
+					abbreviation = abbreviation.substring(0, abbreviation.length() - 1);
+				int abbreviationLength = abbreviation.length();
 
-    private void setTextAbbreviationExpansionMap(Map<String, String> map, String[] tokens, int abbreviationLength,
-            String abbreviation, int expansionIndex) {
-        String expansion = getTentativeExpansion(tokens, expansionIndex, abbreviationLength);
-        expansion = Ling.correctSpelling(getExpansionByHearstAlgorithm(abbreviation, expansion).toLowerCase()).trim();
-        if (!expansion.equals(""))
-            map.put(abbreviation, expansion);
-    }
+				// Expand abbreviation and add to map.
+				if (!abbreviationMap.containsKey(abbreviation)) {
+					setTextAbbreviationExpansionMap(abbreviationMap, tokens, abbreviationLength, abbreviation,
+							expansionIndex);
+				}
 
-    public static String getTentativeExpansion(String[] tokens, int i, int abbreviationLength) {
-        String expansion = "";
-        while (i >= 0 && abbreviationLength > 0) {
-            expansion = tokens[i] + " " + expansion;
-            i--;
-            abbreviationLength--;
-        }
-        return expansion.trim();
-    }
+				// TODO: Does it really make sense to add reversed abbreviations?
+				String reversedAbbreviation = Ling.reverse(abbreviation);
+				if (!abbreviationMap.containsKey(reversedAbbreviation)) {
+					setTextAbbreviationExpansionMap(abbreviationMap, tokens, abbreviationLength, reversedAbbreviation,
+							expansionIndex);
+				}
+			}
+		}
+		input.close();
 
-    private String getExpansionByHearstAlgorithm(String shortForm, String longForm) {
-        int sIndex;
-        int lIndex;
-        char currChar;
+		return abbreviationMap;
+	}
 
-        sIndex = shortForm.length() - 1;
-        lIndex = longForm.length() - 1;
+	/**
+	 * Attempts to expand the acronym and adds it to a dictionary if successful.
+	 * 
+	 * @param map
+	 * @param tokens
+	 * @param abbreviationLength
+	 * @param abbreviation
+	 * @param expansionIndex
+	 */
+	private void setTextAbbreviationExpansionMap(Map<String, String> map, String[] tokens, int abbreviationLength,
+			String abbreviation, int expansionIndex) {
+		String expansion = getTentativeExpansion(tokens, expansionIndex, abbreviationLength);
+		
+		if (expansion.equals("")) {
+			expansion = getExpansionByHearstAlgorithm(abbreviation, expansion);
+		}
+		
+		expansion = Ling.correctSpelling(expansion).trim().toLowerCase();
+		if (!expansion.equals(""))
+			map.put(abbreviation, expansion);
+	}
 
-        for (; sIndex >= 0; sIndex--) {
-            currChar = Character.toLowerCase(shortForm.charAt(sIndex));
-            if (!Character.isLetterOrDigit(currChar))
-                continue;
+	public static String getTentativeExpansion(String[] tokens, int i, int abbreviationLength) {
+		String expansion = "";
+		while (i >= 0 && abbreviationLength > 0) {
+			expansion = tokens[i] + " " + expansion;
+			i--;
+			abbreviationLength--;
+		}
+		return expansion.trim();
+	}
 
-            while (((lIndex >= 0) && (Character.toLowerCase(longForm.charAt(lIndex)) != currChar))
-                    || ((sIndex == 0) && (lIndex > 0) && (Character.isLetterOrDigit(longForm.charAt(lIndex - 1)))))
-                lIndex--;
-            if (lIndex < 0)
-                return "";
-            lIndex--;
-        }
+	private String getExpansionByHearstAlgorithm(String shortForm, String longForm) {
+		int sIndex;
+		int lIndex;
+		char currChar;
 
-        lIndex = longForm.lastIndexOf(" ", lIndex) + 1;
-        longForm = longForm.substring(lIndex);
+		sIndex = shortForm.length() - 1;
+		lIndex = longForm.length() - 1;
 
-        return longForm;
-    }
+		for (; sIndex >= 0; sIndex--) {
+			currChar = Character.toLowerCase(shortForm.charAt(sIndex));
+			if (!Character.isLetterOrDigit(currChar))
+				continue;
+
+			while (((lIndex >= 0) && (Character.toLowerCase(longForm.charAt(lIndex)) != currChar))
+					|| ((sIndex == 0) && (lIndex > 0) && (Character.isLetterOrDigit(longForm.charAt(lIndex - 1)))))
+				lIndex--;
+			if (lIndex < 0)
+				return "";
+			lIndex--;
+		}
+
+		lIndex = longForm.lastIndexOf(" ", lIndex) + 1;
+		longForm = longForm.substring(lIndex);
+
+		return longForm;
+	}
 }

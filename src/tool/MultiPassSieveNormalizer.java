@@ -143,29 +143,16 @@ public class MultiPassSieveNormalizer {
     /**
      * Creates a list of Document objects corresponding 1-1 with each file in the
      * given directory
+     * @throws Exception 
      */
-    private List<Document> getDataSet(File dir) throws IOException {
+    private List<Document> getDataSet(File dir) throws Exception {
         List<Document> dataset = new ArrayList<>();
         for (File file : dir.listFiles()) {
             // Only interested in .concept files, ignore .txt note files
             if (!file.toString().contains(".concept"))
                 continue;
 
-            File conceptFileAsTxt = new File(file.toString().replace(".concept", ".txt"));
-            Document doc = new Document(conceptFileAsTxt, Util.read(conceptFileAsTxt));
-
-            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    line = line.trim();
-                    String[] tokens = line.split("\\|\\|");
-                    doc.addMention(tokens);
-                }
-            } catch (Exception e) {
-                System.out.println("ERROR: Failed to read " + file.toString());
-                throw e;
-            }
-            dataset.add(doc);
+            dataset.add(new Document(file));
         }
         return dataset;
     }
