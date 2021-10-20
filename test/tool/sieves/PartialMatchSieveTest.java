@@ -33,7 +33,6 @@ public class PartialMatchSieveTest {
 
 	@Test
 	public void nonUniqueTokenTest() {
-		var cui = new Exception().getStackTrace()[0].getMethodName();
 		terminology.loadConceptMaps("nonunique term", "bar");
 		terminology.loadConceptMaps("nonunique name", "baz");
 		var mention = new Mention("nonunique",null,null,null);
