@@ -45,7 +45,7 @@ public class PartialMatchSieve extends Sieve {
      * @param mention
      */
     public String apply(Mention mention) {
-        String name = mention.nameExpansion.equals("") ? mention.nameExpansion : mention.name;
+        String name = mention.nameExpansion != null && mention.nameExpansion.equals("") ? mention.nameExpansion : mention.name;
         var cuis = new HashMap<String, Integer>();
 
         for (String token : name.split("\\s+")) {
