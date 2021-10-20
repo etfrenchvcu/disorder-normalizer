@@ -18,21 +18,22 @@ public class DocumentTest {
 
 	@Test
 	public void textTest() {
-		var text = "Myotonic dystrophy (DM), the most prevalent muscular disorder in adults.";
+		var text = "Made Up Disease (MUD) is bad";
 		assertEquals(text, doc.text);
 	}
 	
 	@Test
 	public void abbreviationMapTest() {
 		assertTrue(doc.abbreviationMap.size() > 0);
-		assertEquals("myotonic dystrophy", doc.abbreviationMap.get("dm"));
+		assertEquals("made up disease", doc.abbreviationMap.get("mud"));
 	}
 	
 	@Test
 	public void mentionsTest() {
-		assertEquals(2, doc.mentions.size());
+		assertEquals(1, doc.mentions.size());
 		var m = doc.mentions.get(0);
-		assertEquals("myotonic dystrophy", m.name);
-		assertEquals("0|18", m.indexes);
+		assertEquals("made up disease", m.name);
+		assertEquals("0|1", m.indexes);
+		assertEquals("cui", m.getGoldCui());
 	}
 }

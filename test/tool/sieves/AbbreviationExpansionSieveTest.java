@@ -1,7 +1,10 @@
 package tool.sieves;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.junit.Before;
@@ -14,31 +17,40 @@ import tool.util.Mention;
 import tool.util.Terminology;
 
 public class AbbreviationExpansionSieveTest {
-	String goldCui = "cui";
 	Terminology terminology;
 	HashListMap normalizedNameToCuiListMap;
-	AbbreviationExpansionSieve sieve;
-	Document doc;
 
-//	@Before
-//	public void setUp() throws Exception {
-//		terminology = new Terminology(new ArrayList<String>());
-//		normalizedNameToCuiListMap = new HashListMap();
-//
-//		terminology.loadConceptMaps("name", goldCui);
-//		sieve = new AbbreviationExpansionSieve(terminology, terminology, normalizedNameToCuiListMap);
-//	}
-//
-//	@Test
-//	public void apply_Match() {
-//		var mention = new Mention("name",null,null,null);
-//		assertEquals(goldCui, sieve.apply(mention));
-//	}
-//
-//	@Test
-//	public void apply_Fail() {
-//		var mention = new Mention("other_name",null,null,null);
-//		assertNotEquals(goldCui, sieve.apply(mention));
-//	}
+	@Before
+	public void setUp() throws Exception {
+		var empty = new ArrayList<String>();
+		terminology = new Terminology(empty);
+		normalizedNameToCuiListMap = new HashListMap();
+
+		normalizedNameToCuiListMap.addKeyPair("made up disease", "c001");
+		normalizedNameToCuiListMap.addKeyPair("attention deficit disorder", "c002");
+
+	}
+
+	// Tests using abbreviation from document.
+	@Test
+	public void fromDocument() throws Exception {
+		var empty = new ArrayList<String>();
+		var doc = new Document(new File("test/sample.concept"));
+		var sieve = new AbbreviationExpansionSieve(new Terminology(empty), new Terminology(empty),
+				normalizedNameToCuiListMap, empty);
+		var mention = new Mention("MUD", null, null, null);
+		assertEquals("c001", sieve.apply(mention, doc));
+	}
+
+	// Tests using abbreviation from abbreviation file.
+	@Test
+	public void fromAbbreviationFile() throws IOException {
+		var empty = new ArrayList<String>();
+		var doc = new Document();
+		var sieve = new AbbreviationExpansionSieve(new Terminology(empty), new Terminology(empty),
+				normalizedNameToCuiListMap, empty);
+		var mention = new Mention("add", null, null, null);
+		assertEquals("c002", sieve.apply(mention, doc));
+	}
 
 }

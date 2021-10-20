@@ -44,7 +44,7 @@ public class AbbreviationExpansionSieve extends Sieve {
 
     /**
      * Checks for an exact match in one of the dictionaries after expanding
-     * abbrevations in the mention text.
+     * abbreviations in the mention text.
      * 
      * @param mention
      */
