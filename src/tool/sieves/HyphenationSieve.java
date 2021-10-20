@@ -42,10 +42,10 @@ public class HyphenationSieve extends Sieve {
         List<String> allPermutations = new ArrayList<>();
 
         for (String name : mention.namePermutations) {
-            // Replace digits with words.
+            // Add hyphens.
             allPermutations.addAll(hyphenateName(name));
 
-            // Replace words with digits.
+            // Remove hyphens.
             allPermutations.addAll(dehyphenateString(name));
         }
 

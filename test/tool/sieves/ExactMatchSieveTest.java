@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
-import tool.sieves.ExactMatchSieve;
 import tool.util.HashListMap;
 import tool.util.Mention;
 import tool.util.Terminology;

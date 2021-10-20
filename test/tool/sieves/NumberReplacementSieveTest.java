@@ -10,31 +10,31 @@ import tool.util.HashListMap;
 import tool.util.Mention;
 import tool.util.Terminology;
 
-public class PrepositionalTransformSieveTest {
+public class NumberReplacementSieveTest {
 	Terminology terminology;
 	HashListMap normalizedNameToCuiListMap;
-	PrepositionalTransformSieve sieve;
+	NumberReplacementSieve sieve;
 
 	@Before
 	public void setUp() throws Exception {
 		terminology = new Terminology(new ArrayList<String>());
 		normalizedNameToCuiListMap = new HashListMap();
-		sieve = new PrepositionalTransformSieve(terminology, terminology, normalizedNameToCuiListMap);
+		sieve = new NumberReplacementSieve(terminology, terminology, normalizedNameToCuiListMap);
 	}
 
 	@Test
-	public void inversionTest() {
+	public void numberToWordTest() {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
-		terminology.loadConceptMaps("breast cancer", cui);
-		var mention = new Mention("cancer of breast",null,null,null);
+		terminology.loadConceptMaps("type 2 diabetes", cui);
+		var mention = new Mention("Type II diabetes",null,null,null);
 		assertEquals(cui, sieve.apply(mention));
 	}
 
 	@Test
-	public void insertionTest() {
+	public void wordToNumberTest() {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
-		terminology.loadConceptMaps("complications with diabetes", cui);
-		var mention = new Mention("diabetes complications",null,null,null);
+		terminology.loadConceptMaps("type two diabetes", cui);
+		var mention = new Mention("Type 2 diabetes",null,null,null);
 		assertEquals(cui, sieve.apply(mention));
 	}
 }
