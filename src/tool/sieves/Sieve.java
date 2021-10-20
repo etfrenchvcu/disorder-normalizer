@@ -96,9 +96,11 @@ public abstract class Sieve {
 
         // Check each name permutation for a CUI match in the dictionary.
         for (String name : namePermutations) {
-            cui = exactMatch(name);            
-            if (!cui.equals(""))
+            var match = exactMatch(name);            
+            if (!match.equals("")) {
+                cui = match;
                 matches++;
+            }
         }
 
         // Return only unambiguous CUIs.
