@@ -6,6 +6,7 @@ package tool.util;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class Document {
 
 		// Read corresponding .txt file.
 		var correspondingTxtFile = new File(annotationFile.toString().replace(".concept", ".txt"));
-		this.text = Util.read(correspondingTxtFile);
+		this.text = read(correspondingTxtFile);
 
 		loadMentions(annotationFile);
 		abbreviationMap = getTextAbbreviationExpansionMapFromFile(correspondingTxtFile);
@@ -78,9 +79,26 @@ public class Document {
 	public void addMention(String[] tokens) {
 		String[] cuis = tokens[4].contains("+") ? tokens[4].split("\\+") : tokens[4].split("\\|");
 		String MeSHorSNOMEDcuis = Terminology.getMeSHorSNOMEDCuis(cuis);
-		List<String> OMIMcuis = Terminology.getOMIMCuis(cuis);
-		Mention mention = new Mention(tokens[3], tokens[1], MeSHorSNOMEDcuis, OMIMcuis);
+		List<String> OMIMcuis = getOMIMCuis(cuis);
+		var name = Util.correctSpelling(tokens[3]);
+		Mention mention = new Mention(name, tokens[1], MeSHorSNOMEDcuis, OMIMcuis);
 		mentions.add(mention);
+	}
+
+	/**
+	 * Parses out OMIM CUIs. This may only be relevant for NCBI?
+	 * @param cuis
+	 * @return
+	 */
+	private List<String> getOMIMCuis(String[] cuis) {
+		List<String> OMIMcuis = new ArrayList<>();
+		for (String cui : cuis) {
+			if (cui.contains("OMIM")) {
+				cui = cui.split(":")[1];
+				Util.addUnique(OMIMcuis, cui);
+			}
+		}
+		return OMIMcuis;
 	}
 
 	/**
@@ -104,7 +122,7 @@ public class Document {
 				if (tokens[i].matches("\\(\\w+(\\-\\w+)?\\)(,|\\.)?") || tokens[i].matches("\\([A-Z]+(;|,|\\.)"))
 					expansionIndex = i - 1;
 				else if (tokens[i].matches("[A-Z]+\\)"))
-					expansionIndex = Util.firstIndexOf(tokens, i, "\\(");
+					expansionIndex = firstIndexOf(tokens, i, "\\(");
 
 				if (expansionIndex == -1)
 					continue;
@@ -124,7 +142,7 @@ public class Document {
 				}
 
 				// TODO: Does it really make sense to add reversed abbreviations?
-				String reversedAbbreviation = Ling.reverse(abbreviation);
+				String reversedAbbreviation = Util.reverse(abbreviation);
 				if (!abbreviationMap.containsKey(reversedAbbreviation)) {
 					setTextAbbreviationExpansionMap(abbreviationMap, tokens, abbreviationLength, reversedAbbreviation,
 							expansionIndex);
@@ -134,6 +152,25 @@ public class Document {
 		input.close();
 
 		return abbreviationMap;
+	}
+
+	/**
+	 * Gets the first index matching regex expression.
+	 * 
+	 * @param tokens
+	 * @param i
+	 * @param pattern
+	 * @return
+	 */
+	private int firstIndexOf(String[] tokens, int i, String pattern) {
+		while (i >= 0) {
+			if (tokens[i].matches(pattern + ".*")) {
+				i = i - 1;
+				return i;
+			}
+			i--;
+		}
+		return -1;
 	}
 
 	/**
@@ -148,12 +185,12 @@ public class Document {
 	private void setTextAbbreviationExpansionMap(Map<String, String> map, String[] tokens, int abbreviationLength,
 			String abbreviation, int expansionIndex) {
 		String expansion = getTentativeExpansion(tokens, expansionIndex, abbreviationLength);
-		
+
 		if (expansion.equals("")) {
 			expansion = getExpansionByHearstAlgorithm(abbreviation, expansion);
 		}
-		
-		expansion = Ling.correctSpelling(expansion).trim().toLowerCase();
+
+		expansion = Util.correctSpelling(expansion).trim().toLowerCase();
 		if (!expansion.equals(""))
 			map.put(abbreviation, expansion);
 	}
@@ -193,5 +230,21 @@ public class Document {
 		longForm = longForm.substring(lIndex);
 
 		return longForm;
+	}
+
+	/**
+	 * Reads file contents into a string object.
+	 * 
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	private String read(File file) throws IOException {
+		byte[] data;
+		try (FileInputStream fis = new FileInputStream(file)) {
+			data = new byte[(int) file.length()];
+			fis.read(data);
+		}
+		return new String(data, "UTF-8");
 	}
 }

@@ -34,6 +34,6 @@ public class DocumentTest {
 		var m = doc.mentions.get(0);
 		assertEquals("made up disease", m.name);
 		assertEquals("0|1", m.indexes);
-		assertEquals("cui", m.getGoldCui());
+		assertEquals("cui", m.goldCui);
 	}
 }

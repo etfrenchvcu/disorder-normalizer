@@ -57,7 +57,7 @@ public class AbbreviationExpansionSieve extends Sieve {
         mention.addPermutation(mention.nameExpansion);
 
         // Set the nameExpansion
-        return exactMatch(mention.nameExpansion);
+        return exactMatch(mention, mention.nameExpansion);
     }
 
     /**

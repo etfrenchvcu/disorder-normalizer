@@ -54,6 +54,6 @@ public class StemmingSieve extends Sieve {
         mention.addPermutationList(stemmedPermutations);
 
         // Try to link permutations to a CUI in one of the dictionaries.
-        return normalize(mention.namePermutations);
+        return normalize(mention);
     }
 }

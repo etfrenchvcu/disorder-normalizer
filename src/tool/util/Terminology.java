@@ -42,7 +42,6 @@ public class Terminology {
         this.stopwords = stopwords;
         stemmer = new Stemmer(stopwords);
         initializeMaps();
-        
 
         if (path.isFile())
             loadTerminologyFile(path);
@@ -51,21 +50,21 @@ public class Terminology {
         else
             throw new Exception("Given path is neither file nor directory: " + path.toString());
     }
-    
+
     /**
      * Dummy constructor for unit testing.
      */
     public Terminology(List<String> stopwords) {
-    	this.stopwords = stopwords;
+        this.stopwords = stopwords;
         stemmer = new Stemmer(stopwords);
-    	initializeMaps();
+        initializeMaps();
     }
-    
+
     /**
      * Initialize maps in constructors.
      */
     private void initializeMaps() {
-    	tokenToNameListMap = new HashListMap();
+        tokenToNameListMap = new HashListMap();
         nameToCuiListMap = new HashListMap();
         simpleNameToCuiListMap = new HashListMap();
         compoundNameToCuiListMap = new HashListMap();
@@ -181,17 +180,6 @@ public class Terminology {
         }
     }
 
-    public static List<String> getOMIMCuis(String[] cuis) {
-        List<String> OMIMcuis = new ArrayList<>();
-        for (String cui : cuis) {
-            if (!cui.contains("OMIM"))
-                continue;
-            cui = cui.split(":")[1];
-            OMIMcuis = Util.setList(OMIMcuis, cui);
-        }
-        return OMIMcuis;
-    }
-
     public static String getMeSHorSNOMEDCuis(String[] cuis) {
         String cuiStr = "";
         for (String cui : cuis) {
@@ -203,41 +191,41 @@ public class Terminology {
     }
 
     public void loadTrainingDataTerminology(File dir) throws IOException {
-        Map<String, List<String>> cuiNamesMap = new HashMap<>();
+        HashListMap cuiNamesMap;
         for (File file : dir.listFiles()) {
             if (!file.toString().contains(".concept"))
                 continue;
-            cuiNamesMap = new HashMap<>();
+            cuiNamesMap = new HashListMap();
             try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     line = line.trim();
                     String[] tokens = line.split("\\|\\|");
-                    String conceptName = Ling.correctSpelling(tokens[3].toLowerCase().trim());
+                    String name = Util.correctSpelling(tokens[3].toLowerCase().trim());
                     String[] cuis = tokens[4].contains("+") ? tokens[4].split("\\+") : tokens[4].split("\\|");
                     String MeSHorSNOMEDcuis = getMeSHorSNOMEDCuis(cuis);
                     if (!MeSHorSNOMEDcuis.equals(""))
-                        loadConceptMaps(conceptName, MeSHorSNOMEDcuis);
-                    setOMIM(tokens[4], MeSHorSNOMEDcuis, conceptName);
+                        loadConceptMaps(name, MeSHorSNOMEDcuis);
+                    setOMIM(tokens[4], MeSHorSNOMEDcuis, name);
                     String cui = !MeSHorSNOMEDcuis.equals("") ? MeSHorSNOMEDcuis : tokens[4].replaceAll("OMIM:", "");
 
-                    cuiNamesMap = Util.setMap(cuiNamesMap, cui, conceptName);
+                    cuiNamesMap.addKeyPair(cui, name);
 
                     // -------------remove-------------------------------
                     HashListMap nameFileListMap = cuiNameFileListMap.get(MeSHorSNOMEDcuis);
                     if (nameFileListMap == null)
                         cuiNameFileListMap.put(MeSHorSNOMEDcuis, nameFileListMap = new HashListMap());
-                    nameFileListMap.addKeyPair(conceptName, tokens[0]);
+                    nameFileListMap.addKeyPair(name, tokens[0]);
                     // -------------remove-------------------------------
 
-                    List<String> simpleConceptNames = getTerminologySimpleNames(conceptName.split("\\s+"));
+                    List<String> simpleConceptNames = getTerminologySimpleNames(name.split("\\s+"));
                     for (String simpleConceptName : simpleConceptNames)
                         simpleNameToCuiListMap.addKeyPair(simpleConceptName, cui);
 
                 }
             }
-            
-            // TODO: Remove this.
+
+            // TODO: This section doesn't make sense...
             var ncbi = true;
             if (ncbi)
                 continue;
@@ -249,10 +237,10 @@ public class Terminology {
                     if (nameTokens.length < 3)
                         continue;
                     if (names.contains(nameTokens[0] + " " + nameTokens[1]))
-                        namesToPrune = Util.setList(namesToPrune, nameTokens[0] + " " + nameTokens[1]);
+                        Util.addUnique(namesToPrune, nameTokens[0] + " " + nameTokens[1]);
                     else if (names
                             .contains(nameTokens[nameTokens.length - 2] + " " + nameTokens[nameTokens.length - 1]))
-                        namesToPrune = Util.setList(namesToPrune,
+                        Util.addUnique(namesToPrune,
                                 nameTokens[nameTokens.length - 2] + " " + nameTokens[nameTokens.length - 1]);
                 }
                 for (String nameToPrune : namesToPrune) {
@@ -274,7 +262,7 @@ public class Terminology {
     private void setCompoundNameTerminology(Terminology terminology, String conceptName, String[] conceptNameTokens,
             String cui) {
         if (conceptName.contains("and/or")) {
-            List<Integer> indexes = Util.getTokenIndexes(conceptNameTokens, "and/or");
+            List<Integer> indexes = getTokenIndexes(conceptNameTokens, "and/or");
             if (indexes.size() == 1) {
                 int index = indexes.get(0);
                 if (conceptName.matches("[a-zA-Z]+, [a-zA-Z]+ and/or [a-zA-Z]+.*")) {
@@ -300,13 +288,31 @@ public class Terminology {
         }
     }
 
+    /**
+     * Get a list of all indexes where the given token appears in the array.
+     * 
+     * @param tokens
+     * @param token
+     * @return
+     */
+    private List<Integer> getTokenIndexes(String[] tokens, String token) {
+        List<Integer> indexes = new ArrayList<>();
+        int i = 0;
+        while (i < tokens.length) {
+            if (tokens[i].equals(token))
+                indexes.add(i);
+            i++;
+        }
+        return indexes;
+    }
+
     private List<String> getTerminologySimpleNames(String[] phraseTokens) {
         List<String> newPhrases = new ArrayList<>();
         if (phraseTokens.length == 3) {
             String newPhrase = phraseTokens[0] + " " + phraseTokens[2];
-            newPhrases = Util.setList(newPhrases, newPhrase);
+            Util.addUnique(newPhrases, newPhrase);
             newPhrase = phraseTokens[1] + " " + phraseTokens[2];
-            newPhrases = Util.setList(newPhrases, newPhrase);
+            Util.addUnique(newPhrases, newPhrase);
         }
         return newPhrases;
     }

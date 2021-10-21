@@ -19,24 +19,31 @@ public class Mention {
     public boolean normalized = false;
     public int normalizingSieveLevel;
     public String normalizingSieveName;
+    public String normalizingSource;
     public List<String> alternateCuis;
     public List<String> namePermutations;
     public String indexes;
+    public List<String> goldOMIMCuis;
+    public String goldCui;
 
-    // private String nameExpansion;
-    private String goldMeSHorSNOMEDCui;
-    private List<String> goldOMIMCuis;
-
-    public Mention(String name, String indexes, String goldMeSHorSNOMEDCui, List<String> goldOMIMCuis) {
+    public Mention(String name, String indexes, String goldCui, List<String> goldOMIMCuis) {
         this.indexes = indexes;
-        this.name = Ling.correctSpelling(name.toLowerCase().trim());
-        this.goldMeSHorSNOMEDCui = goldMeSHorSNOMEDCui;
+        this.name = name.trim().toLowerCase();
+        this.goldCui = goldCui;
         this.goldOMIMCuis = goldOMIMCuis;
         this.normalizingSieveLevel = 0;
 
         // Initialize lists
         namePermutations = new ArrayList<>();
         addPermutation(this.name);
+    }
+
+    /**
+     * Prints tab delimited property values.
+     */
+    public String toString() {
+        return name + "\t" + nameExpansion + "\t" + cui + "\t" + normalized + "\t" + normalizingSieveName + "\t" + 
+        normalizingSource + "\t" + goldCui + "\t" + namePermutations.toString() + "\t" + normalizingSieveLevel;
     }
 
     /**
@@ -60,20 +67,5 @@ public class Mention {
         for (var name : names) {
             addPermutation(name);
         }
-    }
-    
-    public String getGoldMeSHorSNOMEDCui() {
-        return goldMeSHorSNOMEDCui;
-    }
-
-    public List<String> getGoldOMIMCuis() {
-        return goldOMIMCuis;
-    }
-
-    public String getGoldCui() {
-        if (!goldMeSHorSNOMEDCui.equals(""))
-            return goldMeSHorSNOMEDCui;
-        else
-            return goldOMIMCuis.size() == 1 ? goldOMIMCuis.get(0) : goldOMIMCuis.toString();
     }
 }

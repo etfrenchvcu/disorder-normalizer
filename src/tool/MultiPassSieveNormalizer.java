@@ -52,7 +52,7 @@ public class MultiPassSieveNormalizer {
         normalizedNameToCuiListMap = new HashListMap();
 
         // set stopwords, correct spellings, and abbreviations data
-        Ling.setSpellingCorrectionMap(new File("resources/spell-check.txt"));
+        Util.setSpellingCorrectionMap(new File("resources/spell-check.txt"));
 
         // Load training data terminology
         stopwords = loadStopwords();
@@ -60,6 +60,12 @@ public class MultiPassSieveNormalizer {
         trainTerminology = new Terminology(train_data_dir, stopwords);
     }
 
+    /**
+     * Initializes the sieves. TODO: Do this from config file?
+     * 
+     * @return
+     * @throws IOException
+     */
     private ArrayList<Sieve> initializeSieves() throws IOException {
         ArrayList<Sieve> sieves = new ArrayList<Sieve>();
 
@@ -86,10 +92,11 @@ public class MultiPassSieveNormalizer {
         // pass(mention, ++currentSieveLevel);
         // --currentSieveLevel;
         // if (!mention.getCui().equals(""))
-        //     return;
+        // return;
         // // Sieve 10
-        // mention.setCui(this.test_data_dir.toString().contains("ncbi") ? PartialMatchNCBISieve.apply(mention)
-        //         : PartialMatchSieve.apply(mention));
+        // mention.setCui(this.test_data_dir.toString().contains("ncbi") ?
+        // PartialMatchNCBISieve.apply(mention)
+        // : PartialMatchSieve.apply(mention));
         // pass(mention, ++currentSieveLevel);
 
         return sieves;
@@ -107,13 +114,13 @@ public class MultiPassSieveNormalizer {
         // Apply sieve to test data.
         List<Document> test_data = getDataSet(this.test_data_dir);
         for (Document doc : test_data) {
-            HashListMap cuiNamesMap = new HashListMap();
+            HashListMap documentCuiNamesMap = new HashListMap();
 
             for (Mention mention : doc.mentions) {
 
                 // Progressively apply sieves until the mention is linked to a CUI.
                 for (int i = 0; i < max_level; i++) {
-                    var sieveName = sieves.get(i).getClass().getName();
+                    var sieveName = sieves.get(i).getClass().getName().replace("tool.sieves.","");
                     if (sieves.get(i) instanceof AbbreviationExpansionSieve) {
                         // Special case for abbreviation expansion sieve.
                         AbbreviationExpansionSieve sieve = (AbbreviationExpansionSieve) sieves.get(i);
@@ -131,21 +138,22 @@ public class MultiPassSieveNormalizer {
                         break;
                 }
 
-                if (mention.cui.equals(""))
-                    mention.cui = "CUI-less";
+                // if (mention.cui.equals(""))
+                //     mention.cui = "CUI-less";
 
                 // Only add unambiguous CUIs to cuiNamesMap.
                 if (mention.normalized)
-                    cuiNamesMap.addKeyPair(mention.cui, mention.name);
+                    documentCuiNamesMap.addKeyPair(mention.cui, mention.name);
             }
-            resolveAmbiguity(doc, cuiNamesMap);
+            resolveAmbiguity(doc, documentCuiNamesMap);
         }
     }
 
     /**
      * Creates a list of Document objects corresponding 1-1 with each file in the
      * given directory
-     * @throws Exception 
+     * 
+     * @throws Exception
      */
     private List<Document> getDataSet(File dir) throws Exception {
         List<Document> dataset = new ArrayList<>();
@@ -211,7 +219,7 @@ public class MultiPassSieveNormalizer {
                 // Add the normalized mention to the running dictionary.
                 storeNormalizedConcept(mention);
                 mention.normalized = true;
-            }            
+            }
 
             normalizedOrAmbiguous = true;
         }
@@ -231,46 +239,51 @@ public class MultiPassSieveNormalizer {
         normalizedNameToCuiListMap.addKeyPair(mention.nameExpansion, mention.cui);
     }
 
-    private void resolveAmbiguity(Document doc, HashListMap cuiNamesMap) throws IOException {
+    /**
+     * Attempts to resolve ambiguity within a document before scoring performance on a document.
+     * @param doc
+     * @param documentCuiNamesMap
+     * @throws IOException
+     */
+    private void resolveAmbiguity(Document doc, HashListMap documentCuiNamesMap) throws IOException {
         for (Mention mention : doc.mentions) {
-            // If mention was normalized (not by ExactMatchSieve) or definitively CUI-less.
-            if (mention.normalizingSieveLevel != 1 || mention.cui.equals("CUI-less")) {
-                eval.evaluateClassification(mention, doc);
-                // storeNormalizedConcept(mention);
-                continue;
-            }
+            // // If mention was normalized (not by ExactMatchSieve) or definitively CUI-less.
+            // if (!mention.normalizingSieveName.equals("ExactMatchSieve") || mention.cui.equals("CUI-less")) {
+            //     eval.evaluateClassification(mention, doc);
+            //     continue;
+            // }
 
-            //TODO: Handle multiple CUIs, prioritize CUI match in document.
+            // // TODO: Handle multiple CUIs, prioritize CUI match in document.
 
-            // If mention absent or unambiguous in training data.
-            List<String> trainingDataCuis = trainTerminology.nameToCuiListMap.get(mention.name);
-            if (trainingDataCuis == null || trainingDataCuis.size() == 1) {
-                eval.evaluateClassification(mention, doc);
-                // storeNormalizedConcept(mention);
-                continue;
-            }
+            // // If mention absent or unambiguous in training data.
+            // List<String> trainingDataCuis = trainTerminology.nameToCuiListMap.get(mention.name);
+            // if (trainingDataCuis == null || trainingDataCuis.size() == 1) {
+            //     eval.evaluateClassification(mention, doc);
+            //     // storeNormalizedConcept(mention);
+            //     continue;
+            // }
 
-            String[] conceptNameTokens = mention.name.split("\\s+");
-            if (conceptNameTokens.length > 1)
-                mention.cui = "CUI-less";
-            else {
-                int countCUIMatch = 0;
-                for (String cui : trainingDataCuis) {
-                    List<String> names = cuiNamesMap.containsKey(cui) ? cuiNamesMap.get(cui) : new ArrayList<String>();
-                    for (String name : names) {
-                        String[] nameTokens = name.split("\\s+");
-                        if (nameTokens.length == 1)
-                            continue;
-                        if (name.matches(mention.name + " .*")) {
-                            countCUIMatch++;
-                        }
-                    }
-                }
-                if (countCUIMatch > 0)
-                    mention.cui = "CUI-less";
-                // else
-                // storeNormalizedConcept(mention);
-            }
+            // String[] conceptNameTokens = mention.name.split("\\s+");
+            // if (conceptNameTokens.length > 1)
+            //     mention.cui = "CUI-less";
+            // else {
+            //     int countCUIMatch = 0;
+            //     for (String cui : trainingDataCuis) {
+            //         List<String> names = documentCuiNamesMap.containsKey(cui) ? documentCuiNamesMap.get(cui) : new ArrayList<String>();
+            //         for (String name : names) {
+            //             String[] nameTokens = name.split("\\s+");
+            //             if (nameTokens.length == 1)
+            //                 continue;
+            //             if (name.matches(mention.name + " .*")) {
+            //                 countCUIMatch++;
+            //             }
+            //         }
+            //     }
+            //     if (countCUIMatch > 0)
+            //         mention.cui = "CUI-less";
+            //     // else
+            //     // storeNormalizedConcept(mention);
+            // }
             eval.evaluateClassification(mention, doc);
         }
     }

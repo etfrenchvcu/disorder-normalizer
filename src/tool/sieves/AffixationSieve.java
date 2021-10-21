@@ -72,7 +72,7 @@ public class AffixationSieve extends Sieve {
         mention.addPermutationList(allPermutations);
 
         // Try to link permutations to a CUI in one of the dictionaries.
-        return normalize(mention.namePermutations);
+        return normalize(mention);
     }
 
     /**

@@ -13,7 +13,6 @@ import java.util.List;
 
 import tool.util.Document;
 import tool.util.Mention;
-import tool.util.Util;
 
 /**
  *
@@ -29,89 +28,98 @@ public class Evaluation {
 
     /**
      * Constructor.
+     * 
      * @param output_data_dir
+     * @throws IOException
      */
-    public Evaluation(File output_data_dir) {
+    public Evaluation(File output_data_dir) throws IOException {
         this.output_data_dir = output_data_dir;
+
+        // Wipe old .concept output files
+        for (File file : output_data_dir.listFiles())
+            if (file.getName().contains(".concept"))
+                file.delete();
+
+        // Set up global results file
+        FileOutputStream results = new FileOutputStream(output_data_dir.toPath() + "/results.txt", false);
+        var header = ("filename\tname\tnameExpansion\tprediction\tnormalized\tnormalizingSieveName\tnormalizingSource\tgoldCui\tnamePermutations\tnormalizingSieveLevel\n")
+                .getBytes();
+        results.write(header);
+        results.close();
     }
-    
+
     public void incrementTotal() {
         totalNames++;
     }
-    
+
     public void incrementTP() {
         tp++;
     }
-        
+
     public void incrementFP() {
         fp++;
     }
-    
-    public void evaluateClassification(Mention mention, Document concepts) throws IOException {
-        // Don't evaluate CUI-less 
-        if(mention.cui.equals("CUI-less"))
+
+    public void evaluateClassification(Mention mention, Document doc) throws IOException {
+        // Don't evaluate CUI-less?
+        if (mention.cui.equals("CUI-less"))
             return;
 
         incrementTotal();
-        if ((!mention.getGoldMeSHorSNOMEDCui().equals("") && mention.getGoldMeSHorSNOMEDCui().equals(mention.cui)) ||
-                (!mention.getGoldOMIMCuis().isEmpty() && mention.getGoldOMIMCuis().contains(mention.cui)))
+        if ((!mention.goldCui.equals("") && mention.goldCui.equals(mention.cui))
+                || (!mention.goldOMIMCuis.isEmpty() && mention.goldOMIMCuis.contains(mention.cui)))
             incrementTP();
-        else if (mention.getGoldMeSHorSNOMEDCui().contains("|") && mention.cui.contains("|")) {
-            List<String> gold = new ArrayList<>(Arrays.asList(mention.getGoldMeSHorSNOMEDCui().split("\\|")));
+        else if (mention.goldCui.contains("|") && mention.cui.contains("|")) {
+            List<String> gold = new ArrayList<>(Arrays.asList(mention.goldCui.split("\\|")));
             List<String> predicted = new ArrayList<>(Arrays.asList(mention.cui.split("\\|")));
             gold.removeAll(predicted);
             if (gold.isEmpty()) {
                 incrementTP();
-            }
-            else {
+            } else {
                 incrementFP();
-                printPred(mention, concepts.filename);
             }
-        }
-        else if (mention.alternateCuis != null && !mention.alternateCuis.isEmpty()) {
-            if (!mention.getGoldMeSHorSNOMEDCui().equals("") && mention.alternateCuis.contains(mention.getGoldMeSHorSNOMEDCui())) {
+        } else if (mention.alternateCuis != null && !mention.alternateCuis.isEmpty()) {
+            if (!mention.goldCui.equals("") && mention.alternateCuis.contains(mention.goldCui)) {
                 incrementTP();
-                mention.cui = mention.getGoldMeSHorSNOMEDCui();
-            }
-            else if (!mention.getGoldOMIMCuis().isEmpty() && Util.containsAny(mention.alternateCuis, mention.getGoldOMIMCuis())) {
+                mention.cui = mention.goldCui;
+            } else if (!mention.goldOMIMCuis.isEmpty()
+                    && mention.alternateCuis.stream().anyMatch(x -> mention.goldOMIMCuis.contains(x))) {
+                // getGoldOMIMCuis not empty OR alternateCuis contains anything in
+                // getGoldOMIMCuis.
                 incrementTP();
-                if (mention.getGoldOMIMCuis().size() == 1)
-                    mention.cui = mention.getGoldOMIMCuis().get(0);
-            }
-            else {
+                if (mention.goldOMIMCuis.size() == 1)
+                    mention.cui = mention.goldOMIMCuis.get(0);
+            } else {
                 incrementFP();
-                printPred(mention, concepts.filename);
             }
-        }
-        else {
+        } else {
             incrementFP();
-            printPred(mention, concepts.filename);
         }
-        
-        //write output
-        FileOutputStream output = new FileOutputStream(output_data_dir.toPath()+"/"+concepts.filename.replace(".txt", ".concept"), true);
-        output.write((concepts.filename.replace(".txt", "")+"||"+mention.indexes+"||"+mention.name+"||"+mention.cui+"\n").getBytes());
+
+        // Write to output annotation file.
+        FileOutputStream output = new FileOutputStream(
+                output_data_dir.toPath() + "/" + doc.filename.replace(".txt", ".concept"), true);
+        output.write((doc.filename.replace(".txt", "") + "||" + mention.indexes + "||" + mention.name + "||"
+                + mention.cui + "\n").getBytes());
         output.close();
-        //logger output
-        //Logger.writeLogFile((concepts.filename+"\t"+concept.getIndexes()+"\t"+concept.getName()+"\t"+concept.getCui()+"\t"+concept.getGoldCui()));
+
+        // Write to global results file.
+        FileOutputStream results = new FileOutputStream(output_data_dir.toPath() + "/results.txt", true);
+        results.write((doc.filename + "\t" + mention.toString() + "\n").getBytes());
+        results.close();
     }
 
-    private void printPred(Mention concept, String file) {
-        // String str = String.format("%s: %s #  %s (%s) ", file, concept.getGoldMeSHorSNOMEDCui(), concept.name, concept.cui);
-        // System.out.println(str);
-    }
-    
     public void computeAccuracy() {
-        accuracy = (double)tp/(double)totalNames;
+        accuracy = (double) tp / (double) totalNames;
     }
-    
+
     public void printResults() {
         System.out.println("*********************");
-        System.out.println("Total Names: "+totalNames);
-        System.out.println("True Normalizations: "+tp);
-        System.out.println("False Normalizations: "+fp);
-        System.out.println("Accuracy: "+accuracy);
+        System.out.println("Total Names: " + totalNames);
+        System.out.println("True Normalizations: " + tp);
+        System.out.println("False Normalizations: " + fp);
+        System.out.println("Accuracy: " + accuracy);
         System.out.println("*********************");
     }
-    
+
 }

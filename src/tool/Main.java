@@ -4,9 +4,10 @@
  */
 package tool;
 
+import java.io.BufferedReader;
 import java.io.File;
-
-import tool.util.Util;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  *
@@ -34,7 +35,7 @@ public class Main {
             if (new File(args[0]).isDirectory())
                 training_data_dir = new File(args[0]);
             else
-                Util.throwIllegalDirectoryException(args[0]);
+                throwIllegalDirectoryException(args[0]);
 
             // Parse test directory.
             if (new File(args[1]).isDirectory()) {
@@ -42,13 +43,13 @@ public class Main {
                 output_data_dir = new File(test_data_dir.toString().replace(test_data_dir.getName(), "output"));
                 output_data_dir.mkdirs();
             } else
-                Util.throwIllegalDirectoryException(args[1]);
+                throwIllegalDirectoryException(args[1]);
 
             // Parse terminology file location.
             if (new File(args[2]).isFile()) {
                 standardTerminologyFile = new File(args[2]);
             } else
-                Util.throwIllegalFileException(args[2]);
+                throwIllegalFileException(args[2]);
 
             maxSieveLevel = Integer.parseInt(args[3]);
         } else {
@@ -71,10 +72,57 @@ public class Main {
         }
 
         Evaluation eval = new Evaluation(output_data_dir);
-        multiPassSieve = new MultiPassSieveNormalizer(training_data_dir, test_data_dir, eval, maxSieveLevel, standardTerminologyFile);
+        multiPassSieve = new MultiPassSieveNormalizer(training_data_dir, test_data_dir, eval, maxSieveLevel,
+                standardTerminologyFile);
         multiPassSieve.run();
         eval.computeAccuracy();
         eval.printResults();
     }
 
+    /**
+     * Exception logic for invalid directory argument.
+     * @param name
+     * @throws IOException
+     */
+    private static void throwIllegalDirectoryException(String name) throws IOException {
+        System.out.println("Input Parameter Exception --> " + name + " is not a directory");
+        var directory = new File(name);
+
+        // Validate files in directory
+        for (File file : directory.listFiles()) {
+            if (file.toString().endsWith(".txt"))
+                continue;
+            BufferedReader in = new BufferedReader(new FileReader(file));
+            while (in.ready()) {
+                String s = in.readLine().trim();
+                if (s.split("\\|\\|").length != 5) {
+                    System.out.println("Input Data Exception --> Check concept data file: " + file.toString());
+                    System.out.println("Every line in file must have the following five main fields");
+                    System.out.println("textfilename||concept_name_indexes||type||concept_name||normalized_identifier");
+                    System.out.println("Multiple values within a field are delimited by \"|\"");
+                    System.out.println(
+                            "Only two fields \"concept_name_indexes\" and \"normalized_indentifier\" can have multiple values");
+                    System.exit(1);
+                }
+            }
+            in.close();
+
+            if (!new File(file.toString().replace(".concept", ".txt")).exists()) {
+                System.out.println(
+                        "Input Data Exception --> Text data file for concept file: " + file.toString() + " is absent");
+                System.exit(1);
+            }
+        }
+
+        System.exit(1);
+    }
+
+    /**
+     * Exception logic for invalid file argument.
+     * @param name
+     */
+    private static void throwIllegalFileException(String name) {
+        System.out.println("Input Parameter Exception --> " + name + " is not a file");
+        System.exit(1);
+    }
 }

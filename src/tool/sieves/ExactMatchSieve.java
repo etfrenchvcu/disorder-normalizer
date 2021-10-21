@@ -28,6 +28,6 @@ public class ExactMatchSieve extends Sieve {
      * Checks for an exact match in one of the dictionaries for the raw (spelling corrected) mention text.
      */
     public String apply(Mention mention) {
-        return exactMatch(mention.name);
+        return exactMatch(mention, mention.name);
     }
 }
