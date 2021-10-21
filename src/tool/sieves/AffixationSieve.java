@@ -261,9 +261,12 @@ public class AffixationSieve extends Sieve {
 
             // Suffixes without pair are removed it instead of replacing.
             suffixMap.addKeyPair(tokens[0], value);
+            if (!value.equals(""))
+                suffixMap.addKeyPair(value, tokens[0]);
 
             // Update maxSuffixLength if necessary.
             maxSuffixLength = Math.max(maxSuffixLength, tokens[0].length());
+            maxSuffixLength = Math.max(maxSuffixLength, value.length());
         }
         in.close();
     }
@@ -282,9 +285,12 @@ public class AffixationSieve extends Sieve {
             String[] tokens = s.split("\\|\\|");
             String value = tokens.length == 1 ? "" : tokens[1];
             prefixMap.put(tokens[0], value);
+            if (!value.equals(""))
+                prefixMap.put(value, tokens[0]);
 
             // Update maxPrefixLength if necessary.
             maxPrefixLength = Math.max(maxPrefixLength, tokens[0].length());
+            maxPrefixLength = Math.max(maxPrefixLength, value.length());
         }
         in.close();
     }
@@ -303,6 +309,8 @@ public class AffixationSieve extends Sieve {
             String[] tokens = s.split("\\|\\|");
             String value = tokens.length == 1 ? "" : tokens[1];
             affixMap.put(tokens[0], value);
+            if (!value.equals(""))
+                prefixMap.put(value, tokens[0]);
         }
         in.close();
     }

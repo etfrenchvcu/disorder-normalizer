@@ -16,7 +16,9 @@ public class Mention {
     public String name;
     public String nameExpansion;
     public String cui;
+    public boolean normalized = false;
     public int normalizingSieveLevel;
+    public String normalizingSieveName;
     public List<String> alternateCuis;
     public List<String> namePermutations;
     public String indexes;

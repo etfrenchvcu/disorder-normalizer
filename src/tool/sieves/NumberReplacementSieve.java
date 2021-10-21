@@ -13,7 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import tool.util.*;
+import tool.util.HashListMap;
+import tool.util.Mention;
+import tool.util.Terminology;
 
 /**
  * Number Replacement Sieve

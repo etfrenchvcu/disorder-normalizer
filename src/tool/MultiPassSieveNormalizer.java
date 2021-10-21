@@ -113,7 +113,7 @@ public class MultiPassSieveNormalizer {
 
                 // Progressively apply sieves until the mention is linked to a CUI.
                 for (int i = 0; i < max_level; i++) {
-
+                    var sieveName = sieves.get(i).getClass().getName();
                     if (sieves.get(i) instanceof AbbreviationExpansionSieve) {
                         // Special case for abbreviation expansion sieve.
                         AbbreviationExpansionSieve sieve = (AbbreviationExpansionSieve) sieves.get(i);
@@ -127,14 +127,16 @@ public class MultiPassSieveNormalizer {
 
                     // Drop out if we successfully normalize the mention
                     // TODO: We can probably drop out if a CUI is ambiguous in normalize step.
-                    if (checkNormalized(mention, i + 1))
+                    if (checkNormalizedOrAmbiguous(mention, i + 1, sieveName))
                         break;
                 }
 
                 if (mention.cui.equals(""))
                     mention.cui = "CUI-less";
 
-                cuiNamesMap.addKeyPair(mention.cui, mention.name);
+                // Only add unambiguous CUIs to cuiNamesMap.
+                if (mention.normalized)
+                    cuiNamesMap.addKeyPair(mention.cui, mention.name);
             }
             resolveAmbiguity(doc, cuiNamesMap);
         }
@@ -182,8 +184,8 @@ public class MultiPassSieveNormalizer {
      * @param level
      * @return
      */
-    private boolean checkNormalized(Mention mention, int level) {
-        boolean normalized = false;
+    private boolean checkNormalizedOrAmbiguous(Mention mention, int level, String normalizingSieve) {
+        boolean normalizedOrAmbiguous = false;
         if (!mention.cui.equals("")) {
             // TODO: Don't always return the list of alternate CUIs if there's another
             // option
@@ -197,20 +199,24 @@ public class MultiPassSieveNormalizer {
                 alternateCuis.addAll(standardTerminology.cuiAlternateCuiMap.get(mention.cui));
             }
 
-            // Set alternate CUIs on the mention
+            // Set alternate CUIs on the mention (still for compound annotations)
             // TODO: make sure these are distinct and !="" upstream
             mention.alternateCuis = alternateCuis;
 
-            // Set the sieve level at which the mention was normalized.
+            // Set the sieve level at which the mention was normalized/ambiguous.
             mention.normalizingSieveLevel = level;
+            mention.normalizingSieveName = normalizingSieve;
 
-            // Add the normalized mention to the running dictionary.
-            storeNormalizedConcept(mention);
+            if (!mention.cui.contains(",")) {
+                // Add the normalized mention to the running dictionary.
+                storeNormalizedConcept(mention);
+                mention.normalized = true;
+            }            
 
-            normalized = true;
+            normalizedOrAmbiguous = true;
         }
 
-        return normalized;
+        return normalizedOrAmbiguous;
     }
 
     /**
@@ -225,24 +231,26 @@ public class MultiPassSieveNormalizer {
         normalizedNameToCuiListMap.addKeyPair(mention.nameExpansion, mention.cui);
     }
 
-    private void resolveAmbiguity(Document document, HashListMap cuiNamesMap) throws IOException {
-        for (Mention mention : document.mentions) {
+    private void resolveAmbiguity(Document doc, HashListMap cuiNamesMap) throws IOException {
+        for (Mention mention : doc.mentions) {
+            // If mention was normalized (not by ExactMatchSieve) or definitively CUI-less.
             if (mention.normalizingSieveLevel != 1 || mention.cui.equals("CUI-less")) {
-                eval.evaluateClassification(mention, document);
+                eval.evaluateClassification(mention, doc);
+                // storeNormalizedConcept(mention);
+                continue;
+            }
+
+            //TODO: Handle multiple CUIs, prioritize CUI match in document.
+
+            // If mention absent or unambiguous in training data.
+            List<String> trainingDataCuis = trainTerminology.nameToCuiListMap.get(mention.name);
+            if (trainingDataCuis == null || trainingDataCuis.size() == 1) {
+                eval.evaluateClassification(mention, doc);
                 // storeNormalizedConcept(mention);
                 continue;
             }
 
             String[] conceptNameTokens = mention.name.split("\\s+");
-
-            // Get matches from train data
-            List<String> trainingDataCuis = trainTerminology.nameToCuiListMap.get(mention.name);
-            if (trainingDataCuis == null || trainingDataCuis.size() == 1) {
-                eval.evaluateClassification(mention, document);
-                // storeNormalizedConcept(mention);
-                continue;
-            }
-
             if (conceptNameTokens.length > 1)
                 mention.cui = "CUI-less";
             else {
@@ -263,7 +271,7 @@ public class MultiPassSieveNormalizer {
                 // else
                 // storeNormalizedConcept(mention);
             }
-            eval.evaluateClassification(mention, document);
+            eval.evaluateClassification(mention, doc);
         }
     }
 

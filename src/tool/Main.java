@@ -30,16 +30,21 @@ public class Main {
 
         // Parse input args
         if (args.length == 4) {
+            // Parse training directory
             if (new File(args[0]).isDirectory())
                 training_data_dir = new File(args[0]);
             else
                 Util.throwIllegalDirectoryException(args[0]);
+
+            // Parse test directory.
             if (new File(args[1]).isDirectory()) {
                 test_data_dir = new File(args[1]);
                 output_data_dir = new File(test_data_dir.toString().replace(test_data_dir.getName(), "output"));
                 output_data_dir.mkdirs();
             } else
                 Util.throwIllegalDirectoryException(args[1]);
+
+            // Parse terminology file location.
             if (new File(args[2]).isFile()) {
                 standardTerminologyFile = new File(args[2]);
             } else
@@ -66,8 +71,7 @@ public class Main {
         }
 
         Evaluation eval = new Evaluation(output_data_dir);
-        multiPassSieve = new MultiPassSieveNormalizer(training_data_dir, test_data_dir, eval, maxSieveLevel,
-                standardTerminologyFile);
+        multiPassSieve = new MultiPassSieveNormalizer(training_data_dir, test_data_dir, eval, maxSieveLevel, standardTerminologyFile);
         multiPassSieve.run();
         eval.computeAccuracy();
         eval.printResults();

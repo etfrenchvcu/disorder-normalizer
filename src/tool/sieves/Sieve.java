@@ -4,6 +4,7 @@
  */
 package tool.sieves;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -86,26 +87,24 @@ public abstract class Sieve {
 
     /**
      * Check the list of name permutations for a match in one of the dictionaries.
-     * Currently only returns a CUI if there is exactly one match.
+     * Return a unique list of matches.
      * @param namePermutations
      * @return cui
      */
     public String normalize(List<String> namePermutations) {
-        int matches = 0;
-        String cui = "";
+        List<String> cuis = new ArrayList<>();
 
         // Check each name permutation for a CUI match in the dictionary.
         for (String name : namePermutations) {
-            cui = exactMatch(name);            
-            if (!cui.equals(""))
-                matches++;
+            var match = exactMatch(name);            
+            if (!match.equals("") && !cuis.contains(match)) {
+                cuis.add(match);
+            }
         }
 
-        // Return only unambiguous CUIs.
-        //TODO: Check for exactly one distinct CUI rather than matches. Add permutations to the dictionary.
-        if (matches==1)
-            return cui;
-        return "";
+        // Return unique CUIs.
+        var result = String.join(",", cuis);
+        return result;
     }
     
 }

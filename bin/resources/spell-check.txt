@@ -1,0 +1,37 @@
+abcess||abscess
+abdominla||abdominal
+adomen||abdomen
+arrrest||arrest
+atelctasis||atelectasis
+atrialfibrillation||atrial fibrillation
+bactermia||bacteremia
+cerebeller||cerebellar
+cirrohsis||cirrhosis
+collectionan||collection
+congenitcal||congenital
+conolidation||consolidation
+delerium||delirium
+dispress||distress
+dysarthira||dysarthria
+edamatous||edematous
+fist||first
+forhead||forehead
+hemmorhage||haemorrhage
+hemorrhage||haemorrhage
+hepatosplenomegally||hepatosplenomegaly
+hernation||herniation
+hyperpigementation||hyperpigmentation
+illeus||ileus
+leukaemia||leukemia
+le||leg
+occlussion||occlusion
+parasthesias||paresthesias
+pneumococcl||pneumococcal
+pnuemonia||pneumonia
+processess||processes
+smallbowel||small bowel
+sytem||system
+three||triple
+tumours||tumors
+tumour||tumor
+withdrawel||withdrawal

@@ -1,7 +1,6 @@
 package tool.sieves;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +9,6 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
-import tool.sieves.AbbreviationExpansionSieve;
 import tool.util.Document;
 import tool.util.HashListMap;
 import tool.util.Mention;
