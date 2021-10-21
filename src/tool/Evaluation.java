@@ -42,7 +42,7 @@ public class Evaluation {
 
         // Set up global results file
         FileOutputStream results = new FileOutputStream(output_data_dir.toPath() + "/results.txt", false);
-        var header = ("filename\tname\tnameExpansion\tprediction\tnormalized\tnormalizingSieveName\tnormalizingSource\tgoldCui\tnamePermutations\tnormalizingSieveLevel\n")
+        var header = ("filename\tname\tnameExpansion\tprediction\tnormalized\tnormalizingSieveName\tnormalizingSource\tgoldCui\tnamePermutations\tnormalizingSieveLevel\tgoldNames\n")
                 .getBytes();
         results.write(header);
         results.close();
@@ -105,7 +105,7 @@ public class Evaluation {
 
         // Write to global results file.
         FileOutputStream results = new FileOutputStream(output_data_dir.toPath() + "/results.txt", true);
-        results.write((doc.filename + "\t" + mention.toString() + "\n").getBytes());
+        results.write((doc.filename.replace(".concept", "") + "\t" + mention.toString() + "\n").getBytes());
         results.close();
     }
 

@@ -25,12 +25,14 @@ public class Mention {
     public String indexes;
     public List<String> goldOMIMCuis;
     public String goldCui;
+    public List<String> goldNames;
 
     public Mention(String name, String indexes, String goldCui, List<String> goldOMIMCuis) {
         this.indexes = indexes;
         this.name = name.trim().toLowerCase();
         this.goldCui = goldCui;
         this.goldOMIMCuis = goldOMIMCuis;
+        this.goldNames = new ArrayList<String>();
         this.normalizingSieveLevel = 0;
 
         // Initialize lists
@@ -43,7 +45,7 @@ public class Mention {
      */
     public String toString() {
         return name + "\t" + nameExpansion + "\t" + cui + "\t" + normalized + "\t" + normalizingSieveName + "\t" + 
-        normalizingSource + "\t" + goldCui + "\t" + namePermutations.toString() + "\t" + normalizingSieveLevel;
+        normalizingSource + "\t" + goldCui + "\t" + namePermutations.toString() + "\t" + normalizingSieveLevel + "\t" + namePermutations.toString();
     }
 
     /**
