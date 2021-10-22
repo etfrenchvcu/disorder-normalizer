@@ -48,7 +48,7 @@ public class AbbreviationExpansionSieve extends Sieve {
      * 
      * @param mention
      */
-    public String apply(Mention mention, Document doc) {
+    public void apply(Mention mention, Document doc) {
         // This uses an expansion created from the corresponding annotation file and the
         // global abbreviation file.
         mention.nameExpansion = getAbbreviationExpansion(doc, mention);
@@ -57,13 +57,19 @@ public class AbbreviationExpansionSieve extends Sieve {
         mention.addPermutation(mention.nameExpansion);
 
         // Set the nameExpansion
-        return exactMatch(mention, mention.nameExpansion);
+        mention.cui = exactMatch(mention, mention.nameExpansion);
+
+        if(!mention.cui.equals("")) {
+            mention.normalized = true;
+            normalizedNameToCuiListMap.addKeyPair(mention.name, mention.cui);
+            normalizedNameToCuiListMap.addKeyPair(mention.nameExpansion, mention.cui);
+        }
     }
 
     /**
      * Only here to implement the abstract.
      */
-    public String apply(Mention mention) throws Exception {
+    public void apply(Mention mention) throws Exception {
         throw new Exception("Use apply(Mention mention, Document doc).");
     }
 

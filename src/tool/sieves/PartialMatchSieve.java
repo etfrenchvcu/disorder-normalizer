@@ -5,6 +5,7 @@
 package tool.sieves;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Map;
 import tool.util.HashListMap;
 import tool.util.Mention;
 import tool.util.Terminology;
+import tool.util.Util;
 
 /**
  * Partial Match Sieve.
@@ -44,9 +46,11 @@ public class PartialMatchSieve extends Sieve {
      * 
      * @param mention
      */
-    public String apply(Mention mention) {
-        String name = mention.nameExpansion != null && mention.nameExpansion.equals("") ? mention.nameExpansion : mention.name;
+    public void apply(Mention mention) {
+        String name = mention.nameExpansion != null && mention.nameExpansion.equals("") ? mention.nameExpansion
+                : mention.name;
         var cuis = new HashMap<String, Integer>();
+        var names = new ArrayList<String>();
 
         for (String token : name.split("\\s+")) {
             // Skip stopwords.
@@ -54,12 +58,12 @@ public class PartialMatchSieve extends Sieve {
 
                 // Add CUIs from trainTerminology.
                 if (trainTerminology.tokenToNameListMap.containsKey(token)) {
-                    addCUIsWithToken(token, trainTerminology, cuis);
+                    addCUIsWithToken(token, trainTerminology, cuis, names);
                 }
 
                 // Add CUIs from standardTerminology.
                 if (standardTerminology.tokenToNameListMap.containsKey(token)) {
-                    addCUIsWithToken(token, standardTerminology, cuis);
+                    addCUIsWithToken(token, standardTerminology, cuis, names);
                 }
 
                 // TODO: Add CUIs from normalizedNameToCuiListMap?
@@ -67,11 +71,18 @@ public class PartialMatchSieve extends Sieve {
         }
 
         // return getBestMatchCui(cuis);
-        return cuis.keySet().size() == 1 ? cuis.keySet().iterator().next() : "";
+        if (cuis.keySet().size() > 0) {
+            mention.cui = String.join(",",cuis.keySet());
+            mention.normalized = cuis.keySet().size() == 1;
+
+            if (mention.normalized)
+                normalizedNameToCuiListMap.addKeyPair(names.get(0), mention.cui);
+        }
     }
 
     /**
      * Gets the CUI with the associated with the most tokens in the name.
+     * 
      * @param cuis
      * @return
      */
@@ -99,11 +110,14 @@ public class PartialMatchSieve extends Sieve {
      * @param token
      * @param terminology
      * @param cuis
+     * @param names
      */
-    private void addCUIsWithToken(String token, Terminology terminology, HashMap<String, Integer> cuis) {
+    private void addCUIsWithToken(String token, Terminology terminology, HashMap<String, Integer> cuis,
+            List<String> names) {
 
         for (var candidateName : terminology.tokenToNameListMap.get(token)) {
             var cui = terminology.nameToCuiListMap.get(candidateName).get(0);
+            Util.addUnique(names, candidateName);
 
             // Initialize map if necessary.
             if (!cuis.keySet().contains(cui))

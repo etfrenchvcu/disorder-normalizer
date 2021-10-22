@@ -11,6 +11,7 @@ import java.util.Map;
 import tool.util.HashListMap;
 import tool.util.Mention;
 import tool.util.Terminology;
+import tool.util.Util;
 
 /**
  *
@@ -44,7 +45,7 @@ public abstract class Sieve {
      * @return cui
      * @throws Exception
      */
-    public abstract String apply(Mention mention) throws Exception;
+    public abstract void apply(Mention mention) throws Exception;
 
     public static List<String> getTerminologyNameCuis(Map<String, List<String>> nameToCuiListMap, String name) {
         var cui = nameToCuiListMap.containsKey(name) ? nameToCuiListMap.get(name) : null;
@@ -108,20 +109,31 @@ public abstract class Sieve {
      * @param mention
      * @return cui
      */
-    public String normalize(Mention mention) {
+    public void normalize(Mention mention) {
         List<String> cuis = new ArrayList<>();
+        List<String> names = new ArrayList<>();
 
         // Check each name permutation for a CUI match in the dictionary.
         for (String name : mention.namePermutations) {
             var match = exactMatch(mention, name);
             if (!match.equals("") && !cuis.contains(match)) {
-                cuis.add(match);
+                Util.addUnique(cuis, match);
+                Util.addUnique(names, name);
             }
         }
 
+        if (cuis.size() == 1) {
+            mention.normalized = true;
+            // Add mention name to dictionary if != permutation used to normalize.
+            if (!mention.name.equals(names.get(0)))
+                normalizedNameToCuiListMap.addKeyPair(mention.name, mention.cui);
+
+            // TODO: Should I normalize nameExpansion?
+            // normalizedNameToCuiListMap.addKeyPair(mention.nameExpansion, mention.cui);
+        }
+
         // Return unique CUIs.
-        var result = String.join(",", cuis);
-        return result;
+        mention.cui = String.join(",", cuis);
     }
 
 }

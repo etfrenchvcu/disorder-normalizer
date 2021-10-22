@@ -1,4 +1,4 @@
-package tool.util;
+package test.tool.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -8,12 +8,14 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 
+import tool.util.Document;
+
 public class DocumentTest {
 	Document doc;
 
 	@Before
 	public void setUp() throws Exception {
-		doc = new Document(new File("test/sample.concept"));
+		doc = new Document(new File("src/test/sample.concept"));
 	}
 
 	@Test

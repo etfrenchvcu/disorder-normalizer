@@ -29,6 +29,18 @@ public class Util {
             list.add(value);
     }
 
+    /**
+     * Adds a list of values to a list with duplication.
+     * 
+     * @param list
+     * @param value
+     */
+    public static void addUnique(List<String> list, List<String> values) {
+        for (var value : values) {
+            addUnique(list, value);
+        }
+    }
+
     private static Map<String, String> spellingCorrectionMap = new HashMap<>();
 
     public static void setSpellingCorrectionMap(File file) throws IOException {
@@ -56,6 +68,7 @@ public class Util {
 
     /**
      * Reverses the given string.
+     * 
      * @param string
      * @return
      */

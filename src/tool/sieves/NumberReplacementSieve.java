@@ -50,7 +50,7 @@ public class NumberReplacementSieve extends Sieve {
      * 
      * @param mention
      */
-    public String apply(Mention mention) {
+    public void apply(Mention mention) {
 
         List<String> allPermutations = new ArrayList<>();
 
@@ -66,7 +66,7 @@ public class NumberReplacementSieve extends Sieve {
         mention.addPermutationList(allPermutations);
 
         // Try to link permutations to a CUI in one of the dictionaries.
-        return normalize(mention);
+        normalize(mention);
     }
 
     /**

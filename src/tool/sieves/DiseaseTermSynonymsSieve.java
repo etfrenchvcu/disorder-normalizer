@@ -44,7 +44,7 @@ public class DiseaseTermSynonymsSieve extends Sieve {
      * 
      * @param mention
      */
-    public String apply(Mention mention) {
+    public void apply(Mention mention) {
         List<String> allPermutations = new ArrayList<>();
 
         // Concatenate lists of disorder terms, plural first.
@@ -77,7 +77,7 @@ public class DiseaseTermSynonymsSieve extends Sieve {
         mention.addPermutationList(allPermutations);
 
         // Try to link permutations to a CUI in one of the dictionaries.
-        return normalize(mention);
+        normalize(mention);
     }
 
     /**

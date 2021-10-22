@@ -58,7 +58,7 @@ public class AffixationSieve extends Sieve {
      * 
      * @param mention
      */
-    public String apply(Mention mention) {
+    public void apply(Mention mention) {
         List<String> allPermutations = new ArrayList<>();
 
         for (String name : mention.namePermutations) {
@@ -72,7 +72,7 @@ public class AffixationSieve extends Sieve {
         mention.addPermutationList(allPermutations);
 
         // Try to link permutations to a CUI in one of the dictionaries.
-        return normalize(mention);
+        normalize(mention);
     }
 
     /**

@@ -4,10 +4,13 @@
  */
 package tool.sieves;
 
+import java.util.Arrays;
+
 import tool.util.*;
 
 /**
  * Exact Match Sieve
+ * 
  * @author
  */
 public class ExactMatchSieve extends Sieve {
@@ -25,9 +28,14 @@ public class ExactMatchSieve extends Sieve {
     }
 
     /**
-     * Checks for an exact match in one of the dictionaries for the raw (spelling corrected) mention text.
+     * Checks for an exact match in one of the dictionaries for the raw (spelling
+     * corrected) mention text.
      */
-    public String apply(Mention mention) {
-        return exactMatch(mention, mention.name);
+    public void apply(Mention mention) {
+        mention.cui = exactMatch(mention, mention.name);
+        if (!mention.cui.equals("")) {
+            mention.normalized = true;
+            mention.goldNames = Arrays.asList(mention.name);
+        }
     }
 }

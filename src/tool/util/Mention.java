@@ -15,7 +15,7 @@ public class Mention {
 
     public String name;
     public String nameExpansion;
-    public String cui;
+    public String cui = "";
     public boolean normalized = false;
     public int normalizingSieveLevel;
     public String normalizingSieveName;
@@ -32,10 +32,11 @@ public class Mention {
         this.name = name.trim().toLowerCase();
         this.goldCui = goldCui;
         this.goldOMIMCuis = goldOMIMCuis;
-        this.goldNames = new ArrayList<String>();
         this.normalizingSieveLevel = 0;
 
         // Initialize lists
+        goldNames = new ArrayList<>();
+        alternateCuis = new ArrayList<>();
         namePermutations = new ArrayList<>();
         addPermutation(this.name);
     }

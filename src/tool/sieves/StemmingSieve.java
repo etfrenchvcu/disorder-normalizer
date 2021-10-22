@@ -43,7 +43,7 @@ public class StemmingSieve extends Sieve {
      * 
      * @param mention
      */
-    public String apply(Mention mention) {
+    public void apply(Mention mention) {
 
         List<String> stemmedPermutations = new ArrayList<>();
 
@@ -54,6 +54,6 @@ public class StemmingSieve extends Sieve {
         mention.addPermutationList(stemmedPermutations);
 
         // Try to link permutations to a CUI in one of the dictionaries.
-        return normalize(mention);
+        normalize(mention);
     }
 }
