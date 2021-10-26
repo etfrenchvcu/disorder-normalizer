@@ -46,7 +46,7 @@ public class Mention {
      */
     public String toString() {
         return name + "\t" + nameExpansion + "\t" + cui + "\t" + normalized + "\t" + normalizingSieveName + "\t" + 
-        normalizingSource + "\t" + goldCui + "\t" + namePermutations.toString() + "\t" + normalizingSieveLevel + "\t" + namePermutations.toString();
+        normalizingSource + "\t" + goldCui + "\t" + String.join(",",namePermutations) + "\t" + normalizingSieveLevel + "\t" + String.join(",",goldNames);
     }
 
     /**

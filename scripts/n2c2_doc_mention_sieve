@@ -1,0 +1,11 @@
+,sieve,n,tp,fp,sieve_acc,agg_recall,agg_precision
+1,ExactMatchSieve,949,919,30,0.97,0.97,0.97
+2,AbbreviationExpansionSieve,5,3,2,0.6,0.97,0.97
+3,PrepositionalTransformSieve,3,2,1,0.67,0.97,0.97
+4,Unknown,0,0,0,0.0,0.97,0.97
+5,HyphenationSieve,7,7,0,1.0,0.97,0.97
+6,AffixationSieve,14,9,5,0.64,0.96,0.96
+7,DiseaseTermSynonymsSieve,8,0,8,0.0,0.95,0.95
+8,StemmingSieve,11,5,6,0.45,0.95,0.95
+9,PartialMatchSieve,43,19,24,0.44,0.93,0.93
+10,Total,1698,964,76,-,0.57,0.93

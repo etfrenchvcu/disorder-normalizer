@@ -4,3 +4,5 @@ n2c2-data
 **/output
 bin/*
 .project
+scripts/umls/*.rrf
+scripts/umls/*.txt

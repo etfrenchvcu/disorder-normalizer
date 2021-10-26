@@ -4,9 +4,9 @@
  */
 package tool.sieves;
 
-import java.util.Arrays;
-
-import tool.util.*;
+import tool.util.HashListMap;
+import tool.util.Mention;
+import tool.util.Terminology;
 
 /**
  * Exact Match Sieve
@@ -35,7 +35,6 @@ public class ExactMatchSieve extends Sieve {
         mention.cui = exactMatch(mention, mention.name);
         if (!mention.cui.equals("")) {
             mention.normalized = true;
-            mention.goldNames = Arrays.asList(mention.name);
         }
     }
 }

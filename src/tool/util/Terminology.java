@@ -9,38 +9,31 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
  * @author
  */
 public class Terminology {
-
-    public Stemmer stemmer;
+    boolean usingPartialMatch = true;
     List<String> stopwords;
     public HashListMap tokenToNameListMap;
     public HashListMap nameToCuiListMap;
-    public HashListMap simpleNameToCuiListMap;
-    public HashListMap compoundNameToCuiListMap;
     public HashListMap cuiToNameListMap;
-    public HashListMap stemmedNameToCuiListMap;
-    public HashListMap cuiToStemmedNameListMap;
     public HashListMap cuiAlternateCuiMap;
-    public static Map<String, HashListMap> cuiNameFileListMap;
 
     /**
      * Initializes Terminology object from either a single terminology.txt file or a
      * training data directory. Maps each CUI to multiple names/synonyms.
-     * 
      * @param path
+     * @param stopwords
+     * @param usingPartialMatch
      * @throws Exception
      */
-    public Terminology(File path, List<String> stopwords) throws Exception {
+    public Terminology(File path, List<String> stopwords, boolean usingPartialMatch) throws Exception {
         this.stopwords = stopwords;
-        stemmer = new Stemmer(stopwords);
+        this.usingPartialMatch = usingPartialMatch;
         initializeMaps();
 
         if (path.isFile())
@@ -56,7 +49,6 @@ public class Terminology {
      */
     public Terminology(List<String> stopwords) {
         this.stopwords = stopwords;
-        stemmer = new Stemmer(stopwords);
         initializeMaps();
     }
 
@@ -66,13 +58,8 @@ public class Terminology {
     private void initializeMaps() {
         tokenToNameListMap = new HashListMap();
         nameToCuiListMap = new HashListMap();
-        simpleNameToCuiListMap = new HashListMap();
-        compoundNameToCuiListMap = new HashListMap();
         cuiToNameListMap = new HashListMap();
-        stemmedNameToCuiListMap = new HashListMap();
-        cuiToStemmedNameListMap = new HashListMap();
         cuiAlternateCuiMap = new HashListMap();
-        cuiNameFileListMap = new HashMap<>();
     }
 
     /**
@@ -112,37 +99,23 @@ public class Terminology {
         nameToCuiListMap.addKeyPair(name, cui);
         cuiToNameListMap.addKeyPair(cui, name);
 
-        String stemmedName = stemmer.stem(name);
-        stemmedNameToCuiListMap.addKeyPair(stemmedName, cui);
-        cuiToStemmedNameListMap.addKeyPair(cui, stemmedName);
-
-        // Create a hash map of names keyed on non-stop tokens they contain (used in
-        // PartialMatchSieve).
-        String[] nameTokens = name.split("\\s");
-        for (String token : nameTokens) {
-            if (stopwords.contains(token))
-                continue;
-            tokenToNameListMap.addKeyPair(token, name);
-        }
-
-        // TODO: Remove this.
-        var ncbi = true;
-        if (!ncbi) {
-            setCompoundNameTerminology(this, name, nameTokens, cui);
-        } else if (cui.contains("|")) {
-            nameToCuiListMap.remove(name);
-            stemmedNameToCuiListMap.remove(stemmedName);
-            for (String conceptNameToken : nameTokens) {
-                if (stopwords.contains(conceptNameToken))
-                    continue;
-                tokenToNameListMap.remove(conceptNameToken, name);
+        // Create a hash map of names keyed on non-stop tokens they contain.
+        // Only necessary if using PartialMatchSieve.
+        if(usingPartialMatch) {
+            String[] nameTokens = name.split("\\s");
+            for (String token : nameTokens) {
+                if (!stopwords.contains(token))
+                    tokenToNameListMap.addKeyPair(token, name);
             }
-            compoundNameToCuiListMap.addKeyPair(name, cui);
-        }
-    }
-
-    public void setCompoundNameToCuiListMap(String name, String cui) {
-        compoundNameToCuiListMap.addKeyPair(name, cui);
+    
+            if (cui.contains("|")) {
+                nameToCuiListMap.remove(name);
+                for (String conceptNameToken : nameTokens) {
+                    if (stopwords.contains(conceptNameToken))
+                        tokenToNameListMap.remove(conceptNameToken, name);
+                }
+            }
+        }        
     }
 
     private String get_preferredID_set_altID(String[] identifiers) {
@@ -165,6 +138,13 @@ public class Terminology {
         return preferredID;
     }
 
+    /**
+     * Used for OMIM annotations in NCBI.
+     * 
+     * @param cuis
+     * @param MeSHorSNOMEDcuis
+     * @param conceptName
+     */
     private void setOMIM(String cuis, String MeSHorSNOMEDcuis, String conceptName) {
         if (MeSHorSNOMEDcuis.equals("")) {
             cuis = cuis.replaceAll("OMIM:", "");
@@ -172,10 +152,10 @@ public class Terminology {
         } else {
             String[] cuis_arr = cuis.split("\\|");
             for (String cui : cuis_arr) {
-                if (!cui.contains("OMIM"))
-                    continue;
-                cui = cui.split(":")[1];
-                cuiAlternateCuiMap.addKeyPair(MeSHorSNOMEDcuis, cui);
+                if (cui.contains("OMIM")) {
+                    cui = cui.split(":")[1];
+                    cuiAlternateCuiMap.addKeyPair(MeSHorSNOMEDcuis, cui);
+                }
             }
         }
     }
@@ -210,18 +190,6 @@ public class Terminology {
                     String cui = !MeSHorSNOMEDcuis.equals("") ? MeSHorSNOMEDcuis : tokens[4].replaceAll("OMIM:", "");
 
                     cuiNamesMap.addKeyPair(cui, name);
-
-                    // -------------remove-------------------------------
-                    HashListMap nameFileListMap = cuiNameFileListMap.get(MeSHorSNOMEDcuis);
-                    if (nameFileListMap == null)
-                        cuiNameFileListMap.put(MeSHorSNOMEDcuis, nameFileListMap = new HashListMap());
-                    nameFileListMap.addKeyPair(name, tokens[0]);
-                    // -------------remove-------------------------------
-
-                    List<String> simpleConceptNames = getTerminologySimpleNames(name.split("\\s+"));
-                    for (String simpleConceptName : simpleConceptNames)
-                        simpleNameToCuiListMap.addKeyPair(simpleConceptName, cui);
-
                 }
             }
 
@@ -246,8 +214,6 @@ public class Terminology {
                 for (String nameToPrune : namesToPrune) {
                     nameToCuiListMap.remove(nameToPrune);
                     cuiToNameListMap.get(cui).remove(nameToPrune);
-                    stemmedNameToCuiListMap.remove(stemmer.stem(nameToPrune));
-                    cuiToStemmedNameListMap.get(cui).remove(stemmer.stem(nameToPrune));
                     String[] nameToPruneTokens = nameToPrune.split("\\s+");
                     for (String nameToPruneToken : nameToPruneTokens) {
                         if (stopwords.contains(nameToPruneToken))
@@ -257,63 +223,5 @@ public class Terminology {
                 }
             }
         }
-    }
-
-    private void setCompoundNameTerminology(Terminology terminology, String conceptName, String[] conceptNameTokens,
-            String cui) {
-        if (conceptName.contains("and/or")) {
-            List<Integer> indexes = getTokenIndexes(conceptNameTokens, "and/or");
-            if (indexes.size() == 1) {
-                int index = indexes.get(0);
-                if (conceptName.matches("[a-zA-Z]+, [a-zA-Z]+ and/or [a-zA-Z]+.*")) {
-                    String replacement1 = conceptNameTokens[index - 2].replace(",", "");
-                    String replacement2 = conceptNameTokens[index - 1];
-                    String replacement3 = conceptNameTokens[index + 1];
-                    String phrase = replacement1 + ", " + replacement2 + " " + conceptNameTokens[index] + " "
-                            + replacement3;
-
-                    terminology.setCompoundNameToCuiListMap(conceptName.replace(phrase, replacement1), cui);
-                    terminology.setCompoundNameToCuiListMap(conceptName.replace(phrase, replacement2), cui);
-                    terminology.setCompoundNameToCuiListMap(conceptName.replace(phrase, replacement3), cui);
-                } else {
-                    String replacement1 = conceptNameTokens[index - 1];
-                    String replacement2 = conceptNameTokens.length - 1 == index + 2
-                            ? conceptNameTokens[index + 1] + " " + conceptNameTokens[index + 2]
-                            : conceptNameTokens[index + 1];
-                    String phrase = replacement1 + " " + conceptNameTokens[index] + " " + replacement2;
-                    terminology.setCompoundNameToCuiListMap(conceptName.replace(phrase, replacement1), cui);
-                    terminology.setCompoundNameToCuiListMap(conceptName.replace(phrase, replacement2), cui);
-                }
-            }
-        }
-    }
-
-    /**
-     * Get a list of all indexes where the given token appears in the array.
-     * 
-     * @param tokens
-     * @param token
-     * @return
-     */
-    private List<Integer> getTokenIndexes(String[] tokens, String token) {
-        List<Integer> indexes = new ArrayList<>();
-        int i = 0;
-        while (i < tokens.length) {
-            if (tokens[i].equals(token))
-                indexes.add(i);
-            i++;
-        }
-        return indexes;
-    }
-
-    private List<String> getTerminologySimpleNames(String[] phraseTokens) {
-        List<String> newPhrases = new ArrayList<>();
-        if (phraseTokens.length == 3) {
-            String newPhrase = phraseTokens[0] + " " + phraseTokens[2];
-            Util.addUnique(newPhrases, newPhrase);
-            newPhrase = phraseTokens[1] + " " + phraseTokens[2];
-            Util.addUnique(newPhrases, newPhrase);
-        }
-        return newPhrases;
     }
 }

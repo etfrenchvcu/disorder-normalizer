@@ -69,9 +69,10 @@ public class MultiPassSieveNormalizer {
         Util.setSpellingCorrectionMap(new File("resources/spell-check.txt"));
 
         // Load training data terminology
+        var usingPartialMatch = false;
         stopwords = loadStopwords();
-        standardTerminology = new Terminology(standardTerminologyFile, stopwords);
-        trainTerminology = new Terminology(trainDir, stopwords);
+        standardTerminology = new Terminology(standardTerminologyFile, stopwords, usingPartialMatch);
+        trainTerminology = new Terminology(trainDir, stopwords, usingPartialMatch);
     }
 
     /**
@@ -111,15 +112,19 @@ public class MultiPassSieveNormalizer {
 
         // Apply sieve to test data.
         List<Document> test_data = getDataSet(this.testDir);
-        for (Document doc : test_data) {
-            HashListMap documentCuiNamesMap = new HashListMap();
 
-            for (Mention mention : doc.mentions) {
+        // Progressively apply sieves until the mention is linked to a CUI.
+        for (int i = 0; i < Math.min(maxLevel, sieves.size()); i++) {
+            var sieveName = sieves.get(i).getClass().getName().replace("tool.sieves.", "");
 
-                // Progressively apply sieves until the mention is linked to a CUI.
-                for (int i = 0; i < Math.min(maxLevel, sieves.size()); i++) {
-                    var sieveName = sieves.get(i).getClass().getName().replace("tool.sieves.", "");
-                    if (sieves.get(i) instanceof AbbreviationExpansionSieve) {
+            for (Document doc : test_data) {
+                HashListMap documentCuiNamesMap = new HashListMap();
+
+                for (Mention mention : doc.mentions) {
+                    if (mention.normalized)
+                        continue;
+
+                    if (sieveName.equals("AbbreviationExpansionSieve")) {
                         // Special case for abbreviation expansion sieve.
                         AbbreviationExpansionSieve sieve = (AbbreviationExpansionSieve) sieves.get(i);
                         sieve.apply(mention, doc);
@@ -146,15 +151,36 @@ public class MultiPassSieveNormalizer {
                         }
 
                         // Drop out once we successfully normalize the mention.
-                        break;
+                        // break;
                     }
                 }
+            }
+            // resolveAmbiguity(doc, documentCuiNamesMap);
+        }
+
+        // Evaluate all mentions after completely done.
+        for (Document doc : test_data) {
+            for (Mention mention : doc.mentions) {
+                // Debug only: Find the name corresponding to the gold mention CUI.
+                appendGoldName(mention);
 
                 // This is also called in resolveAmbiguity.
                 // Remove this line if using that method.
                 eval.evaluateClassification(mention, doc);
             }
-            // resolveAmbiguity(doc, documentCuiNamesMap);
+        }
+    }
+
+    private void appendGoldName(Mention mention) {
+        // Find name for gold cui if available.
+        if (standardTerminology.cuiToNameListMap.containsKey(mention.goldCui)) {
+            for (var name : standardTerminology.cuiToNameListMap.get(mention.goldCui))
+                Util.addUnique(mention.goldNames, name);
+        }
+
+        if (trainTerminology.cuiToNameListMap.containsKey(mention.goldCui)) {
+            for (var name : trainTerminology.cuiToNameListMap.get(mention.goldCui))
+                Util.addUnique(mention.goldNames, name);
         }
     }
 
@@ -168,16 +194,6 @@ public class MultiPassSieveNormalizer {
      */
     private void resolveAmbiguity(Document doc, HashListMap documentCuiNamesMap) throws IOException {
         for (Mention mention : doc.mentions) {
-            // Find name for gold cui if available.
-            if (standardTerminology.cuiToNameListMap.containsKey(mention.goldCui)) {
-                for (var name : standardTerminology.cuiToNameListMap.get(mention.goldCui))
-                    Util.addUnique(mention.goldNames, name);
-            }
-
-            if (trainTerminology.cuiToNameListMap.containsKey(mention.goldCui)) {
-                for (var name : trainTerminology.cuiToNameListMap.get(mention.goldCui))
-                    Util.addUnique(mention.goldNames, name);
-            }
 
             eval.evaluateClassification(mention, doc);
             // // If mention was normalized (not by ExactMatchSieve) or definitively

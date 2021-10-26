@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import tool.util.HashListMap;
 import tool.util.Mention;
@@ -80,28 +79,28 @@ public class PartialMatchSieve extends Sieve {
         }
     }
 
-    /**
-     * Gets the CUI with the associated with the most tokens in the name.
-     * 
-     * @param cuis
-     * @return
-     */
-    private String getBestMatchCui(HashMap<String, Integer> cuis) {
-        Map.Entry<String, Integer> bestMatch = null;
+    // /**
+    //  * Gets the CUI with the associated with the most tokens in the name.
+    //  * 
+    //  * @param cuis
+    //  * @return
+    //  */
+    // private String getBestMatchCui(HashMap<String, Integer> cuis) {
+    //     Map.Entry<String, Integer> bestMatch = null;
 
-        for (Map.Entry<String, Integer> entry : cuis.entrySet()) {
-            if (bestMatch == null || entry.getValue().compareTo(bestMatch.getValue()) > 0) {
-                // Initialize or when entry has most CUI hits.
-                bestMatch = entry;
-            } else if (entry.getValue().compareTo(bestMatch.getValue()) == 0
-                    && entry.getKey().length() < bestMatch.getKey().length()) {
-                // Same # CUI hits, but entry is shorter than previous best match.
-                bestMatch = entry;
-            }
-        }
+    //     for (Map.Entry<String, Integer> entry : cuis.entrySet()) {
+    //         if (bestMatch == null || entry.getValue().compareTo(bestMatch.getValue()) > 0) {
+    //             // Initialize or when entry has most CUI hits.
+    //             bestMatch = entry;
+    //         } else if (entry.getValue().compareTo(bestMatch.getValue()) == 0
+    //                 && entry.getKey().length() < bestMatch.getKey().length()) {
+    //             // Same # CUI hits, but entry is shorter than previous best match.
+    //             bestMatch = entry;
+    //         }
+    //     }
 
-        return bestMatch == null ? "" : bestMatch.getKey();
-    }
+    //     return bestMatch == null ? "" : bestMatch.getKey();
+    // }
 
     /**
      * Add CUIs to the list which correspond to a name in the terminology containing
