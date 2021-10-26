@@ -1,0 +1,9 @@
+ExactMatchSieve|1353|1264|89|0.93|0.93|0.93
+AbbreviationExpansionSieve|7|4|3|0.57|0.93|0.93
+PrepositionalTransformSieve|14|12|2|0.86|0.93|0.93
+NumberReplacementSieve|1|0|1|0.0|0.93|0.93
+HyphenationSieve|7|7|0|1.0|0.93|0.93
+AffixationSieve|12|8|4|0.67|0.93|0.93
+DiseaseTermSynonymsSieve|26|3|23|0.12|0.91|0.91
+StemmingSieve|17|8|9|0.47|0.91|0.91
+Total|2062|1306|131|-|0.63|0.91
