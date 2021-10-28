@@ -59,7 +59,7 @@ public class AbbreviationExpansionSieve extends Sieve {
         // Set the nameExpansion
         mention.cui = exactMatch(mention, mention.nameExpansion);
 
-        if(!mention.cui.equals("")) {
+        if(!mention.cui.equals("") && !mention.cui.contains(",")) {
             mention.normalized = true;
             normalizedNameToCuiListMap.addKeyPair(mention.name, mention.cui);
             normalizedNameToCuiListMap.addKeyPair(mention.nameExpansion, mention.cui);

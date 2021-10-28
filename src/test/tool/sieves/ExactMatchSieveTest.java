@@ -16,26 +16,50 @@ import tool.util.Mention;
 import tool.util.Terminology;
 
 public class ExactMatchSieveTest {
-	Terminology terminology;
+	Terminology standard;
+	Terminology train;
 	HashListMap normalizedNameToCuiListMap;
 	ExactMatchSieve sieve;
 
 	@Before
 	public void setUp() throws Exception {
-		terminology = new Terminology(new ArrayList<String>());
+		standard = new Terminology(new ArrayList<String>());
+		train = new Terminology(new ArrayList<String>());
 		normalizedNameToCuiListMap = new HashListMap();
-		sieve = new ExactMatchSieve(terminology, terminology, normalizedNameToCuiListMap);
+		sieve = new ExactMatchSieve(standard, train, normalizedNameToCuiListMap);
 	}
 
 	@Test
-	public void apply_Match() {
+	public void applyMatch() {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
-		terminology.loadConceptMaps("name", cui);
+		standard.loadConceptMaps("name", cui);
 		var mention = new Mention("name", null, null, null);
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
 		assertNull(normalizedNameToCuiListMap.get("name"));
+	}
+
+	@Test
+	public void ambiguousBetweenTerminologies() {
+		var name = new Exception().getStackTrace()[0].getMethodName().toLowerCase();
+		standard.loadConceptMaps(name, "standard_cui");
+		train.loadConceptMaps(name, "train_cui");
+		var mention = new Mention(name, null, null, null);
+		sieve.apply(mention);
+		assertTrue(mention.normalized);
+		assertEquals("train_cui", mention.cui);
+		assertNull(normalizedNameToCuiListMap.get("name"));
+	}
+
+	@Test
+	public void ambiguousWithinTerminology() {
+		var name = new Exception().getStackTrace()[0].getMethodName().toLowerCase();
+		standard.loadConceptMaps(name, "standard_cui1");
+		standard.loadConceptMaps(name, "standard_cui2");
+		var mention = new Mention(name, null, null, null);
+		sieve.apply(mention);
+		assertFalse(mention.normalized);
 	}
 
 	@Test

@@ -33,7 +33,9 @@ public class ExactMatchSieve extends Sieve {
      */
     public void apply(Mention mention) {
         mention.cui = exactMatch(mention, mention.name);
-        if (!mention.cui.equals("")) {
+
+        // Normalized if exactly one CUI was returned, not a list.
+        if (!mention.cui.equals("") && !mention.cui.contains(",")) {
             mention.normalized = true;
         }
     }

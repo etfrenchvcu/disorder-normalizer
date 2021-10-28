@@ -52,10 +52,16 @@ public abstract class Sieve {
         return cui;
     }
 
+    /**
+     * Returns a list of CUIs that matched or an empty string;
+     * 
+     * @param nameToCuiListMap
+     * @param name
+     * @return
+     */
     public static String getTerminologyNameCui(HashListMap nameToCuiListMap, String name) {
-        return nameToCuiListMap.containsKey(name) && nameToCuiListMap.get(name).size() == 1
-                ? nameToCuiListMap.get(name).get(0)
-                : "";
+        var matches = nameToCuiListMap.get(name);
+        return matches == null ? "" : String.join(",", matches);
     }
 
     /**
@@ -64,10 +70,11 @@ public abstract class Sieve {
      * 
      * @param mention
      * @param name
-     * @return
+     * @return comma delimited list of CUIs.
      */
     public String exactMatch(Mention mention, String name) {
         String cui = "";
+
         // Checks against names already normalized by multi-pass sieve
         cui = getTerminologyNameCui(normalizedNameToCuiListMap, name);
         if (!cui.equals("")) {
@@ -116,7 +123,15 @@ public abstract class Sieve {
         // Check each name permutation for a CUI match in the dictionary.
         for (String name : mention.namePermutations) {
             var match = exactMatch(mention, name);
-            if (!match.equals("") && !cuis.contains(match)) {
+
+            if (match.contains(",")) {
+                // exactMatch returned a list of CUIs.
+                Util.addUnique(names, name);
+                for (var cui : match.split(",")) {
+                    Util.addUnique(cuis, cui);
+                }
+            } else if (!match.equals("")) {
+                // exactMatch returned exactly one CUI.
                 Util.addUnique(cuis, match);
                 Util.addUnique(names, name);
             }
