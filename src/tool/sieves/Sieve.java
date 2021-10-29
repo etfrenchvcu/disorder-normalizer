@@ -21,7 +21,7 @@ public abstract class Sieve {
 
     Terminology standardTerminology;
     Terminology trainTerminology;
-    HashListMap normalizedNameToCuiListMap;
+    // HashListMap normalizedNameToCuiListMap;
 
     /**
      * Abstract constructor.
@@ -34,7 +34,7 @@ public abstract class Sieve {
             HashListMap normalizedNameToCuiListMap) {
         this.standardTerminology = standardTerminology;
         this.trainTerminology = trainTerminology;
-        this.normalizedNameToCuiListMap = normalizedNameToCuiListMap;
+        // this.normalizedNameToCuiListMap = normalizedNameToCuiListMap;
     }
 
     /**
@@ -76,11 +76,11 @@ public abstract class Sieve {
         String cui = "";
 
         // Checks against names already normalized by multi-pass sieve
-        cui = getTerminologyNameCui(normalizedNameToCuiListMap, name);
-        if (!cui.equals("")) {
-            mention.normalizingSource = "normalizedNameToCuiListMap";
-            return cui;
-        }
+        // cui = getTerminologyNameCui(normalizedNameToCuiListMap, name);
+        // if (!cui.equals("")) {
+        //     mention.normalizingSource = "normalizedNameToCuiListMap";
+        //     return cui;
+        // }
 
         // Checks against names in training data
         cui = getTerminologyNameCui(trainTerminology.nameToCuiListMap, name);
@@ -139,9 +139,9 @@ public abstract class Sieve {
 
         if (cuis.size() == 1) {
             mention.normalized = true;
-            // Add mention name to dictionary if != permutation used to normalize.
-            if (!mention.name.equals(names.get(0)))
-                normalizedNameToCuiListMap.addKeyPair(mention.name, mention.cui);
+            // TODO: I don't think we actually need this dictionary
+            // if (!mention.name.equals(names.get(0)))
+            //     normalizedNameToCuiListMap.addKeyPair(mention.name, mention.cui);
 
             // TODO: Should I normalize nameExpansion?
             // normalizedNameToCuiListMap.addKeyPair(mention.nameExpansion, mention.cui);

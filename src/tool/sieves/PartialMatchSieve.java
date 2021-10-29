@@ -74,8 +74,8 @@ public class PartialMatchSieve extends Sieve {
             mention.cui = String.join(",",cuis.keySet());
             mention.normalized = cuis.keySet().size() == 1;
 
-            if (mention.normalized)
-                normalizedNameToCuiListMap.addKeyPair(names.get(0), mention.cui);
+            // if (mention.normalized)
+            //     normalizedNameToCuiListMap.addKeyPair(names.get(0), mention.cui);
         }
     }
 
