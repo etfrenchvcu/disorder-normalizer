@@ -8,6 +8,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
 
 /**
  *
@@ -22,39 +24,37 @@ public class Main {
      */
     public static void main(String[] args) throws Exception {
         System.out.println("Starting run...");
-        File training_data_dir = null;
+        File trainDir = null;
         File test_data_dir = null;
-        File output_data_dir = null;
-        int maxSieveLevel = 0;
+        File outputDir = null;
         File standardTerminologyFile = null;
         MultiPassSieveNormalizer multiPassSieve;
 
         // Parse input args
-        if (args.length == 4) {
-            // Parse training directory
-            if (new File(args[0]).isDirectory())
-                training_data_dir = new File(args[0]);
-            else
-                throwIllegalDirectoryException(args[0]);
+        if (args.length >= 2) {
+            // Parse terminology file location.
+            if (new File(args[0]).isFile()) {
+                standardTerminologyFile = new File(args[0]);
+            } else
+                throwIllegalFileException(args[0]);
 
-            // Parse test directory.
+            // Parse training directory
             if (new File(args[1]).isDirectory()) {
-                test_data_dir = new File(args[1]);
-                output_data_dir = new File(test_data_dir.toString().replace(test_data_dir.getName(), "output"));
-                output_data_dir.mkdirs();
+                trainDir = new File(args[1]);
+                outputDir = new File(trainDir.toString().replace(trainDir.getName(), "output"));
+                outputDir.mkdirs();
             } else
                 throwIllegalDirectoryException(args[1]);
 
-            // Parse terminology file location.
-            if (new File(args[2]).isFile()) {
-                standardTerminologyFile = new File(args[2]);
-            } else
-                throwIllegalFileException(args[2]);
-
-            maxSieveLevel = Integer.parseInt(args[3]);
+            if (args.length >= 3) {
+                // Parse test directory.
+                if (new File(args[2]).isDirectory()) {
+                    test_data_dir = new File(args[2]);
+                } else
+                    throwIllegalDirectoryException(args[2]);
+            }
         } else {
-            System.out.println(
-                    "Usage: java tool.Main <training-data-dir> <test-data-dir> <terminology/ontology-file> max-sieve-level");
+            System.out.println("Usage: java tool.Main <terminology/ontology-file> <training-data-dir> <test-data-dir>");
             System.out.println("---------------------");
             System.out.println("Sieve levels:");
             System.out.println("1 for exact match");
@@ -71,16 +71,70 @@ public class Main {
             System.exit(1);
         }
 
-        Evaluation eval = new Evaluation(output_data_dir);
-        multiPassSieve = new MultiPassSieveNormalizer(training_data_dir, test_data_dir, eval, maxSieveLevel,
-                standardTerminologyFile);
-        multiPassSieve.run();
+        Evaluation eval = new Evaluation(outputDir);
+        multiPassSieve = new MultiPassSieveNormalizer(eval, standardTerminologyFile);
+        if (test_data_dir == null) {
+            // Run cross validation on training data
+
+            // Set up train/test folders
+            var xvalTrainName = trainDir.toString().replace(trainDir.getName(), "xval_train");
+            var xvalTrain = new File(xvalTrainName);
+            xvalTrain.mkdirs();
+            var xvalTestName = trainDir.toString().replace(trainDir.getName(), "xval_test");
+            var xvalTest = new File(xvalTestName);
+            xvalTest.mkdirs();
+
+            // 3-fold cross validation
+            var folds = 3;
+            for (int i = 0; i < folds; i++) {
+                // Wipe directories
+                purgeDirectory(xvalTrain);
+                purgeDirectory(xvalTest);
+
+                // Get list of training .concept files.
+                var trainAnnotations = Arrays.stream(trainDir.listFiles()).filter(x -> x.getName().contains(".concept"))
+                        .toArray(File[]::new);
+
+                // Partition train/test
+                for (int j = 0; j < trainAnnotations.length; j++) {
+                    var txtFile = new File(trainAnnotations[j].getPath().replace(".concept", ".txt")).toPath();
+                    var destinationFile = (j % folds == i) ? xvalTestName : xvalTrainName;
+                    destinationFile += "/" + trainAnnotations[j].getName();
+
+                    // Copy .concept and .txt to train/test bucket
+                    Files.copy(trainAnnotations[j].toPath(), new File(destinationFile).toPath());
+                    Files.copy(txtFile, new File(destinationFile.replace(".concept", ".txt")).toPath());
+                }
+                
+                // Run for current fold.
+                multiPassSieve.run(xvalTrain, xvalTest);
+            }
+
+        } else {
+            throw new Exception("Running on test dataset not implemented yet.");
+        }
+
+        // Evaluate on all folds together.
         eval.computeAccuracy();
         eval.printResults();
     }
 
     /**
+     * Delete all files in a directory.
+     * 
+     * @param dir
+     */
+    private static void purgeDirectory(File dir) {
+        for (File file : dir.listFiles()) {
+            if (file.isDirectory())
+                purgeDirectory(file);
+            file.delete();
+        }
+    }
+
+    /**
      * Exception logic for invalid directory argument.
+     * 
      * @param name
      * @throws IOException
      */
@@ -119,6 +173,7 @@ public class Main {
 
     /**
      * Exception logic for invalid file argument.
+     * 
      * @param name
      */
     private static void throwIllegalFileException(String name) {
