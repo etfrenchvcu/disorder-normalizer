@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.junit.Before;
@@ -42,7 +41,7 @@ public class AbbreviationExpansionSieveTest {
 
 	// Tests using abbreviation from abbreviation file.
 	@Test
-	public void fromAbbreviationFile() throws IOException {
+	public void fromAbbreviationFile() throws Exception {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
 		terminology.nameToCuiListMap.addKeyPair("altered auditory feedback", cui);
 		var mention = new Mention("aaf", null, null, null);
@@ -52,7 +51,16 @@ public class AbbreviationExpansionSieveTest {
 	}
 
 	@Test
-	public void failToNormalize() throws IOException {
+	public void ambiguousAbbreviation() throws Exception {
+		terminology.nameToCuiListMap.addKeyPair("cardiac arrest", "cui1");
+		terminology.nameToCuiListMap.addKeyPair("cholic acid", "cui2");
+		var mention = new Mention("ca", null, null, null);
+		sieve.apply(mention, new Document());
+		assertFalse(mention.normalized);
+	}
+
+	@Test
+	public void failToNormalize() throws Exception {
 		var mention = new Mention("xkcd", null, null, null);
 		sieve.apply(mention, new Document());
 		assertFalse(mention.normalized);

@@ -26,7 +26,7 @@ public class StemmingSieveTest {
 	}
 
 	@Test
-	public void addHyphenTest() {
+	public void switchStemTest() {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
 		terminology.loadConceptMaps("system", cui);
 		var mention = new Mention("systemic", null, null, null);

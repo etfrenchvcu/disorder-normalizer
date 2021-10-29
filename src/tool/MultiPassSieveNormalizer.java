@@ -22,6 +22,7 @@ import tool.sieves.PartialMatchSieve;
 import tool.sieves.PrepositionalTransformSieve;
 import tool.sieves.Sieve;
 import tool.sieves.StemmingSieve;
+import tool.sieves.UmlsEndingSieve;
 import tool.util.Document;
 import tool.util.HashListMap;
 import tool.util.Mention;
@@ -73,13 +74,14 @@ public class MultiPassSieveNormalizer {
         ArrayList<Sieve> sieves = new ArrayList<Sieve>();
 
         sieves.add(new ExactMatchSieve(standardTerminology, trainTerminology));
+        sieves.add(new UmlsEndingSieve(standardTerminology, trainTerminology));        
         sieves.add(new AbbreviationExpansionSieve(standardTerminology, trainTerminology, stopwords));
         sieves.add(new PrepositionalTransformSieve(standardTerminology, trainTerminology));
         sieves.add(new NumberReplacementSieve(standardTerminology, trainTerminology));
         sieves.add(new HyphenationSieve(standardTerminology, trainTerminology));
         // sieves.add(new AffixationSieve(standardTerminology, trainTerminology)); //
         // This one is slow...
-        sieves.add(new DiseaseTermSynonymsSieve(standardTerminology, trainTerminology));
+        // sieves.add(new DiseaseTermSynonymsSieve(standardTerminology, trainTerminology)); //Slow and bad
         sieves.add(new StemmingSieve(standardTerminology, trainTerminology, new Stemmer(stopwords)));
         // sieves.add(new CompoundPhraseSieve(standardTerminology, trainTerminology,
         // normalizedNameToCuiListMap));
