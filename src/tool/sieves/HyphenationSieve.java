@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import tool.util.HashListMap;
 import tool.util.Mention;
 import tool.util.Terminology;
 
@@ -23,12 +22,10 @@ public class HyphenationSieve extends Sieve {
      * 
      * @param standardTerminology
      * @param trainTerminology
-     * @param normalizedNameToCuiListMap
      * @throws IOException
      */
-    public HyphenationSieve(Terminology standardTerminology, Terminology trainTerminology,
-            HashListMap normalizedNameToCuiListMap) {
-        super(standardTerminology, trainTerminology, normalizedNameToCuiListMap);
+    public HyphenationSieve(Terminology standardTerminology, Terminology trainTerminology) {
+        super(standardTerminology, trainTerminology);
     }
 
     /**

@@ -21,20 +21,16 @@ public abstract class Sieve {
 
     Terminology standardTerminology;
     Terminology trainTerminology;
-    // HashListMap normalizedNameToCuiListMap;
 
     /**
      * Abstract constructor.
      * 
      * @param standardTerminology
      * @param trainTerminology
-     * @param normalizedNameToCuiListMap
      */
-    public Sieve(Terminology standardTerminology, Terminology trainTerminology,
-            HashListMap normalizedNameToCuiListMap) {
+    public Sieve(Terminology standardTerminology, Terminology trainTerminology) {
         this.standardTerminology = standardTerminology;
         this.trainTerminology = trainTerminology;
-        // this.normalizedNameToCuiListMap = normalizedNameToCuiListMap;
     }
 
     /**
@@ -75,13 +71,6 @@ public abstract class Sieve {
     public String exactMatch(Mention mention, String name) {
         String cui = "";
 
-        // Checks against names already normalized by multi-pass sieve
-        // cui = getTerminologyNameCui(normalizedNameToCuiListMap, name);
-        // if (!cui.equals("")) {
-        //     mention.normalizingSource = "normalizedNameToCuiListMap";
-        //     return cui;
-        // }
-
         // Checks against names in training data
         cui = getTerminologyNameCui(trainTerminology.nameToCuiListMap, name);
         if (!cui.equals("")) {
@@ -98,16 +87,6 @@ public abstract class Sieve {
 
         return "";
     }
-
-    // Original implementation
-    // public static String normalize(List<String> namesKnowledgeBase) {
-    // for (String name : namesKnowledgeBase) {
-    // String cui = exactMatchSieve(name);
-    // if (!cui.equals(""))
-    // return cui;
-    // }
-    // return "";
-    // }
 
     /**
      * Check the list of name permutations for a match in one of the dictionaries.
@@ -139,12 +118,6 @@ public abstract class Sieve {
 
         if (cuis.size() == 1) {
             mention.normalized = true;
-            // TODO: I don't think we actually need this dictionary
-            // if (!mention.name.equals(names.get(0)))
-            //     normalizedNameToCuiListMap.addKeyPair(mention.name, mention.cui);
-
-            // TODO: Should I normalize nameExpansion?
-            // normalizedNameToCuiListMap.addKeyPair(mention.nameExpansion, mention.cui);
         }
 
         // Return unique CUIs.

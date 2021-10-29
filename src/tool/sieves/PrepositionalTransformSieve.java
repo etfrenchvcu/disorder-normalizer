@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import tool.util.*;
+import tool.util.Mention;
+import tool.util.Terminology;
+import tool.util.Util;
 
 /**
  * Prepositional Transform Sieve (subject <=> object conversion)
@@ -23,11 +25,9 @@ public class PrepositionalTransformSieve extends Sieve {
      * 
      * @param standardTerminology
      * @param trainTerminology
-     * @param normalizedNameToCuiListMap
      */
-    public PrepositionalTransformSieve(Terminology standardTerminology, Terminology trainTerminology,
-            HashListMap normalizedNameToCuiListMap) {
-        super(standardTerminology, trainTerminology, normalizedNameToCuiListMap);
+    public PrepositionalTransformSieve(Terminology standardTerminology, Terminology trainTerminology) {
+        super(standardTerminology, trainTerminology);
     }
 
     /**

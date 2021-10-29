@@ -31,12 +31,10 @@ public class NumberReplacementSieve extends Sieve {
      * 
      * @param standardTerminology
      * @param trainTerminology
-     * @param normalizedNameToCuiListMap
      * @throws IOException
      */
-    public NumberReplacementSieve(Terminology standardTerminology, Terminology trainTerminology,
-            HashListMap normalizedNameToCuiListMap) throws IOException {
-        super(standardTerminology, trainTerminology, normalizedNameToCuiListMap);
+    public NumberReplacementSieve(Terminology standardTerminology, Terminology trainTerminology) throws IOException {
+        super(standardTerminology, trainTerminology);
 
         // Initialize word=>digit and digit=>word mappings.
         digitToWordMap = new HashListMap();

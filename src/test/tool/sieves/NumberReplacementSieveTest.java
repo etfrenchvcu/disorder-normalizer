@@ -2,8 +2,6 @@ package test.tool.sieves;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -12,20 +10,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 import tool.sieves.NumberReplacementSieve;
-import tool.util.HashListMap;
 import tool.util.Mention;
 import tool.util.Terminology;
 
 public class NumberReplacementSieveTest {
 	Terminology terminology;
-	HashListMap normalizedNameToCuiListMap;
 	NumberReplacementSieve sieve;
 
 	@Before
 	public void setUp() throws Exception {
 		terminology = new Terminology(new ArrayList<String>());
-		normalizedNameToCuiListMap = new HashListMap();
-		sieve = new NumberReplacementSieve(terminology, terminology, normalizedNameToCuiListMap);
+		sieve = new NumberReplacementSieve(terminology, terminology);
 	}
 
 	@Test
@@ -36,7 +31,6 @@ public class NumberReplacementSieveTest {
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
-		assertNotNull(normalizedNameToCuiListMap.get("type ii diabetes"));
 	}
 
 	@Test
@@ -47,7 +41,6 @@ public class NumberReplacementSieveTest {
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
-		assertNotNull(normalizedNameToCuiListMap.get("type 2 diabetes"));
 	}
 
 	@Test
@@ -56,6 +49,5 @@ public class NumberReplacementSieveTest {
 		sieve.apply(mention);
 		assertFalse(mention.normalized);
 		assertEquals("", mention.cui);
-		assertNull(normalizedNameToCuiListMap.get("xkcd"));
 	}
 }

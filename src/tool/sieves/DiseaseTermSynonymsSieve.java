@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import tool.util.HashListMap;
 import tool.util.Mention;
 import tool.util.Terminology;
 
@@ -30,12 +29,10 @@ public class DiseaseTermSynonymsSieve extends Sieve {
      * 
      * @param standardTerminology
      * @param trainTerminology
-     * @param normalizedNameToCuiListMap
      * @throws IOException
      */
-    public DiseaseTermSynonymsSieve(Terminology standardTerminology, Terminology trainTerminology,
-            HashListMap normalizedNameToCuiListMap) {
-        super(standardTerminology, trainTerminology, normalizedNameToCuiListMap);
+    public DiseaseTermSynonymsSieve(Terminology standardTerminology, Terminology trainTerminology) {
+        super(standardTerminology, trainTerminology);
     }
 
     /**

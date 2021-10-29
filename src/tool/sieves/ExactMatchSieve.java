@@ -4,7 +4,6 @@
  */
 package tool.sieves;
 
-import tool.util.HashListMap;
 import tool.util.Mention;
 import tool.util.Terminology;
 
@@ -20,11 +19,9 @@ public class ExactMatchSieve extends Sieve {
      * 
      * @param standardTerminology
      * @param trainTerminology
-     * @param normalizedNameToCuiListMap
      */
-    public ExactMatchSieve(Terminology standardTerminology, Terminology trainTerminology,
-            HashListMap normalizedNameToCuiListMap) {
-        super(standardTerminology, trainTerminology, normalizedNameToCuiListMap);
+    public ExactMatchSieve(Terminology standardTerminology, Terminology trainTerminology) {
+        super(standardTerminology, trainTerminology);
     }
 
     /**

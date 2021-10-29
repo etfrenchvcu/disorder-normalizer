@@ -35,12 +35,10 @@ public class AffixationSieve extends Sieve {
      * 
      * @param standardTerminology
      * @param trainTerminology
-     * @param normalizedNameToCuiListMap
      * @throws IOException
      */
-    public AffixationSieve(Terminology standardTerminology, Terminology trainTerminology,
-            HashListMap normalizedNameToCuiListMap) throws IOException {
-        super(standardTerminology, trainTerminology, normalizedNameToCuiListMap);
+    public AffixationSieve(Terminology standardTerminology, Terminology trainTerminology) throws IOException {
+        super(standardTerminology, trainTerminology);
 
         // Initialize max lengths.
         maxSuffixLength = 0;

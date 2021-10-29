@@ -2,7 +2,6 @@ package test.tool.sieves;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -11,20 +10,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 import tool.sieves.PartialMatchSieve;
-import tool.util.HashListMap;
 import tool.util.Mention;
 import tool.util.Terminology;
 
 public class PartialMatchSieveTest {
 	Terminology terminology;
-	HashListMap normalizedNameToCuiListMap;
 	PartialMatchSieve sieve;
 
 	@Before
 	public void setUp() throws Exception {
 		terminology = new Terminology(new ArrayList<String>());
-		normalizedNameToCuiListMap = new HashListMap();
-		sieve = new PartialMatchSieve(terminology, terminology, normalizedNameToCuiListMap, new ArrayList<String>());
+		sieve = new PartialMatchSieve(terminology, terminology, new ArrayList<String>());
 	}
 
 	@Test
@@ -54,6 +50,5 @@ public class PartialMatchSieveTest {
 		sieve.apply(mention);
 		assertFalse(mention.normalized);
 		assertEquals("", mention.cui);
-		assertNull(normalizedNameToCuiListMap.get("xkcd"));
 	}
 }

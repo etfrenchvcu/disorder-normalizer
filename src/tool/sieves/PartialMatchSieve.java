@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import tool.util.HashListMap;
 import tool.util.Mention;
 import tool.util.Terminology;
 import tool.util.Util;
@@ -28,13 +27,11 @@ public class PartialMatchSieve extends Sieve {
      * 
      * @param standardTerminology
      * @param trainTerminology
-     * @param normalizedNameToCuiListMap
      * @param stopwords
      * @throws IOException
      */
-    public PartialMatchSieve(Terminology standardTerminology, Terminology trainTerminology,
-            HashListMap normalizedNameToCuiListMap, List<String> stopwords) {
-        super(standardTerminology, trainTerminology, normalizedNameToCuiListMap);
+    public PartialMatchSieve(Terminology standardTerminology, Terminology trainTerminology, List<String> stopwords) {
+        super(standardTerminology, trainTerminology);
 
         this.stopwords = stopwords;
     }

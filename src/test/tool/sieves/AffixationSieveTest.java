@@ -2,8 +2,6 @@ package test.tool.sieves;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -12,20 +10,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 import tool.sieves.AffixationSieve;
-import tool.util.HashListMap;
 import tool.util.Mention;
 import tool.util.Terminology;
 
 public class AffixationSieveTest {
 	Terminology terminology;
-	HashListMap normalizedNameToCuiListMap;
 	AffixationSieve sieve;
 
 	@Before
 	public void setUp() throws Exception {
 		terminology = new Terminology(new ArrayList<String>());
-		normalizedNameToCuiListMap = new HashListMap();
-		sieve = new AffixationSieve(terminology, terminology, normalizedNameToCuiListMap);
+		sieve = new AffixationSieve(terminology, terminology);
 	}
 
 	@Test
@@ -36,7 +31,6 @@ public class AffixationSieveTest {
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
-		assertNotNull(normalizedNameToCuiListMap.get("septic"));
 	}
 
 	@Test
@@ -47,7 +41,6 @@ public class AffixationSieveTest {
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
-		assertNotNull(normalizedNameToCuiListMap.get("opiod abuse disorder"));
 	}
 
 	@Test
@@ -58,7 +51,6 @@ public class AffixationSieveTest {
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
-		assertNotNull(normalizedNameToCuiListMap.get("basal cell cancer"));
 	}
 
 	@Test
@@ -67,6 +59,5 @@ public class AffixationSieveTest {
 		sieve.apply(mention);
 		assertFalse(mention.normalized);
 		assertEquals("", mention.cui);
-		assertNull(normalizedNameToCuiListMap.get("xkcd"));
 	}
 }

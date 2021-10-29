@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import tool.util.HashListMap;
 import tool.util.Mention;
 import tool.util.Stemmer;
 import tool.util.Terminology;
@@ -20,7 +19,6 @@ import tool.util.Terminology;
  */
 public class StemmingSieve extends Sieve {
 
-    HashListMap stemmedNormalizedNameToCuiListMap;
     Stemmer stemmer;
 
     /**
@@ -28,12 +26,11 @@ public class StemmingSieve extends Sieve {
      * 
      * @param standardTerminology
      * @param trainTerminology
-     * @param normalizedNameToCuiListMap
      * @throws IOException
      */
-    public StemmingSieve(Terminology standardTerminology, Terminology trainTerminology,
-            HashListMap normalizedNameToCuiListMap, Stemmer stemmer) throws IOException {
-        super(standardTerminology, trainTerminology, normalizedNameToCuiListMap);
+    public StemmingSieve(Terminology standardTerminology, Terminology trainTerminology, Stemmer stemmer)
+            throws IOException {
+        super(standardTerminology, trainTerminology);
         this.stemmer = stemmer;
     }
 

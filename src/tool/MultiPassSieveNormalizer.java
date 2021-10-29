@@ -84,19 +84,17 @@ public class MultiPassSieveNormalizer {
     private ArrayList<Sieve> initializeSieves() throws IOException {
         ArrayList<Sieve> sieves = new ArrayList<Sieve>();
 
-        sieves.add(new ExactMatchSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
-        sieves.add(new AbbreviationExpansionSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap,
-                stopwords));
-        sieves.add(new PrepositionalTransformSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
-        sieves.add(new NumberReplacementSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
-        sieves.add(new HyphenationSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
-        sieves.add(new AffixationSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
-        sieves.add(new DiseaseTermSynonymsSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap));
-        sieves.add(new StemmingSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap,
-                new Stemmer(stopwords)));
+        sieves.add(new ExactMatchSieve(standardTerminology, trainTerminology));
+        sieves.add(new AbbreviationExpansionSieve(standardTerminology, trainTerminology, stopwords));
+        sieves.add(new PrepositionalTransformSieve(standardTerminology, trainTerminology));
+        sieves.add(new NumberReplacementSieve(standardTerminology, trainTerminology));
+        sieves.add(new HyphenationSieve(standardTerminology, trainTerminology));
+        sieves.add(new AffixationSieve(standardTerminology, trainTerminology));
+        sieves.add(new DiseaseTermSynonymsSieve(standardTerminology, trainTerminology));
+        sieves.add(new StemmingSieve(standardTerminology, trainTerminology, new Stemmer(stopwords)));
         // sieves.add(new CompoundPhraseSieve(standardTerminology, trainTerminology,
         // normalizedNameToCuiListMap));
-        sieves.add(new PartialMatchSieve(standardTerminology, trainTerminology, normalizedNameToCuiListMap, stopwords));
+        sieves.add(new PartialMatchSieve(standardTerminology, trainTerminology, stopwords));
 
         return sieves;
     }

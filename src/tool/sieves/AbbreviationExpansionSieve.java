@@ -31,12 +31,10 @@ public class AbbreviationExpansionSieve extends Sieve {
      * 
      * @param standardTerminology
      * @param trainTerminology
-     * @param normalizedNameToCuiListMap
      * @throws IOException
      */
-    public AbbreviationExpansionSieve(Terminology standardTerminology, Terminology trainTerminology,
-            HashListMap normalizedNameToCuiListMap, List<String> stopwords) throws IOException {
-        super(standardTerminology, trainTerminology, normalizedNameToCuiListMap);
+    public AbbreviationExpansionSieve(Terminology standardTerminology, Terminology trainTerminology, List<String> stopwords) throws IOException {
+        super(standardTerminology, trainTerminology);
 
         this.stopwords = stopwords;
         globalAbbreviationMap = loadAbbreviationMap();
@@ -61,8 +59,6 @@ public class AbbreviationExpansionSieve extends Sieve {
 
         if(!mention.cui.equals("") && !mention.cui.contains(",")) {
             mention.normalized = true;
-            // normalizedNameToCuiListMap.addKeyPair(mention.name, mention.cui);
-            // normalizedNameToCuiListMap.addKeyPair(mention.nameExpansion, mention.cui);
         }
     }
 
