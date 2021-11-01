@@ -14,11 +14,13 @@ import java.util.Date;
 import java.util.List;
 
 import tool.sieves.AbbreviationExpansionSieve;
+import tool.sieves.AmbiguitySieve;
 import tool.sieves.ExactMatchSieve;
 import tool.sieves.HyphenationSieve;
 import tool.sieves.NumberReplacementSieve;
 import tool.sieves.PartialMatchSieve;
 import tool.sieves.PrepositionalTransformSieve;
+import tool.sieves.RemoveStopwordsSieve;
 import tool.sieves.Sieve;
 import tool.sieves.StemmingSieve;
 import tool.sieves.UmlsEndingSieve;
@@ -73,18 +75,21 @@ public class MultiPassSieveNormalizer {
         ArrayList<Sieve> sieves = new ArrayList<Sieve>();
 
         sieves.add(new ExactMatchSieve(standardTerminology, trainTerminology));
-        sieves.add(new UmlsEndingSieve(standardTerminology, trainTerminology));        
+        sieves.add(new RemoveStopwordsSieve(standardTerminology, trainTerminology));
+        sieves.add(new UmlsEndingSieve(standardTerminology, trainTerminology));
         sieves.add(new AbbreviationExpansionSieve(standardTerminology, trainTerminology, stopwords));
         sieves.add(new PrepositionalTransformSieve(standardTerminology, trainTerminology));
         sieves.add(new NumberReplacementSieve(standardTerminology, trainTerminology));
         sieves.add(new HyphenationSieve(standardTerminology, trainTerminology));
         // sieves.add(new AffixationSieve(standardTerminology, trainTerminology)); //
         // This one is slow...
-        // sieves.add(new DiseaseTermSynonymsSieve(standardTerminology, trainTerminology)); //Slow and bad
-        sieves.add(new StemmingSieve(standardTerminology, trainTerminology, new Stemmer(stopwords)));
+        // sieves.add(new DiseaseTermSynonymsSieve(standardTerminology,
+        // trainTerminology)); //Slow and bad
+        // sieves.add(new StemmingSieve(standardTerminology, trainTerminology, new Stemmer(stopwords)));
         // sieves.add(new CompoundPhraseSieve(standardTerminology, trainTerminology,
         // normalizedNameToCuiListMap));
         sieves.add(new PartialMatchSieve(standardTerminology, trainTerminology, stopwords));
+        sieves.add(new AmbiguitySieve(standardTerminology, trainTerminology));
 
         return sieves;
     }
@@ -112,12 +117,16 @@ public class MultiPassSieveNormalizer {
 
                 for (Mention mention : doc.mentions) {
                     // Skip already normalized and length==1 (too ambiguous)
-                    if (mention.normalized || mention.name.length()==1)
+                    if (mention.normalized || mention.name.length() == 1)
                         continue;
 
                     if (sieveName.equals("AbbreviationExpansionSieve")) {
                         // Special case for abbreviation expansion sieve.
                         AbbreviationExpansionSieve sieve = (AbbreviationExpansionSieve) sieves.get(i);
+                        sieve.apply(mention, doc);
+                    } else if (sieveName.equals("AmbiguitySieve")) {
+                        // Special case for AmbiguitySieve.
+                        AmbiguitySieve sieve = (AmbiguitySieve) sieves.get(i);
                         sieve.apply(mention, doc);
                     } else {
                         // Default sieve apply.
