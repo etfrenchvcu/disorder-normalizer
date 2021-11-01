@@ -94,151 +94,159 @@ public class AbbreviationExpansionSieve extends Sieve {
     }
 
     // /**
-    //  * Attempt to find and expand abbreviations in the given mention using first an
-    //  * abbreviation map from the source annotation file, the checking the global
-    //  * annotation file.
-    //  * 
-    //  * @param doc
-    //  * @param mention
-    //  * @return
-    //  */
+    // * Attempt to find and expand abbreviations in the given mention using first
+    // an
+    // * abbreviation map from the source annotation file, the checking the global
+    // * annotation file.
+    // *
+    // * @param doc
+    // * @param mention
+    // * @return
+    // */
     // private String getAbbreviationExpansion(Document doc, Mention mention) {
-    //     var name = mention.name;
-    //     String[] nameTokens = name.split("\\s");
+    // var name = mention.name;
+    // String[] nameTokens = name.split("\\s");
 
-    //     // Edge case when mention name is a single character, assume it's part of a
-    //     // bigger abbreviation and search outside the indices of the annotation.
-    //     if (nameTokens.length == 1 && nameTokens[0].length() == 1)
-    //         nameTokens[0] = expandSingleCharacter(doc.text, name, mention.indexes.split("\\|"));
+    // // Edge case when mention name is a single character, assume it's part of a
+    // // bigger abbreviation and search outside the indices of the annotation.
+    // if (nameTokens.length == 1 && nameTokens[0].length() == 1)
+    // nameTokens[0] = expandSingleCharacter(doc.text, name,
+    // mention.indexes.split("\\|"));
 
-    //     // Build expanded name one token at a time.
-    //     String nameExpansion = "";
-    //     for (String token : nameTokens) {
-    //         String nextToken = token;
+    // // Build expanded name one token at a time.
+    // String nameExpansion = "";
+    // for (String token : nameTokens) {
+    // String nextToken = token;
 
-    //         if (doc.abbreviationMap != null && doc.abbreviationMap.containsKey(token)) {
-    //             // Check the map created from the annotation file first.
-    //             nextToken = doc.abbreviationMap.get(token);
-    //         } else {
-    //             // Get a list of candidate expansions from the global abbreviation file.
-    //             List<String> candidateExpansions = globalAbbreviationMap.get(token);
-    //             if (candidateExpansions != null) {
-    //                 var expansion = getBestExpansion(doc.text, candidateExpansions);
-    //                 nextToken = expansion.equals("") ? token : expansion;
-    //             }
-    //         }
+    // if (doc.abbreviationMap != null && doc.abbreviationMap.containsKey(token)) {
+    // // Check the map created from the annotation file first.
+    // nextToken = doc.abbreviationMap.get(token);
+    // } else {
+    // // Get a list of candidate expansions from the global abbreviation file.
+    // List<String> candidateExpansions = globalAbbreviationMap.get(token);
+    // if (candidateExpansions != null) {
+    // var expansion = getBestExpansion(doc.text, candidateExpansions);
+    // nextToken = expansion.equals("") ? token : expansion;
+    // }
+    // }
 
-    //         // Apend next token.
-    //         nameExpansion += " " + nextToken;
-    //     }
+    // // Apend next token.
+    // nameExpansion += " " + nextToken;
+    // }
 
-    //     // If single character name was expanded, reduce the expansion back down?
-    //     if (nameTokens.length == 1 && !nameTokens[0].equals(name))
-    //         nameExpansion = getTrimmedExpansion(doc.text, name, mention.indexes.split("\\|"), nameExpansion);
+    // // If single character name was expanded, reduce the expansion back down?
+    // if (nameTokens.length == 1 && !nameTokens[0].equals(name))
+    // nameExpansion = getTrimmedExpansion(doc.text, name,
+    // mention.indexes.split("\\|"), nameExpansion);
 
-    //     return nameExpansion.trim();
+    // return nameExpansion.trim();
     // }
 
     // private String getBestExpansion(String text, List<String> expansionList) {
-    //     // Return first item if it's the only item.
-    //     if (expansionList.size() == 1)
-    //         return expansionList.get(0);
+    // // Return first item if it's the only item.
+    // if (expansionList.size() == 1)
+    // return expansionList.get(0);
 
-    //     int maxNumberOfContentWords = 0;
-    //     int maxContainedContentWords = 0;
-    //     String returnExpansion = "";
-    //     for (String expansion : expansionList) {
-    //         List<String> expansionContentWordsList = filterStopwords(expansion.split("\\s"));
+    // int maxNumberOfContentWords = 0;
+    // int maxContainedContentWords = 0;
+    // String returnExpansion = "";
+    // for (String expansion : expansionList) {
+    // List<String> expansionContentWordsList =
+    // filterStopwords(expansion.split("\\s"));
 
-    //         int tempNumberOfContentWords = expansionContentWordsList.size();
-    //         int tempContainedContentWords = 0;
-    //         for (String expansionContentWord : expansionContentWordsList) {
-    //             if (text.contains(" " + expansionContentWord) || text.contains(expansionContentWord + " "))
-    //                 tempContainedContentWords++;
-    //         }
+    // int tempNumberOfContentWords = expansionContentWordsList.size();
+    // int tempContainedContentWords = 0;
+    // for (String expansionContentWord : expansionContentWordsList) {
+    // if (text.contains(" " + expansionContentWord) ||
+    // text.contains(expansionContentWord + " "))
+    // tempContainedContentWords++;
+    // }
 
-    //         if (tempNumberOfContentWords > maxNumberOfContentWords
-    //                 && tempContainedContentWords == tempNumberOfContentWords) {
-    //             maxNumberOfContentWords = tempNumberOfContentWords;
-    //             maxContainedContentWords = 1000;
-    //             returnExpansion = expansion;
-    //         } else if (tempNumberOfContentWords >= maxNumberOfContentWords
-    //                 && tempContainedContentWords > maxContainedContentWords) {
-    //             maxNumberOfContentWords = tempNumberOfContentWords;
-    //             maxContainedContentWords = tempContainedContentWords;
-    //             returnExpansion = expansion;
-    //         }
+    // if (tempNumberOfContentWords > maxNumberOfContentWords
+    // && tempContainedContentWords == tempNumberOfContentWords) {
+    // maxNumberOfContentWords = tempNumberOfContentWords;
+    // maxContainedContentWords = 1000;
+    // returnExpansion = expansion;
+    // } else if (tempNumberOfContentWords >= maxNumberOfContentWords
+    // && tempContainedContentWords > maxContainedContentWords) {
+    // maxNumberOfContentWords = tempNumberOfContentWords;
+    // maxContainedContentWords = tempContainedContentWords;
+    // returnExpansion = expansion;
+    // }
 
-    //     }
-    //     return returnExpansion;
+    // }
+    // return returnExpansion;
     // }
 
     // /**
-    //  * Checking something only in cases where nameExpansion contains a "/"?
-    //  * 
-    //  * @param text
-    //  * @param name
-    //  * @param indexes
-    //  * @param nameExpansionSeparated
-    //  * @return
-    //  */
-    // private String getTrimmedExpansion(String text, String name, String[] indexes, String nameExpansion) {
-    //     var nameExpansionSeparated = nameExpansion.split("/");
-    //     if (indexes.length != 2)
-    //         return name;
-    //     int begin = Integer.parseInt(indexes[0]);
-    //     int end = Integer.parseInt(indexes[1]);
-    //     if (text.substring(begin - 3, end + 3).toLowerCase()
-    //             .matches("(^|\\s|\\W)[a-zA-Z]/" + name + "/[a-zA-Z](\\s|$|\\W)"))
-    //         return nameExpansionSeparated[1].toLowerCase();
-    //     else if (text.substring(begin - 1, end + 5).toLowerCase()
-    //             .matches("(^|\\s|\\W)" + name + "/[a-zA-Z]/[a-zA-Z](\\s|$|\\W)"))
-    //         return nameExpansionSeparated[0].toLowerCase();
-    //     else if (text.substring(begin - 5, end + 1).toLowerCase()
-    //             .matches("(^|\\s|\\W)[a-zA-Z]/[a-zA-Z]/" + name + "(\\s|$|\\W)"))
-    //         return nameExpansionSeparated[2].toLowerCase();
-    //     return name;
+    // * Checking something only in cases where nameExpansion contains a "/"?
+    // *
+    // * @param text
+    // * @param name
+    // * @param indexes
+    // * @param nameExpansionSeparated
+    // * @return
+    // */
+    // private String getTrimmedExpansion(String text, String name, String[]
+    // indexes, String nameExpansion) {
+    // var nameExpansionSeparated = nameExpansion.split("/");
+    // if (indexes.length != 2)
+    // return name;
+    // int begin = Integer.parseInt(indexes[0]);
+    // int end = Integer.parseInt(indexes[1]);
+    // if (text.substring(begin - 3, end + 3).toLowerCase()
+    // .matches("(^|\\s|\\W)[a-zA-Z]/" + name + "/[a-zA-Z](\\s|$|\\W)"))
+    // return nameExpansionSeparated[1].toLowerCase();
+    // else if (text.substring(begin - 1, end + 5).toLowerCase()
+    // .matches("(^|\\s|\\W)" + name + "/[a-zA-Z]/[a-zA-Z](\\s|$|\\W)"))
+    // return nameExpansionSeparated[0].toLowerCase();
+    // else if (text.substring(begin - 5, end + 1).toLowerCase()
+    // .matches("(^|\\s|\\W)[a-zA-Z]/[a-zA-Z]/" + name + "(\\s|$|\\W)"))
+    // return nameExpansionSeparated[2].toLowerCase();
+    // return name;
     // }
 
     // /**
-    //  * Called when a mention name is only a single character. Attempts to expand the
-    //  * search around the mention to find a larger abbreviation it's part of.
-    //  * 
-    //  * @param text
-    //  * @param name
-    //  * @param indexes
-    //  * @return
-    //  */
-    // private String expandSingleCharacter(String text, String name, String[] indexes) {
-    //     if (indexes.length != 2)
-    //         return name;
-    //     int begin = Integer.parseInt(indexes[0]);
-    //     int end = Integer.parseInt(indexes[1]);
-    //     if (text.substring(begin - 3, end + 3).toLowerCase()
-    //             .matches("(^|\\s|\\W)[a-zA-Z]/" + name + "/[a-zA-Z](\\s|$|\\W)"))
-    //         return text.substring(begin - 2, end + 2).toLowerCase();
-    //     else if (text.substring(begin - 1, end + 5).toLowerCase()
-    //             .matches("(^|\\s|\\W)" + name + "/[a-zA-Z]/[a-zA-Z](\\s|$|\\W)"))
-    //         return text.substring(begin, end + 4).toLowerCase();
-    //     else if (text.substring(begin - 5, end + 1).toLowerCase()
-    //             .matches("(^|\\s|\\W)[a-zA-Z]/[a-zA-Z]/" + name + "(\\s|$|\\W)"))
-    //         return text.substring(begin - 4, end).toLowerCase();
-    //     return name;
+    // * Called when a mention name is only a single character. Attempts to expand
+    // the
+    // * search around the mention to find a larger abbreviation it's part of.
+    // *
+    // * @param text
+    // * @param name
+    // * @param indexes
+    // * @return
+    // */
+    // private String expandSingleCharacter(String text, String name, String[]
+    // indexes) {
+    // if (indexes.length != 2)
+    // return name;
+    // int begin = Integer.parseInt(indexes[0]);
+    // int end = Integer.parseInt(indexes[1]);
+    // if (text.substring(begin - 3, end + 3).toLowerCase()
+    // .matches("(^|\\s|\\W)[a-zA-Z]/" + name + "/[a-zA-Z](\\s|$|\\W)"))
+    // return text.substring(begin - 2, end + 2).toLowerCase();
+    // else if (text.substring(begin - 1, end + 5).toLowerCase()
+    // .matches("(^|\\s|\\W)" + name + "/[a-zA-Z]/[a-zA-Z](\\s|$|\\W)"))
+    // return text.substring(begin, end + 4).toLowerCase();
+    // else if (text.substring(begin - 5, end + 1).toLowerCase()
+    // .matches("(^|\\s|\\W)[a-zA-Z]/[a-zA-Z]/" + name + "(\\s|$|\\W)"))
+    // return text.substring(begin - 4, end).toLowerCase();
+    // return name;
     // }
 
     // /**
-    //  * Filters stopwords out of the given token list.
-    //  * 
-    //  * @param tokens
-    //  * @return
-    //  */
+    // * Filters stopwords out of the given token list.
+    // *
+    // * @param tokens
+    // * @return
+    // */
     // private List<String> filterStopwords(String[] tokens) {
-    //     List<String> contentWords = new ArrayList<>();
-    //     for (String token : tokens) {
-    //         if (!stopwords.contains(token))
-    //             contentWords.add(token);
-    //     }
-    //     return contentWords;
+    // List<String> contentWords = new ArrayList<>();
+    // for (String token : tokens) {
+    // if (!stopwords.contains(token))
+    // contentWords.add(token);
+    // }
+    // return contentWords;
     // }
 
     /**

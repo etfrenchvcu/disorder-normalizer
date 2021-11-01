@@ -43,8 +43,8 @@ public class AbbreviationExpansionSieveTest {
 	@Test
 	public void fromAbbreviationFile() throws Exception {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
-		terminology.nameToCuiListMap.addKeyPair("altered auditory feedback", cui);
-		var mention = new Mention("aaf", null, null, null);
+		terminology.nameToCuiListMap.addKeyPair("arterial blood gas", cui);
+		var mention = new Mention("abg", null, null, null);
 		sieve.apply(mention, new Document());
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
@@ -52,8 +52,8 @@ public class AbbreviationExpansionSieveTest {
 
 	@Test
 	public void ambiguousAbbreviation() throws Exception {
-		terminology.nameToCuiListMap.addKeyPair("cardiac arrest", "cui1");
-		terminology.nameToCuiListMap.addKeyPair("cholic acid", "cui2");
+		terminology.nameToCuiListMap.addKeyPair("cancer", "cui1");
+		terminology.nameToCuiListMap.addKeyPair("coronary artery", "cui2");
 		var mention = new Mention("ca", null, null, null);
 		sieve.apply(mention, new Document());
 		assertFalse(mention.normalized);

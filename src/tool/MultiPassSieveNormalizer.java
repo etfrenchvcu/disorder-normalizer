@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.List;
 
 import tool.sieves.AbbreviationExpansionSieve;
-import tool.sieves.DiseaseTermSynonymsSieve;
 import tool.sieves.ExactMatchSieve;
 import tool.sieves.HyphenationSieve;
 import tool.sieves.NumberReplacementSieve;
@@ -112,7 +111,8 @@ public class MultiPassSieveNormalizer {
                 HashListMap documentCuiNamesMap = new HashListMap();
 
                 for (Mention mention : doc.mentions) {
-                    if (mention.normalized)
+                    // Skip already normalized and length==1 (too ambiguous)
+                    if (mention.normalized || mention.name.length()==1)
                         continue;
 
                     if (sieveName.equals("AbbreviationExpansionSieve")) {
