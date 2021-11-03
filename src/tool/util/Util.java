@@ -58,8 +58,10 @@ public class Util {
         String[] phrase_tokens = phrase.split("\\s+");
         phrase = "";
         for (String phrase_token : phrase_tokens) {
-            phrase_token = spellingCorrectionMap.containsKey(phrase_token) ? spellingCorrectionMap.get(phrase_token)
-                    : phrase_token;
+            if (spellingCorrectionMap.containsKey(phrase_token)) {
+                phrase_token = spellingCorrectionMap.get(phrase_token);
+            }
+            
             phrase += phrase_token + " ";
         }
         phrase = phrase.trim();
