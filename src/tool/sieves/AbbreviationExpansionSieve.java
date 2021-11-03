@@ -9,11 +9,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-import tool.util.Document;
 import tool.util.HashListMap;
 import tool.util.Mention;
 import tool.util.Terminology;
@@ -42,11 +39,11 @@ public class AbbreviationExpansionSieve extends Sieve {
     }
 
     /**
-     * Only here to implement the abstract.
+     * Checks for abbreviation expansions from global file.
      */
-    public void apply(Mention mention, Document doc) throws Exception {
+    public void apply(Mention mention) throws Exception {
         // Tries to find an acronym and expands it to include all permutations.
-        var allPermutations = getAbbreviationPermutations(mention.name, doc.abbreviationMap);
+        var allPermutations = getAbbreviationPermutations(mention.name);
 
         // Append unique permutations to the mention object.
         mention.addPermutationList(allPermutations);
@@ -56,29 +53,16 @@ public class AbbreviationExpansionSieve extends Sieve {
     }
 
     /**
-     * Only here to implement the abstract.
-     */
-    public void apply(Mention mention) throws Exception {
-        throw new Exception("Use apply(Mention mention, Document doc).");
-    }
-
-    /**
      * Assumes a name contains at most one acronym and returns all permutations of
      * its expansion.
      * 
      * @param name
-     * @param docMap
      * @return
      */
-    private List<String> getAbbreviationPermutations(String name, Map<String, String> docMap) {
+    private List<String> getAbbreviationPermutations(String name) {
         var nameTokens = name.split("\\s");
         for (var i = 0; i < nameTokens.length; i++) {
-            if (docMap != null && docMap.containsKey(nameTokens[i])) {
-                // Check the map created from the annotation file first.
-                nameTokens[i] = docMap.get(nameTokens[i]);
-                var expansion = String.join(" ", nameTokens);
-                return Arrays.asList(expansion);
-            } else if (globalAbbreviationMap.containsKey(nameTokens[i])) {
+            if (globalAbbreviationMap.containsKey(nameTokens[i])) {
                 // Get a list of candidate expansions from the global abbreviation file.
                 var expansions = new ArrayList<String>();
                 for (var expansion : globalAbbreviationMap.get(nameTokens[i])) {

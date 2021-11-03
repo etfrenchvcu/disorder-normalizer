@@ -27,7 +27,7 @@ public class UmlsEndingSieveTest {
 	public void addEndingTest() {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
 		terminology.loadConceptMaps("delirium, nos", cui);
-		var mention = new Mention("delirium", null, null, null);
+		var mention = new Mention("delirium", null, null);
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
@@ -35,7 +35,7 @@ public class UmlsEndingSieveTest {
 
 	@Test
 	public void failToNormalize() {
-		var mention = new Mention("xkcd", null, null, null);
+		var mention = new Mention("xkcd", null, null);
 		sieve.apply(mention);
 		assertFalse(mention.normalized);
 		assertEquals("", mention.cui);

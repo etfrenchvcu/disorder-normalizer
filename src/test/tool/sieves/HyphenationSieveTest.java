@@ -27,7 +27,7 @@ public class HyphenationSieveTest {
 	public void addHyphenTest() {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
 		terminology.loadConceptMaps("a-fib", cui);
-		var mention = new Mention("a fib", null, null, null);
+		var mention = new Mention("a fib", null, null);
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
@@ -37,7 +37,7 @@ public class HyphenationSieveTest {
 	public void removeHyphenTest() {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
 		terminology.loadConceptMaps("diabetes mellitus", cui);
-		var mention = new Mention("diabetes-mellitus", null, null, null);
+		var mention = new Mention("diabetes-mellitus", null, null);
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
@@ -47,14 +47,14 @@ public class HyphenationSieveTest {
 	public void normalization() {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
 		terminology.loadConceptMaps("fake-disease name", cui);
-		var mention = new Mention("fake disease name", null, null, null);
+		var mention = new Mention("fake disease name", null, null);
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 	}
 
 	@Test
 	public void failToNormalize() {
-		var mention = new Mention("xkcd", null, null, null);
+		var mention = new Mention("xkcd", null, null);
 		sieve.apply(mention);
 		assertFalse(mention.normalized);
 		assertEquals("", mention.cui);

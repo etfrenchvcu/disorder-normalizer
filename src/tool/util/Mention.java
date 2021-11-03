@@ -24,15 +24,13 @@ public class Mention {
     public List<String> alternateCuis;
     public List<String> namePermutations;
     public String indexes;
-    public List<String> goldOMIMCuis;
     public String goldCui;
     public List<String> goldNames;
 
-    public Mention(String name, String indexes, String goldCui, List<String> goldOMIMCuis) {
+    public Mention(String name, String indexes, String goldCui) {
         this.indexes = indexes;
         this.name = name.trim().toLowerCase();
         this.goldCui = goldCui;
-        this.goldOMIMCuis = goldOMIMCuis;
         this.normalizingSieveLevel = 0;
 
         // Initialize lists

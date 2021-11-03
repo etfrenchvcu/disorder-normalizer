@@ -4,14 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import tool.sieves.AbbreviationExpansionSieve;
-import tool.util.Document;
 import tool.util.Mention;
 import tool.util.Terminology;
 
@@ -26,26 +24,13 @@ public class AbbreviationExpansionSieveTest {
 		sieve = new AbbreviationExpansionSieve(terminology, new Terminology(empty));
 	}
 
-	// Tests using abbreviation from document.
-	@Test
-	public void fromDocument() throws Exception {
-		var cui = new Exception().getStackTrace()[0].getMethodName();
-		var doc = new Document(new File("src/test/sample.concept"));
-		terminology.nameToCuiListMap.addKeyPair("made up disease", cui);
-		doc.abbreviationMap.put("made up disease", cui);
-		var mention = new Mention("MUD", null, null, null);
-		sieve.apply(mention, doc);
-		assertTrue(mention.normalized);
-		assertEquals(cui, mention.cui);
-	}
-
 	// Tests using abbreviation from abbreviation file.
 	@Test
 	public void fromAbbreviationFile() throws Exception {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
 		terminology.nameToCuiListMap.addKeyPair("arterial blood gas", cui);
-		var mention = new Mention("abg", null, null, null);
-		sieve.apply(mention, new Document());
+		var mention = new Mention("abg", null, null);
+		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
 	}
@@ -54,15 +39,15 @@ public class AbbreviationExpansionSieveTest {
 	public void ambiguousAbbreviation() throws Exception {
 		terminology.nameToCuiListMap.addKeyPair("cancer", "cui1");
 		terminology.nameToCuiListMap.addKeyPair("coronary artery", "cui2");
-		var mention = new Mention("ca", null, null, null);
-		sieve.apply(mention, new Document());
+		var mention = new Mention("ca", null, null);
+		sieve.apply(mention);
 		assertFalse(mention.normalized);
 	}
 
 	@Test
 	public void failToNormalize() throws Exception {
-		var mention = new Mention("xkcd", null, null, null);
-		sieve.apply(mention, new Document());
+		var mention = new Mention("xkcd", null, null);
+		sieve.apply(mention);
 		assertFalse(mention.normalized);
 		assertEquals("", mention.cui);
 	}

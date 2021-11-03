@@ -28,7 +28,7 @@ public class PartialMatchSieveTest {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
 		terminology.loadConceptMaps("unique term", cui);
 		terminology.loadConceptMaps("term name", "foo");
-		var mention = new Mention("unique", null, null, null);
+		var mention = new Mention("unique", null, null);
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
@@ -38,7 +38,7 @@ public class PartialMatchSieveTest {
 	public void nonUniqueTokenTest() {
 		terminology.loadConceptMaps("nonunique term", "bar");
 		terminology.loadConceptMaps("nonunique name", "baz");
-		var mention = new Mention("nonunique", null, null, null);
+		var mention = new Mention("nonunique", null, null);
 		sieve.apply(mention);
 		assertFalse(mention.normalized);
 		assertEquals(2, mention.cui.split(",").length);
@@ -46,7 +46,7 @@ public class PartialMatchSieveTest {
 
 	@Test
 	public void failToNormalize() {
-		var mention = new Mention("xkcd", null, null, null);
+		var mention = new Mention("xkcd", null, null);
 		sieve.apply(mention);
 		assertFalse(mention.normalized);
 		assertEquals("", mention.cui);

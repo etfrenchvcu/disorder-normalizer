@@ -29,6 +29,7 @@ public class Main {
         File outputDir = null;
         File standardTerminologyFile = null;
         MultiPassSieveNormalizer multiPassSieve;
+        System.out.println(System.getProperty("user.dir"));
 
         // Parse input args
         if (args.length >= 2) {

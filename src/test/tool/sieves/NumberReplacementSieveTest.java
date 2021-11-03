@@ -27,7 +27,7 @@ public class NumberReplacementSieveTest {
 	public void numberToWordTest() {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
 		terminology.loadConceptMaps("type 2 diabetes", cui);
-		var mention = new Mention("Type II diabetes", null, null, null);
+		var mention = new Mention("Type II diabetes", null, null);
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
@@ -37,7 +37,7 @@ public class NumberReplacementSieveTest {
 	public void wordToNumberTest() {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
 		terminology.loadConceptMaps("type two diabetes", cui);
-		var mention = new Mention("Type 2 diabetes", null, null, null);
+		var mention = new Mention("Type 2 diabetes", null, null);
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
@@ -45,7 +45,7 @@ public class NumberReplacementSieveTest {
 
 	@Test
 	public void failToNormalize() {
-		var mention = new Mention("xkcd", null, null, null);
+		var mention = new Mention("xkcd", null, null);
 		sieve.apply(mention);
 		assertFalse(mention.normalized);
 		assertEquals("", mention.cui);

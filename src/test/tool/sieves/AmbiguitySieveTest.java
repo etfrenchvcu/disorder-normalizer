@@ -30,7 +30,7 @@ public class AmbiguitySieveTest {
 	@Test
 	public void applyMatch() throws Exception {
 		standard.loadConceptMaps("name", "cui");
-		var mention = new Mention("name", null, null, null);
+		var mention = new Mention("name", null, null);
 		mention.cui = "bad_cui,cui";
 		var doc = new Document(new File("src/test/sample.concept"));
 		doc.mentions.get(0).cui = "cui";
@@ -41,7 +41,7 @@ public class AmbiguitySieveTest {
 
 	@Test
 	public void failToNormalize() throws Exception {
-		var mention = new Mention("xkcd", null, null, null);
+		var mention = new Mention("xkcd", null, null);
 		mention.cui = "bad_cui,other_cui";
 		var doc = new Document(new File("src/test/sample.concept"));
 		doc.mentions.get(0).cui = "cui";

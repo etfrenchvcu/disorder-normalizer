@@ -66,8 +66,7 @@ public class Evaluation {
             return;
 
         incrementTotal();
-        if ((!mention.goldCui.equals("") && mention.goldCui.equals(mention.cui))
-                || (!mention.goldOMIMCuis.isEmpty() && mention.goldOMIMCuis.contains(mention.cui)))
+        if (!mention.goldCui.equals("") && mention.goldCui.equals(mention.cui))
             incrementTP();
         else if (mention.goldCui.contains("|") && mention.cui.contains("|")) {
             List<String> gold = new ArrayList<>(Arrays.asList(mention.goldCui.split("\\|")));
@@ -82,13 +81,6 @@ public class Evaluation {
             if (!mention.goldCui.equals("") && mention.alternateCuis.contains(mention.goldCui)) {
                 incrementTP();
                 mention.cui = mention.goldCui;
-            } else if (!mention.goldOMIMCuis.isEmpty()
-                    && mention.alternateCuis.stream().anyMatch(x -> mention.goldOMIMCuis.contains(x))) {
-                // getGoldOMIMCuis not empty OR alternateCuis contains anything in
-                // getGoldOMIMCuis.
-                incrementTP();
-                if (mention.goldOMIMCuis.size() == 1)
-                    mention.cui = mention.goldOMIMCuis.get(0);
             } else {
                 incrementFP();
             }

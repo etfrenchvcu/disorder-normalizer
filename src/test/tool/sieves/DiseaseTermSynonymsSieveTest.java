@@ -27,7 +27,7 @@ public class DiseaseTermSynonymsSieveTest {
 	public void replaceTermTest() {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
 		terminology.loadConceptMaps("cushing's disease", cui);
-		var mention = new Mention("cushing's syndrome", null, null, null);
+		var mention = new Mention("cushing's syndrome", null, null);
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
@@ -37,7 +37,7 @@ public class DiseaseTermSynonymsSieveTest {
 	public void removeTermTest() {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
 		terminology.loadConceptMaps("opiod use", cui);
-		var mention = new Mention("opiod use disorder", null, null, null);
+		var mention = new Mention("opiod use disorder", null, null);
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
@@ -45,7 +45,7 @@ public class DiseaseTermSynonymsSieveTest {
 
 	@Test
 	public void failToNormalize() {
-		var mention = new Mention("xkcd", null, null, null);
+		var mention = new Mention("xkcd", null, null);
 		sieve.apply(mention);
 		assertFalse(mention.normalized);
 		assertEquals("", mention.cui);

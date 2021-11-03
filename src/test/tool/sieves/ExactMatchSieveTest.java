@@ -29,7 +29,7 @@ public class ExactMatchSieveTest {
 	public void applyMatch() {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
 		standard.loadConceptMaps("name", cui);
-		var mention = new Mention("name", null, null, null);
+		var mention = new Mention("name", null, null);
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
@@ -40,7 +40,7 @@ public class ExactMatchSieveTest {
 		var name = new Exception().getStackTrace()[0].getMethodName().toLowerCase();
 		standard.loadConceptMaps(name, "standard_cui");
 		train.loadConceptMaps(name, "train_cui");
-		var mention = new Mention(name, null, null, null);
+		var mention = new Mention(name, null, null);
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals("train_cui", mention.cui);
@@ -51,14 +51,14 @@ public class ExactMatchSieveTest {
 		var name = new Exception().getStackTrace()[0].getMethodName().toLowerCase();
 		standard.loadConceptMaps(name, "standard_cui1");
 		standard.loadConceptMaps(name, "standard_cui2");
-		var mention = new Mention(name, null, null, null);
+		var mention = new Mention(name, null, null);
 		sieve.apply(mention);
 		assertFalse(mention.normalized);
 	}
 
 	@Test
 	public void failToNormalize() {
-		var mention = new Mention("xkcd", null, null, null);
+		var mention = new Mention("xkcd", null, null);
 		sieve.apply(mention);
 		assertFalse(mention.normalized);
 		assertEquals("", mention.cui);

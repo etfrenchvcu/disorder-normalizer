@@ -118,11 +118,7 @@ public class MultiPassSieveNormalizer {
                     if (mention.normalized || mention.name.length() == 1)
                         continue;
 
-                    if (sieveName.equals("AbbreviationExpansionSieve")) {
-                        // Special case for abbreviation expansion sieve.
-                        AbbreviationExpansionSieve sieve = (AbbreviationExpansionSieve) sieves.get(i);
-                        sieve.apply(mention, doc);
-                    } else if (sieveName.equals("AmbiguitySieve")) {
+                    if (sieveName.equals("AmbiguitySieve")) {
                         // Special case for AmbiguitySieve.
                         AmbiguitySieve sieve = (AmbiguitySieve) sieves.get(i);
                         sieve.apply(mention, doc);

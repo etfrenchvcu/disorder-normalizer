@@ -27,7 +27,7 @@ public class PrepositionalTransformSieveTest {
 	public void inversionTest() {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
 		terminology.loadConceptMaps("breast cancer", cui);
-		var mention = new Mention("cancer of breast", null, null, null);
+		var mention = new Mention("cancer of breast", null, null);
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
@@ -37,7 +37,7 @@ public class PrepositionalTransformSieveTest {
 	public void insertionTest() {
 		var cui = new Exception().getStackTrace()[0].getMethodName();
 		terminology.loadConceptMaps("complications with diabetes", cui);
-		var mention = new Mention("diabetes complications", null, null, null);
+		var mention = new Mention("diabetes complications", null, null);
 		sieve.apply(mention);
 		assertTrue(mention.normalized);
 		assertEquals(cui, mention.cui);
@@ -45,7 +45,7 @@ public class PrepositionalTransformSieveTest {
 
 	@Test
 	public void failToNormalize() {
-		var mention = new Mention("xkcd", null, null, null);
+		var mention = new Mention("xkcd", null, null);
 		sieve.apply(mention);
 		assertFalse(mention.normalized);
 		assertEquals("", mention.cui);
