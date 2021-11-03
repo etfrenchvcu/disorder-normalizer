@@ -80,7 +80,6 @@ public class MultiPassSieveNormalizer {
         sieves.add(new NumberReplacementSieve(standardTerminology, trainTerminology));
         sieves.add(new HyphenationSieve(standardTerminology, trainTerminology));
         // sieves.add(new UmlsEndingSieve(standardTerminology, trainTerminology));
-        // sieves.add(new AffixationSieve(standardTerminology, trainTerminology)); //
         // This one is slow...
         // sieves.add(new DiseaseTermSynonymsSieve(standardTerminology,
         // trainTerminology)); //Slow and bad
