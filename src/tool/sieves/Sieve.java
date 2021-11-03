@@ -113,6 +113,7 @@ public abstract class Sieve {
                 // exactMatch returned exactly one CUI.
                 Util.addUnique(cuis, match);
                 Util.addUnique(names, name);
+                mention.normalizingName = name;
             }
         }
 

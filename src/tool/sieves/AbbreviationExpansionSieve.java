@@ -26,7 +26,6 @@ import tool.util.Terminology;
 public class AbbreviationExpansionSieve extends Sieve {
 
     private HashListMap globalAbbreviationMap;
-    private List<String> stopwords;
 
     /**
      * Constructor. Calls abstract constructor.
@@ -35,11 +34,10 @@ public class AbbreviationExpansionSieve extends Sieve {
      * @param trainTerminology
      * @throws IOException
      */
-    public AbbreviationExpansionSieve(Terminology standardTerminology, Terminology trainTerminology,
-            List<String> stopwords) throws IOException {
+    public AbbreviationExpansionSieve(Terminology standardTerminology, Terminology trainTerminology)
+            throws IOException {
         super(standardTerminology, trainTerminology);
 
-        this.stopwords = stopwords;
         globalAbbreviationMap = loadAbbreviationMap();
     }
 

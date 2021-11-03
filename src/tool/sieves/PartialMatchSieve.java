@@ -43,12 +43,10 @@ public class PartialMatchSieve extends Sieve {
      * @param mention
      */
     public void apply(Mention mention) {
-        String name = mention.nameExpansion != null && mention.nameExpansion.equals("") ? mention.nameExpansion
-                : mention.name;
         var cuis = new HashMap<String, Integer>();
         var names = new ArrayList<String>();
 
-        for (String token : name.split("\\s+")) {
+        for (String token : mention.name.split("\\s+")) {
             // Skip stopwords.
             if (!stopwords.contains(token)) {
 
@@ -68,35 +66,36 @@ public class PartialMatchSieve extends Sieve {
 
         // return getBestMatchCui(cuis);
         if (cuis.keySet().size() > 0) {
-            mention.cui = String.join(",",cuis.keySet());
+            mention.cui = String.join(",", cuis.keySet());
             mention.normalized = cuis.keySet().size() == 1;
 
             // if (mention.normalized)
-            //     normalizedNameToCuiListMap.addKeyPair(names.get(0), mention.cui);
+            // normalizedNameToCuiListMap.addKeyPair(names.get(0), mention.cui);
         }
     }
 
     // /**
-    //  * Gets the CUI with the associated with the most tokens in the name.
-    //  * 
-    //  * @param cuis
-    //  * @return
-    //  */
+    // * Gets the CUI with the associated with the most tokens in the name.
+    // *
+    // * @param cuis
+    // * @return
+    // */
     // private String getBestMatchCui(HashMap<String, Integer> cuis) {
-    //     Map.Entry<String, Integer> bestMatch = null;
+    // Map.Entry<String, Integer> bestMatch = null;
 
-    //     for (Map.Entry<String, Integer> entry : cuis.entrySet()) {
-    //         if (bestMatch == null || entry.getValue().compareTo(bestMatch.getValue()) > 0) {
-    //             // Initialize or when entry has most CUI hits.
-    //             bestMatch = entry;
-    //         } else if (entry.getValue().compareTo(bestMatch.getValue()) == 0
-    //                 && entry.getKey().length() < bestMatch.getKey().length()) {
-    //             // Same # CUI hits, but entry is shorter than previous best match.
-    //             bestMatch = entry;
-    //         }
-    //     }
+    // for (Map.Entry<String, Integer> entry : cuis.entrySet()) {
+    // if (bestMatch == null || entry.getValue().compareTo(bestMatch.getValue()) >
+    // 0) {
+    // // Initialize or when entry has most CUI hits.
+    // bestMatch = entry;
+    // } else if (entry.getValue().compareTo(bestMatch.getValue()) == 0
+    // && entry.getKey().length() < bestMatch.getKey().length()) {
+    // // Same # CUI hits, but entry is shorter than previous best match.
+    // bestMatch = entry;
+    // }
+    // }
 
-    //     return bestMatch == null ? "" : bestMatch.getKey();
+    // return bestMatch == null ? "" : bestMatch.getKey();
     // }
 
     /**

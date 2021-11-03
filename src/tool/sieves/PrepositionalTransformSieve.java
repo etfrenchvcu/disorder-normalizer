@@ -145,18 +145,21 @@ public class PrepositionalTransformSieve extends Sieve {
     private List<String> insertPrepositionsInPhrase(String phrase) {
         var phraseTokens = Arrays.asList(phrase.split("\\s+"));
         List<String> newPrepositionalPhrases = new ArrayList<>();
-        for (String preposition : PREPOSITIONS) {
-            // Insert preposition near the end of the string
-            var dropFirstToken = String.join(" ", phraseTokens.subList(1, phraseTokens.size()));
-            String newPrepositionalPhrase = (dropFirstToken + " " + preposition + " " + phraseTokens.get(0)).trim();
-            Util.addUnique(newPrepositionalPhrases, newPrepositionalPhrase);
+        if (phraseTokens.size() > 1) {
+            for (String preposition : PREPOSITIONS) {
+                // Insert preposition near the end of the string
+                var dropFirstToken = String.join(" ", phraseTokens.subList(1, phraseTokens.size()));
+                String newPrepositionalPhrase = (dropFirstToken + " " + preposition + " " + phraseTokens.get(0)).trim();
+                Util.addUnique(newPrepositionalPhrases, newPrepositionalPhrase);
 
-            // insert preposition near the beginning of the string
-            var dropLastToken = String.join(" ", phraseTokens.subList(0, phraseTokens.size() - 1));
-            newPrepositionalPhrase = (phraseTokens.get(phraseTokens.size() - 1) + " " + preposition + " "
-                    + dropLastToken).trim();
-            Util.addUnique(newPrepositionalPhrases, newPrepositionalPhrase);
+                // insert preposition near the beginning of the string
+                var dropLastToken = String.join(" ", phraseTokens.subList(0, phraseTokens.size() - 1));
+                newPrepositionalPhrase = (phraseTokens.get(phraseTokens.size() - 1) + " " + preposition + " "
+                        + dropLastToken).trim();
+                Util.addUnique(newPrepositionalPhrases, newPrepositionalPhrase);
+            }
         }
+
         return newPrepositionalPhrases;
     }
 
