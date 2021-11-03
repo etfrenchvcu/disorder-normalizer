@@ -6,3 +6,4 @@ bin/*
 .project
 scripts/umls/*.rrf
 scripts/umls/*.txt
+.DS_Store
