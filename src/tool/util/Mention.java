@@ -18,6 +18,7 @@ public class Mention {
     public String cui = "";
     public boolean normalized = false;
     public int normalizingSieveLevel;
+    public String normalizingName;
     public String normalizingSieveName;
     public String normalizingSource;
     public List<String> alternateCuis;
@@ -46,7 +47,7 @@ public class Mention {
      */
     public String toString() {
         return name + "\t" + keyPhrase + "\t" + cui + "\t" + normalized + "\t" + normalizingSieveName + "\t" + 
-        normalizingSource + "\t" + goldCui + "\t" + String.join(",",namePermutations) + "\t" + normalizingSieveLevel + "\t" + String.join(",",goldNames);
+        normalizingSource + "\t" + goldCui + "\t" + normalizingName + "\t" + normalizingSieveLevel + "\t" + String.join(",",goldNames);
     }
 
     /**

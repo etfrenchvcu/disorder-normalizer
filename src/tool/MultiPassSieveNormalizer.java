@@ -22,12 +22,10 @@ import tool.sieves.PartialMatchSieve;
 import tool.sieves.PrepositionalTransformSieve;
 import tool.sieves.RemoveStopwordsSieve;
 import tool.sieves.Sieve;
-import tool.sieves.StemmingSieve;
-import tool.sieves.UmlsEndingSieve;
+import tool.sieves.SuffixationSieve;
 import tool.util.Document;
 import tool.util.HashListMap;
 import tool.util.Mention;
-import tool.util.Stemmer;
 import tool.util.Terminology;
 import tool.util.Util;
 
@@ -76,16 +74,17 @@ public class MultiPassSieveNormalizer {
 
         sieves.add(new ExactMatchSieve(standardTerminology, trainTerminology));
         sieves.add(new RemoveStopwordsSieve(standardTerminology, trainTerminology));
-        sieves.add(new UmlsEndingSieve(standardTerminology, trainTerminology));
-        sieves.add(new AbbreviationExpansionSieve(standardTerminology, trainTerminology, stopwords));
+        sieves.add(new AbbreviationExpansionSieve(standardTerminology, trainTerminology));
+        sieves.add(new SuffixationSieve(standardTerminology, trainTerminology));
         sieves.add(new PrepositionalTransformSieve(standardTerminology, trainTerminology));
         sieves.add(new NumberReplacementSieve(standardTerminology, trainTerminology));
         sieves.add(new HyphenationSieve(standardTerminology, trainTerminology));
+        // sieves.add(new UmlsEndingSieve(standardTerminology, trainTerminology));
         // sieves.add(new AffixationSieve(standardTerminology, trainTerminology)); //
         // This one is slow...
         // sieves.add(new DiseaseTermSynonymsSieve(standardTerminology,
         // trainTerminology)); //Slow and bad
-        // sieves.add(new StemmingSieve(standardTerminology, trainTerminology, new Stemmer(stopwords)));
+
         // sieves.add(new CompoundPhraseSieve(standardTerminology, trainTerminology,
         // normalizedNameToCuiListMap));
         sieves.add(new PartialMatchSieve(standardTerminology, trainTerminology, stopwords));
@@ -181,62 +180,6 @@ public class MultiPassSieveNormalizer {
         if (trainMap.containsKey(mention.goldCui)) {
             for (var name : trainMap.get(mention.goldCui))
                 Util.addUnique(mention.goldNames, name);
-        }
-    }
-
-    /**
-     * Attempts to resolve ambiguity within a document before scoring performance on
-     * a document.
-     * 
-     * @param doc
-     * @param documentCuiNamesMap
-     * @throws IOException
-     */
-    private void resolveAmbiguity(Document doc, HashListMap documentCuiNamesMap) throws IOException {
-        for (Mention mention : doc.mentions) {
-
-            eval.evaluateClassification(mention, doc);
-            // // If mention was normalized (not by ExactMatchSieve) or definitively
-            // CUI-less.
-            // if (!mention.normalizingSieveName.equals("ExactMatchSieve") ||
-            // mention.cui.equals("CUI-less")) {
-            // eval.evaluateClassification(mention, doc);
-            // continue;
-            // }
-
-            // // TODO: Handle multiple CUIs, prioritize CUI match in document.
-
-            // // If mention absent or unambiguous in training data.
-            // List<String> trainingDataCuis =
-            // trainTerminology.nameToCuiListMap.get(mention.name);
-            // if (trainingDataCuis == null || trainingDataCuis.size() == 1) {
-            // eval.evaluateClassification(mention, doc);
-            // // storeNormalizedConcept(mention);
-            // continue;
-            // }
-
-            // String[] conceptNameTokens = mention.name.split("\\s+");
-            // if (conceptNameTokens.length > 1)
-            // mention.cui = "CUI-less";
-            // else {
-            // int countCUIMatch = 0;
-            // for (String cui : trainingDataCuis) {
-            // List<String> names = documentCuiNamesMap.containsKey(cui) ?
-            // documentCuiNamesMap.get(cui) : new ArrayList<String>();
-            // for (String name : names) {
-            // String[] nameTokens = name.split("\\s+");
-            // if (nameTokens.length == 1)
-            // continue;
-            // if (name.matches(mention.name + " .*")) {
-            // countCUIMatch++;
-            // }
-            // }
-            // }
-            // if (countCUIMatch > 0)
-            // mention.cui = "CUI-less";
-            // // else
-            // // storeNormalizedConcept(mention);
-            // }
         }
     }
 

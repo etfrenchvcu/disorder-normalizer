@@ -31,8 +31,7 @@ public class UmlsEndingSieve extends Sieve {
     public UmlsEndingSieve(Terminology standardTerminology, Terminology trainTerminology) throws IOException {
         super(standardTerminology, trainTerminology);
 
-        //TODO: Try other endings like "(finding)"
-        endings = Arrays.asList(", nos");
+        endings = Arrays.asList(", nos", " (procedure)", " test", " measurement", " (body structure)", " (finding)");
     }
 
     /**

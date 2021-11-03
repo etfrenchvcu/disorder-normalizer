@@ -23,7 +23,7 @@ public class AbbreviationExpansionSieveTest {
 	public void setUp() throws Exception {
 		var empty = new ArrayList<String>();
 		terminology = new Terminology(empty);
-		sieve = new AbbreviationExpansionSieve(terminology, new Terminology(empty), empty);
+		sieve = new AbbreviationExpansionSieve(terminology, new Terminology(empty));
 	}
 
 	// Tests using abbreviation from document.
