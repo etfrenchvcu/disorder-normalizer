@@ -14,7 +14,7 @@ import java.util.List;
 public class Mention {
 
     public String name;
-    public String nameExpansion;
+    public String keyPhrase;
     public String cui = "";
     public boolean normalized = false;
     public int normalizingSieveLevel;
@@ -45,7 +45,7 @@ public class Mention {
      * Prints tab delimited property values.
      */
     public String toString() {
-        return name + "\t" + nameExpansion + "\t" + cui + "\t" + normalized + "\t" + normalizingSieveName + "\t" + 
+        return name + "\t" + keyPhrase + "\t" + cui + "\t" + normalized + "\t" + normalizingSieveName + "\t" + 
         normalizingSource + "\t" + goldCui + "\t" + String.join(",",namePermutations) + "\t" + normalizingSieveLevel + "\t" + String.join(",",goldNames);
     }
 

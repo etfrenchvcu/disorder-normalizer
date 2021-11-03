@@ -27,7 +27,7 @@ public class RemoveStopwordsSieve extends Sieve {
      */
     public RemoveStopwordsSieve(Terminology standardTerminology, Terminology trainTerminology) {
         super(standardTerminology, trainTerminology);
-        stopwords = Arrays.asList("a", "an", "the", "his", "her");
+        stopwords = Arrays.asList("a", "an", "the", "his", "her", "&apos;s", "'s", "this", "these", "any", "patient");
     }
 
     /**
@@ -40,6 +40,9 @@ public class RemoveStopwordsSieve extends Sieve {
             token = token.trim();
             if (!stopwords.contains(token)) {
                 swRemoved += token + " ";
+            } else {
+                // Store removed stopword for analysis
+                mention.keyPhrase = token;
             }
         }
         swRemoved = swRemoved.trim();
