@@ -27,7 +27,7 @@ public class RemoveStopwordsSieve extends Sieve {
      */
     public RemoveStopwordsSieve(Terminology standardTerminology, Terminology trainTerminology) {
         super(standardTerminology, trainTerminology);
-        stopwords = Arrays.asList("a", "an", "the", "his", "her", "&apos;s", "'s", "this", "these", "any", "patient");
+        stopwords = Arrays.asList("a", "an", "the", "his", "her", "&apos;s", "'s", "this", "these", "any", "patient", "\"");
     }
 
     /**

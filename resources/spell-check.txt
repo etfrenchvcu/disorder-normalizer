@@ -34,3 +34,4 @@ sytem||system
 tumours||tumors
 tumour||tumor
 withdrawel||withdrawal
+xray||x-ray

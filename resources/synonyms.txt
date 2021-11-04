@@ -1,0 +1,30 @@
+blocker||agonist
+per||from
+double||bilateral
+treatment||therapy
+decreased||impaired
+increased||high
+occasional||intermittent
+decreased||reduced
+\d{2}%||partial
+100%||complete
+bleed||hemorrhage
+bleeding||hemorrhage
+exploratory||diagnostic
+old||prior
+three||triple
+extreme||severe
+illness||disorder
+stitch||suture
+decubiti||pressure sores
+decubitus||pressure sore
+scan||imaging
+after||post
+tumor||cancer
+pertussis||whooping cough
+operative procedure||surgery
+exam||examination
+replacement||supplement
+cardiac||heart
+mid||middle
+drainage||discharge
