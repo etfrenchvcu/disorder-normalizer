@@ -1,7 +1,7 @@
+s||
 ages||ed
 aldo||aldosteronism
 ates||ated
-ation||ed
 brady||bradycardia
 cancer||carcinoma
 cemic||cemia
@@ -10,6 +10,7 @@ cral||crum
 cular||cal
 cula||culosis
 culi||culus
+dic||dia
 ed||e
 elt||eeling
 eral||eric
@@ -18,8 +19,13 @@ esoph||esophageal
 etoh||alcohol
 evi||evus
 ged||gement
+gent||gency
 gliom||glioma
 iate||ioid
+ies||ic
+ies||y
+ing||
+ing||e
 ky||kes
 lm||lmonary
 lt||eling
@@ -42,13 +48,11 @@ ses||sis
 sillar||sil
 sions||sion
 sion||tion
-sis||tic
-s||
 tachy||tachicardia
 tal||tum
 ted||tation
-ter||teral
 tic||sis
+ties||ty
 tion||sion
 tious||tion
 tive||tion

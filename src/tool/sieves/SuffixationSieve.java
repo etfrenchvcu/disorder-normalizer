@@ -48,8 +48,12 @@ public class SuffixationSieve extends Sieve {
 
         List<String> stemmedPermutations = new ArrayList<>();
 
+        List<String> keys = new ArrayList<String>();
+        keys.addAll(suffixMap.keySet());
+        keys.sort((s1, s2) -> s1.length() - s2.length());
+
         // Attempt to stem each name permutation.
-        for (var suffix : suffixMap.keySet()) {
+        for (var suffix : keys) {
             var regex = suffix + "(\\s|$)";
             var replacement = suffixMap.get(suffix);
             for (String name : mention.namePermutations) {
