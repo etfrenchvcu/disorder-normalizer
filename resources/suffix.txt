@@ -1,4 +1,3 @@
-s||
 ages||ed
 aldo||aldosteronism
 ates||ated
@@ -13,7 +12,6 @@ culi||culus
 dic||dia
 ed||e
 elt||eeling
-eral||eric
 erium||irium
 esoph||esophageal
 etoh||alcohol
@@ -23,7 +21,6 @@ gent||gency
 gliom||glioma
 iate||ioid
 ies||ic
-ies||y
 ing||
 ing||e
 ky||kes
@@ -32,7 +29,6 @@ lm||lmonary
 lt||eling
 lum||lar
 ly||
-men||minal
 ncy||nt
 ness||ng
 nic||nia
@@ -45,7 +41,6 @@ ptum||ptal
 red||ry
 ric||ria
 sed||sis
-ses||sis
 sillar||sil
 sions||sion
 sion||tion
@@ -53,7 +48,6 @@ tachy||tachicardia
 tal||tum
 ted||tation
 tic||sis
-ties||ty
 tion||sion
 tious||tion
 tive||tion
@@ -62,4 +56,3 @@ tricle||tricular
 trophin||tropic
 tus||tal
 vi||vus
-wer||wing

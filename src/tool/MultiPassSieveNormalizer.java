@@ -86,7 +86,7 @@ public class MultiPassSieveNormalizer {
         // normalizedNameToCuiListMap));
         // sieves.add(new PartialMatchSieve(standardTerminology, trainTerminology,
         // stopwords));
-        sieves.add(new AmbiguitySieve(standardTerminology, trainTerminology));
+        // sieves.add(new AmbiguitySieve(standardTerminology, trainTerminology));
 
         return sieves;
     }
