@@ -18,7 +18,7 @@ import tool.util.Util;
  * @author Jen
  */
 public class PrepositionalTransformSieve extends Sieve {
-    public final List<String> PREPOSITIONS = Arrays.asList("in", "with", "on", "of");
+    public final List<String> PREPOSITIONS = Arrays.asList("in", "with", "on", "of", "to");
 
     /**
      * Constructor. Calls abstract constructor.

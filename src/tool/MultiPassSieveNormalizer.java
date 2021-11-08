@@ -8,16 +8,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import tool.sieves.AbbreviationExpansionSieve;
 import tool.sieves.AmbiguitySieve;
 import tool.sieves.ExactMatchSieve;
 import tool.sieves.HyphenationSieve;
-import tool.sieves.PartialMatchSieve;
 import tool.sieves.PrepositionalTransformSieve;
 import tool.sieves.RemoveStopwordsSieve;
 import tool.sieves.Sieve;
@@ -73,13 +70,13 @@ public class MultiPassSieveNormalizer {
         ArrayList<Sieve> sieves = new ArrayList<Sieve>();
 
         sieves.add(new ExactMatchSieve(standardTerminology, trainTerminology));
-        sieves.add(new RemoveStopwordsSieve(standardTerminology, trainTerminology));
         sieves.add(new AbbreviationExpansionSieve(standardTerminology, trainTerminology));
+        sieves.add(new RemoveStopwordsSieve(standardTerminology, trainTerminology));
         sieves.add(new SynonymSieve(standardTerminology, trainTerminology));
         sieves.add(new SuffixationSieve(standardTerminology, trainTerminology));
         sieves.add(new PrepositionalTransformSieve(standardTerminology, trainTerminology));
         sieves.add(new HyphenationSieve(standardTerminology, trainTerminology));
-        
+
         // sieves.add(new UmlsEndingSieve(standardTerminology, trainTerminology));
         // This one is slow...
         // sieves.add(new DiseaseTermSynonymsSieve(standardTerminology,
@@ -87,7 +84,8 @@ public class MultiPassSieveNormalizer {
 
         // sieves.add(new CompoundPhraseSieve(standardTerminology, trainTerminology,
         // normalizedNameToCuiListMap));
-        sieves.add(new PartialMatchSieve(standardTerminology, trainTerminology, stopwords));
+        // sieves.add(new PartialMatchSieve(standardTerminology, trainTerminology,
+        // stopwords));
         sieves.add(new AmbiguitySieve(standardTerminology, trainTerminology));
 
         return sieves;
@@ -109,15 +107,18 @@ public class MultiPassSieveNormalizer {
         // Progressively apply sieves until the mention is linked to a CUI.
         for (int i = 0; i < sieves.size(); i++) {
             var sieveName = sieves.get(i).getClass().getName().replace("tool.sieves.", "");
-            System.out.println(sieveName + ": " + new SimpleDateFormat("mm.ss").format(new Date()));
 
             for (Document doc : test_data) {
                 HashListMap documentCuiNamesMap = new HashListMap();
 
                 for (Mention mention : doc.mentions) {
-                    // Skip already normalized and length==1 (too ambiguous)
-                    if (mention.normalized || mention.name.length() == 1)
+                    // Skip already normalized
+                    if (mention.normalized)
                         continue;
+
+                    // if (mention.name.equals("his non-q wave mi")) {
+                    //     var foo = 0;
+                    // }
 
                     if (sieveName.equals("AmbiguitySieve")) {
                         // Special case for AmbiguitySieve.

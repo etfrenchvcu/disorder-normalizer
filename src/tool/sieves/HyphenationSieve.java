@@ -6,6 +6,7 @@ package tool.sieves;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import tool.util.Mention;
@@ -13,9 +14,12 @@ import tool.util.Terminology;
 
 /**
  * Hyphenation Sieve.
+ * 
  * @author
  */
 public class HyphenationSieve extends Sieve {
+
+    List<String> specialCases;
 
     /**
      * Constructor. Calls abstract constructor.
@@ -26,6 +30,7 @@ public class HyphenationSieve extends Sieve {
      */
     public HyphenationSieve(Terminology standardTerminology, Terminology trainTerminology) {
         super(standardTerminology, trainTerminology);
+        specialCases = Arrays.asList("non", "pre", "post");
     }
 
     /**
@@ -44,6 +49,17 @@ public class HyphenationSieve extends Sieve {
 
             // Remove hyphens.
             allPermutations.addAll(dehyphenateString(name));
+
+            // Inject hyphen after non/pre/post
+            for (var s : specialCases) {
+                var regex = "(\\s|^)" + s + "(?=[a-z])";
+                var replacement = " " + s + "-";
+                var permutation = name.replaceAll(regex, replacement).trim();
+                if (!permutation.equals(name)) {
+                    allPermutations.add(permutation);
+                    mention.keyPhrase = s;
+                }
+            }
         }
 
         // Append unique permutations to the mention object.
@@ -82,20 +98,10 @@ public class HyphenationSieve extends Sieve {
      * @return
      */
     public static List<String> dehyphenateString(String name) {
-        // Split the name into sections separated by hyphens.
-        String[] nameSections = name.split("\\-");
         List<String> dehyphenatedNames = new ArrayList<>();
-        for (int i = 1; i < nameSections.length; i++) {
-            String dehyphenatedString = "";
-            for (int j = 0; j < nameSections.length; j++) {
-                if (j == i)
-                    dehyphenatedString += " " + nameSections[j];
-                else
-                    dehyphenatedString = dehyphenatedString.equals("") ? nameSections[j]
-                            : dehyphenatedString + "-" + nameSections[j];
-            }
-            dehyphenatedNames.add(dehyphenatedString);
-        }
+        dehyphenatedNames.add(name.replaceAll("\\-", ""));
+        dehyphenatedNames.add(name.replaceAll("\\-", " "));
+    
         return dehyphenatedNames;
     }
 

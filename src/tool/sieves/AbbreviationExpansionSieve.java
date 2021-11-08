@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import tool.util.HashListMap;
 import tool.util.Mention;
@@ -42,37 +41,28 @@ public class AbbreviationExpansionSieve extends Sieve {
      * Checks for abbreviation expansions from global file.
      */
     public void apply(Mention mention) throws Exception {
+        var expansions = new ArrayList<String>();
+
         // Tries to find an acronym and expands it to include all permutations.
-        var allPermutations = getAbbreviationPermutations(mention.name);
-
-        // Append unique permutations to the mention object.
-        mention.addPermutationList(allPermutations);
-
-        // Try to link permutations to a CUI in one of the dictionaries.
-        normalize(mention);
-    }
-
-    /**
-     * Assumes a name contains at most one acronym and returns all permutations of
-     * its expansion.
-     * 
-     * @param name
-     * @return
-     */
-    private List<String> getAbbreviationPermutations(String name) {
-        var nameTokens = name.split("\\s");
+        var nameTokens = mention.name.split("\\s");
         for (var i = 0; i < nameTokens.length; i++) {
-            if (globalAbbreviationMap.containsKey(nameTokens[i])) {
+            var token = nameTokens[i].replace(".", ""); // Remove periods
+            if (globalAbbreviationMap.containsKey(token)) {
                 // Get a list of candidate expansions from the global abbreviation file.
-                var expansions = new ArrayList<String>();
-                for (var expansion : globalAbbreviationMap.get(nameTokens[i])) {
+                for (var expansion : globalAbbreviationMap.get(token)) {
                     nameTokens[i] = expansion;
                     expansions.add(String.join(" ", nameTokens));
                 }
-                return expansions;
+                mention.keyPhrase = token;
+                break;
             }
         }
-        return new ArrayList<String>();
+
+        // Append unique permutations to the mention object.
+        mention.addPermutationList(expansions);
+
+        // Try to link permutations to a CUI in one of the dictionaries.
+        normalize(mention);
     }
 
     // /**

@@ -9,7 +9,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  *
@@ -88,6 +90,8 @@ public class Main {
             // 3-fold cross validation
             var folds = 3;
             for (int i = 0; i < folds; i++) {
+                System.out.println("Running fold " + i + ": " + new SimpleDateFormat("mm.ss").format(new Date()));
+
                 // Wipe directories
                 purgeDirectory(xvalTrain);
                 purgeDirectory(xvalTest);

@@ -48,6 +48,7 @@ public class SuffixationSieve extends Sieve {
 
         List<String> stemmedPermutations = new ArrayList<>();
 
+        //TODO: Apply shortest suffixes first (Only for debugging)
         List<String> keys = new ArrayList<String>();
         keys.addAll(suffixMap.keySet());
         keys.sort((s1, s2) -> s1.length() - s2.length());

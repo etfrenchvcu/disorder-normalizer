@@ -1,19 +1,13 @@
 /d||per day
 131i||radioactive isotope of iodine (atomic weight 131)
 132i||radioactive isotope of iodine (atomic weight 132)
-a||accommodation
-a||acetum
-a||anode
-a||anterior
-a||artery
-a||before
 a&p||auscultation and percussion
 a-g||ratio albumin/globulin ratio
 a-p||anterior-posterior
 a-v||arteriovenous
 a-v||atrioventricular
-a.c.||before a meal
-a.m.a.||against medical advice
+ac||before a meal
+ama||against medical advice
 a/ca||accommodative/convergence accommodation ratio
 a/g||ratio albumin/globulin ratio
 a/v||arteriovenous
@@ -22,7 +16,7 @@ a2||aortic second sound
 aa||arteries
 aa||of each
 aaa||abdominal aortic aneurysm
-abd||abdominal/abdomen
+abd||abdominal
 abg||arterial blood gas
 abi||ankle-brachial index
 abo||three basic blood groups
@@ -32,7 +26,6 @@ ac||alternating current
 ac||axiocervical
 ac||before a meal
 acc||accommodation
-acc.||accommodation
 ace||angiotensin-converting enzyme
 ach||acetylcholine
 ache||acetylcholinesterase
@@ -41,8 +34,6 @@ acls||advanced cardiac life support
 acth||adrenocorticotropic hormone
 ad||advance directive
 ad||as desired
-ad||lib. freely
-ad||sat. to saturation
 ad||to
 ad||up to
 adh||antidiuretic hormone
@@ -50,7 +41,6 @@ adhd||attention deficit-hyperactivity disorder
 adl||activities of daily living
 adls||activities of daily living
 admov||apply
-admov.||apply
 aed||antiepileptic drug
 af||atrial fibrillation
 afb||acid-fast bacillus
@@ -68,41 +58,26 @@ aids||acquired immunodeficiency syndrome
 ak||above the knee
 al||aluminum
 alb||albumin
-all||acute lymphocytic leukemia
 alp||alkaline phosphatase
 als||amyotrophic lateral sclerosis
 alt||alanine aminotransferase
-alt||dieb. every other day
-alt||hor. every other hour
-alt||noc. every other night
-alt.||dieb. every other day
-alt.||hor. every other hour
-alt.||noc. every other night
 am||mixed astigmatism
 am||morning
 ama||against medical advice
 ami||acute myocardial infarction
 aml||acute myelogenous (myeloblastic) leukemia
 amls||advanced medical life support
-amp||ampule
-amp||amputation
+amp||ampules
 ana||antinuclear antibody
 anat||anatomy or anatomic
 anna||anti-neuronal nuclear antibody
 anp||atrial natriuretic peptide
 ant||anterior
-ant.||anterior
 anti-ccp||anticyclic citrullinated peptide
 ao||aorta
-ao.||aorta
-ap||before dinner
 apap||acetaminophen
 aptt||activated partial thromboplastin
-aq||dest. distilled water
-aq||frig. cold water
 aq||water
-aq.||dest. distilled water
-aq.||frig. cold water
 arc||aids-related complex
 ards||acute respiratory distress syndrome
 armd||age-related macular degeneration
@@ -110,12 +85,10 @@ as||ankylosing spondylitis
 as||aortic stenosis
 as||astigmatism
 as||auris sinistra (left ear)
-as.||astigmatism
 asa||acetylsalicylic acid
 asc||ascending
 asc||atypical squamous cells
 asc-us||atypical squamous cells of undetermined significance
-asc.||ascending
 asca||anti-saccharomyces cerevisiae antibody
 ascvd||atherosclerotic cardiovascular disease
 asd||atrial septal defect
@@ -123,23 +96,13 @@ ash||hypermetropic astigmatism
 asm||myopic astigmatism
 ast||aspartate aminotransferase
 ast||astigmatism
-at||wt. atomic weight
-at.||wt. atomic weight
 atcc||american type culture collection
 au||gold
 av||arteriovenous
 av||atrioventricular
 av||avoirdupois
-av.||avoirdupois
 avm||arteriovenous malformation
 avp||arginine vasopressin
-b||bacillus
-b||bone
-b||boron
-b.||bone
-b.i.d.||twice a day
-b.i.n.||twice a night
-b.p.||british pharmacopeia
 ba||barium
 bac||blood alcohol concentration
 bbb||blood-brain barrier
@@ -153,8 +116,8 @@ be||beryllium
 bhs||beta-hemolytic streptococci
 bi||bismuth
 bib||drink
-bib.||drink
 bid||twice a day
+bili||bilirubin
 bin||twice a night
 bipap||bilevel positive airway pressure
 bk||below the knee
@@ -166,7 +129,6 @@ bms||bone marrow suppression
 bmt||bone marrow transplantation
 bnp||brain natriuretic peptide
 bol||pill
-bol.||pill
 bp||blood pressure
 bp||british pharmacopeia
 bph||benign prostatic hyperplasia
@@ -182,22 +144,12 @@ bun||blood urea nitrogen
 bw||birth weight
 bw||body weight
 bx||biopsy
-c||calorie (kilocalorie)
-c||calorie (small calorie)
-c||celsius
-c||with
 c&s||culture and sensitivity
-c.m.s.||to be taken tomorrow morning
-c.n.||tomorrow night
-c.n.s.||to be taken tomorrow night
 c/o||complains of
 ca||about
 ca||approximately
 ca||cancer
 ca||coronary artery
-ca.||about
-ca.||approximately
-ca.||cancer
 cabg||coronary artery bypass graft
 caco3||calcium carbonate
 cad||coronary artery disease
@@ -205,7 +157,6 @@ cah||chronic active hepatitis
 cal||large calorie
 cap||capsule
 cap||let (the patient) take
-cap.||capsule
 cath||catheter
 cbc||complete blood count
 cbi||continuous bladder irrigation
@@ -223,7 +174,6 @@ ccu||critical care unit
 cd4||t-helper cells
 cd8||cytotoxic cells
 cdc||centers for disease control and prevention
-cea||carcinoembryonic antigen
 cf||christmas factor
 cf||cystic fibrosis
 cftr||cystic fibrosis transmembrane regulator
@@ -252,11 +202,8 @@ co||carbon monoxide
 co||cardiac output
 co||cobalt
 co2||carbon dioxide
-cold||chronic obstructive lung disease
 comp||compound
 comp||compounded of
-comp.||compound
-comp.||compounded of
 comt||catechol-o-methyltransferase
 copd||chronic obstructive pulmonary disease
 cox-2||cyclooxygenase 2 inhibitors
@@ -269,9 +216,7 @@ cphss||cincinnati prehospital stroke scale
 cpk||creatine phosphokinase
 cpm||continuous passive motion
 cpr||cardiopulmonary resuscitation
-cr||conditioned reflex
-cr||controlled release
-cr||crown-rump length
+cr||creatinine
 crest||calcinosis
 crest||esophageal dysfunction
 crest||raynaud phenomenon
@@ -285,7 +230,7 @@ cs||culture and sensitivity
 csf||cerebrospinal fluid
 csf||colony-stimulating factor
 csh||combat support hospital
-ct||computed/computerized tomography
+ct||computed tomography
 cu||copper
 cv||cardiovascular
 cva||cardiovascular accident
@@ -295,12 +240,8 @@ cvc||central venous catheter
 cvp||central venous pressure
 cvrb||critical value read back
 cvs||chorionic villi sampling
+cvvh||continuous venovenous haemofiltration
 cxr||chest x-ray
-d||and c dilatation and curettage
-d||density
-d||diopter
-d||dose
-d||right
 d5/0.9||nacl 5% dextrose and normal saline solution (0.9% nacl)
 d5/09||nacl 5% dextrose and normal saline solution (0.9% nacl)
 d5w||5% dextrose in water
@@ -312,22 +253,14 @@ dc||discontinue
 dc||doctor of chiropractic
 derm||dermatology
 det||let it be given
-det.||let it be given
 dexa||dual-energy x-ray absorptiometry
 dfv||doppler flow velocimetry
 dht||dihydrotestosterone
 di||diabetes insipidus
 dic||disseminated intravascular coagulation
-dieb||alt. every other day
-dieb||tert. every third day
-dieb.||alt. every other day
-dieb.||tert. every third day
 dil||dilute
 dil||diluted
-dil.||dilute
-dil.||diluted
 dim||halved
-dim.||halved
 disida||(scan) diisopropyl iminodiacetic acid (cholescintigraphy)
 djd||degenerative joint disease
 dka||diabetic ketoacidosis
@@ -343,7 +276,6 @@ doe||dyspnea on exertion
 dpat||diphtheria-acellular pertussis tetanus (vaccine)
 dpt||diphtheria-pertussis-tetanus (vaccine)
 dr||dram
-dr.||dram
 dre||digital rectal examination
 drg||diagnosis-related group
 dsm-iv-tr||4th edition
@@ -352,12 +284,9 @@ dsm-iv-tr||text revision
 dtr||deep tendon reflex(es)
 dts||delirium tremens
 dur||dolor while pain lasts
-dur.||dolor while pain lasts
 dvt||deep vein thrombosis
 dwi||driving while intoxicated
 dx||diagnosis
-e||escherichia
-e||eye
 ebv||epstein-barr virus
 ecf||extended care facility
 ecf||extracellular fluid
@@ -373,9 +302,6 @@ ed||erythema dose
 edd||estimated date of delivery (formerly edc: estimated date of confinement)
 eeg||electroencephalogram
 eent||and throat
-eent||ear
-eent||eye
-eent||nose
 ef||ejection fraction
 egd||esophagogastroduodenoscopy
 eia||enzyme immunosorbent assay
@@ -383,16 +309,12 @@ ekg||electrocardiogram
 ekg||electrocardiograph
 elisa||enzyme-linked immunosorbent assay
 elix||elixir
-elix.||elixir
 em||emmetropia
 ema-iga||immunoglobulin a antiendomysial
 emg||electromyogram
 emg||electromyography
 ems||emergency medical service
 endo||endocrine
-ent||and throat
-ent||ear
-ent||nose
 eom||extraocular muscles
 ep||extrapyramidal
 eps||extrapyramidal symptoms
@@ -402,29 +324,24 @@ ercp||endoscopic retrograde cholangiopancreatography
 esr||erythrocyte sedimentation rate
 esrd||end-stage renal disease
 est||electroshock therapy
+ert||estrogen replacement therapy
 eswl||extracorporeal shock wave lithotripsy
 et-1||endothelin-1
+ett||exercise tolerance test
 etoh||ethyl alcohol
 ext||extensor
 ext||external
-ext.||extensor
-ext.||external
-f||and e fluid and electrolyte
-f||fahrenheit
-f||female
 fa||fatty acid
 fap||familial adenomatous polyposis
 fbs||fasting blood sugar
 fd||fatal dose
 fd||focal distance
-fda||(u.s.) food and drug administration
 fe||iron
 fev||forced expiratory volume
 ffp||fresh frozen plasma
 fht||fetal heart tone
 fish||fluorescence in situ hybridization
 fl||flexor
-fl.||flexor
 fld||fluid
 fp||family practice
 fp||family practitioner
@@ -457,11 +374,8 @@ gtt||drops
 gtt||glucose tolerance test
 gu||genitourinary
 guttat||drop by drop
-guttat.||drop by drop
 gvhd||graft-versus-host disease
 gyn||gynecology
-h||hour
-h||hydrogen
 h&h||hematocrit and hemoglobin
 h+||hydrogen ion
 h/o||history of
@@ -479,11 +393,6 @@ hcv||hepatitis c virus
 hd||hearing distance
 hdl||high-density lipoprotein
 hdv||hepatitis d
-heent||and throat
-heent||ear
-heent||eye
-heent||head
-heent||nose
 hellp||elevated liver enzymes
 hellp||hemolysis
 hellp||low platelets
@@ -499,12 +408,6 @@ hida||hepatobiliary iminodiacetic acid (cholescintigraphy)
 hiv||human immunodeficiency virus
 hla||human leukocyteantigen
 hob||head of bed
-hor||decub. bedtime
-hor||h.s. bedtime
-hor||som
-hor.||decub. bedtime
-hor.||h.s. bedtime
-hor.||som
 hpi||history of present illness
 hpv||human papillomavirus
 hr||heart rate
@@ -517,9 +420,7 @@ htn||hypertension
 hx||history
 hy||hyperopia
 hz||hertz (cycles per second)
-i||iodine
 i&o||intake and output
-i.u.||a international unit
 ibw||ideal body weight
 ic||inspiratory capacity
 icd||implantable cardioverter defibrillator
@@ -528,27 +429,22 @@ ics||intercostal space
 icsh||interstitial cell-stimulating hormone
 icu||intensive care unit
 id||the same
-id.||the same
 iddm||insulin-dependent diabetes mellitus
 idm||infants of diabetic mothers
 ied||improvised explosive device
 ig||immunoglobulin
 ige||immunoglobulin e
 igg||immunoglobulin g
+ihss||idiopathic hypertrophic subaortic stenosis
 il-1||interleukin 1
 il-8||interleukin 8
 im||intramuscular
-in||d. daily
 inf||inferior
 inf||interferon
-inf.||inferior
 inj||injection
-inj.||injection
 inr||international normalized ratio
 instill||instillation
-instill.||instillation
 int||internal
-int.||internal
 iop||intraocular pressure
 ippb||intermittent positive pressure breathing
 iq||intelligence quotient
@@ -566,7 +462,6 @@ jnc||detection
 jnc||evaluation
 jra||juvenile rheumatoid arthritis
 jt||joint
-jt.||joint
 k||potassium
 kg||kilogram
 ki||potassium iodine
@@ -577,7 +472,6 @@ kub||kidney
 kub||ureter
 kv||kilovolt
 kvo||keep vein open
-l||liter
 l&d||labor and delivery
 lab||laboratory
 lat||lateral
@@ -597,13 +491,11 @@ li||lithium
 lig||ligament
 liq||fluid
 liq||liquid
-liq.||fluid
-liq.||liquid
 lle||left lower extremity
 lll||left lower lobe
 llq||left lower quadrant
 lmp||last menstrual period
-loc||level/loss of consciousness
+loc||loss of consciousness
 lp||lumbar puncture
 lr||lactated ringer (solution)
 lsil||low-grade squamous epithelial lesion
@@ -611,22 +503,10 @@ ltd||lowest tolerated dose
 lue||left upper extremity
 lul||left upper lobe
 luq||left upper quadrant
-lv||left ventricle
+lv||left ventricular
 lvad||left ventricular assist device
 lvh||left ventricular hypertrophy
-m||male
-m||master
-m||medicine
-m||meta
-m||meter
-m||minim
-m||molar
-m||mole
-m||muscle
-m||thousand
 ma||mental age
-man||prim. first thing in the morning
-man.||prim. first thing in the morning
 mao-b||monoamine oxidase-b
 map||mean arterial pressure
 mat||miller analogies test
@@ -639,7 +519,6 @@ mci||millicurie
 mcv||mean corpuscular volume
 md||muscular dystrophy
 mdi||metered-dose inhaler
-me||ratio myeloid/erythroid ratio
 med||medial
 med||minimum effective dose
 meld||model for end-stage liver disease
@@ -652,7 +531,6 @@ mgso4||magnesium sulfate
 mi||myocardial infarction
 mid||minimum infective dose
 mist||a mixture
-mist.||a mixture
 ml||milliliter
 mld||minimum lethal dose
 mlf||medial longitudinal fasciculus
@@ -665,14 +543,12 @@ mmr||measles-mumps-rubella (vaccine)
 mmse||mini-mental status examination
 mn||manganese
 mol||wt molecular weight
-mor||dict. as directed
-mor||sol. as accustomed
-mor.||dict. as directed
-mor.||sol. as accustomed
+mso4||morphine sulfate
 mpc||maximum permitted concentration
 mpn||most probable number
-mr||milliroentgen
+mr||mitral regurgitation
 mra||magnetic resonance angiography
+mra||magnetic resonance imaging angiography
 mrgfus||mr-guided focused ultrasound surgery
 mri||magnetic resonance imaging
 ms||mitral stenosis
@@ -682,11 +558,8 @@ mv||mitral valve
 mva||motor vehicle accident
 mw||molecular weight
 my||myopia
-n||nerve
 n||nitrogen
 n&v||nausea and vomiting
-n.b.||note well
-n.p.o.||nothing by mouth
 n/a||not applicable
 n/v||nausea and vomiting
 na||sodium
@@ -709,55 +582,35 @@ nmj||neuromuscular junction
 nms||neuroleptic malignant syndrome
 nn||nerves
 noct||in the night
-noct||maneq. night and morning
-noct.||in the night
-noct.||maneq. night and morning
-non||n.r. do not repeat
-non||rep
 npn||nonprotein nitrogen
 npo||nothing by mouth
 nrc||normal retinal correspondence
 ns||normal saline
 nsaid||nonsteroidal anti-inflammatory drug
 nsr||normal sinus rhythm
-o||pint
-o.d.||right eye
-o.s.||left eye
+od||right eye
+os||left eye
 o2||oxygen
 ob||obstetrics
 oc||oral contraceptive
 ocd||obsessive-compulsive disorder
 od||right eye
 ol||oil
-ol.||oil
-om||mane vel noc. every morning or night
-om.||mane vel noc. every morning or night
-omn||hor. every hour
-omn||noct. every night
-omn.||hor. every hour
-omn.||noct. every night
 ompc||outer membrane porin c
 oob||out of bed
 opd||outpatient department
 or||operating room
-orif||open reduction with/and internal fixation
+orif||open reduction and internal fixation
 os||left eye
 osha||occupational safety and health administration
 ot||occupational therapy
 otc||over-the-counter
 ou||each eye
 oz||ounce
-p||after
-p||melting point
 p-a||placenta abruption
 p-a||posteroanterior
 p-a||pulmonary artery
 p-anca||perinuclear antineutrophil cytoplasmic antibody
-p.c.||after meals
-p.o.||orally
-p.r.||through the rectum
-p.r.n.||as needed
-p.v.||through the vagina
 p2||pulmonic second sound
 p4p||pay for performance
 pa||placenta abruption
@@ -771,11 +624,11 @@ pals||pediatric advanced life support
 pao||2 alveolar oxygen partial pressure
 pap||test papanicolaou smear
 part||vic in divided doses
-part.||vic in divided doses
 pb||lead
 pbi||protein-bound iodine
 pc||after meals
-pca||patient-controlled analgesia
+pca||patient controlled analgesia
+pcea||patient controlled epidural analgesia
 pco||2 carbon dioxide pressure
 pcos||polycystic ovarian syndrome
 pcp||pneumocystis carinii pneumonia
@@ -804,7 +657,6 @@ pfp||pay for performance
 pft||pulmonary function test
 ph||hydrogen ion concentration
 phar||pharmacy
-phar.||pharmacy
 pharm||pharmacy
 pi||present illness
 pi||previous illness
@@ -812,11 +664,10 @@ picc||peripherally inserted central catheter
 pid||pelvic inflammatory disease
 pih||pregnancy-induced hypertension
 pil||pill
-pil.||pill
 pip||proximal interphalangeal
 pipda||(scan) 99mtc-para-isopropylacetanilido-iminodiaacetic acid (cholescintigraphy)
 pku||phenylketonuria
-pm||afternoon/evening
+pm||evening
 pmh||past medical history
 pmi||point of maximal impulse
 pmn||polymorphonuclear neutrophil leukocytes
@@ -824,17 +675,15 @@ pms||premenstrual syndrome
 pnd||paroxysmal nocturnal dyspnea
 pnh||paroxysmal nocturnal hemoglobinuria
 pns||peripheral nervous system
-po||orally
+po||administration of substance via oral route
 polst||physician orders for life-sustaining therapy
-post||posterior
-post.||posterior
 pp||placenta previa
 ppd||purified protein derivative (tb test)
 ppm||parts per million
 pr||through the rectum
+pro||prothrombin
 prbcs||packed red blood cells
 prn||as needed
-pro||time/pt prothrombin time
 psa||prostate-specific antigen
 psv||prostate-specific antigen
 pt||patient
@@ -850,16 +699,6 @@ pv||through the vagina
 pvc||premature ventricular contraction
 pvr||peripheral vascular resistance
 q||every
-q.2h.||every 2 hours
-q.3h.||every 3 hours
-q.4h.||every 4 hours
-q.h.||every hour
-q.i.d.||a four times a day
-q.l.||as much as wanted
-q.o.d.||a every other day
-q.p.||as much as desired
-q.s.||as much as needed
-q.v.||as much as you please
 q2h||every 2 hours
 q3h||every 3 hours
 q4h||every 4 hours
@@ -883,7 +722,7 @@ raiu||radioactive iodine uptake
 rbc||red blood cell
 rbc||red blood count
 rd||raynaud disease
-rda||recommended daily/dietary allowance
+rda||recommended daily allowance
 rds||respiratory distress syndrome
 re||rhenium
 re||right eye
@@ -911,16 +750,8 @@ rt||respiratory therapy
 rue||right upper extremity
 rul||right upper lobe
 ruq||right upper quadrant
-s||mark
-s||sacral
-s||without
+rv||right ventricular
 s-a||sinoatrial
-s.||sacral
-s.c.||subcutaneous(ly)
-s.d.||standard deviation
-s.e.||standard error
-s.o.s.||if necessary
-s.q.||subcutaneous(ly)
 s/a||sinoatrial
 s/p||no change after
 sa||sinoatrial
@@ -937,7 +768,6 @@ se||selenium
 se||standard error
 sed||rate sedimentation rate
 semih||half an hour
-semih.||half an hour
 serm||selective estrogen receptor modulator
 sga||small for gestational age
 si||international system of units
@@ -945,7 +775,6 @@ si||silicon
 siadh||syndrome of inappropriate diuretic hormone
 sids||sudden infant death syndrome
 sig||write on label
-sig.||write on label
 sjs||stevens-johnson syndrome
 sle||systemic lupus erythematosus
 slp||speech-language pathology
@@ -958,41 +787,31 @@ sol||dissolved
 sol||solution
 sos||if necessary
 sp||gr specific gravity
+spep||serum protein electrophoresis
 spect||single-photon emission computed tomography
 spf||skin protection factor
 sph||spherical
 spt||spirit
-spt.||spirit
-sq||subcutaneous(ly)
+sq||subcutaneous
 sr||strontium
 ss||a half
 ssri||selective serotonin reuptake inhibitor
 sss||sick sinus syndrome
-st||let it/them stand
-st.||let it/them stand
 staph||staphylococcus
 stat||immediately
-stat.||immediately
 std||sexually transmitted disease
 strep||streptococcus
 sts||serologic test for syphilis
 stu||skin test unit
 sup||superior
-sup.||superior
 supf||superficial
-supf.||superficial
 sv||stroke volume
 sv||supraventricular
 svc||superior vena cava
 sx||symptoms
 syr||syrup
-syr.||syrup
 t||temperature
 t&a||tonsillectomy and adenoidectomy
-t.a.t.||toxin-antitoxin
-t.d.s.||to be taken three times daily
-t.i.d.||three times a day
-t.i.n.||three times a night
 t3||triiodothyronine
 t4||tetraiodothyronine
 t4||thyroxine
@@ -1020,7 +839,6 @@ tibc||total iron-binding capacity
 tid||three times a day
 tin||three times a night
 tinct||tincture
-tinct.||tincture
 tkr||total knee replacement
 tl||thallium
 tlc||tender loving care
@@ -1035,7 +853,6 @@ tnm||tumor-node-metastasis
 tnt||trinitrotoluene
 tntm||too numerous to mention
 top||topically
-top.||topically
 torb||telephone order read back
 tpi||treponema pallidum immobilization test for syphilis
 tpn||total parenteral nutrition
@@ -1043,7 +860,6 @@ tpo||thyroid peroxidase
 tpr||and respiration
 tpr||pulse
 tpr||temperature
-tr||tincture
 trap||akinesia or postural instablity bradykinesia
 trap||and postural instability
 trap||criteria tremor
@@ -1051,37 +867,28 @@ trap||rigidity
 treg||regulatory t cell
 trit||grind
 trit||triturate
-trit.||grind
-trit.||triturate
 tsd||time since death
 tse||testicular self-examination
-tsh||thyroid-stimulating hormone
+tsh||thyroid stimulating hormone
+tte||transthoracic echocardiogram
 ttg||antitransglutaminase
 tuma||transurethral microwave antenna
 tur||transurethral resection
 turp||transurethral resection of the prostate
 tx||treatment
-u||a uranium
-u||unit a
 ua||urinalysis
 uc||ulcerative colitis
 ue||upper extremity
 uhf||ultrahigh frequency
-ult||praes. the last ordered
-ult.||praes. the last ordered
 umb||umbilicus
 ung||ointment
-ung.||ointment
 uri||upper respiratory infection
 us||ultrasonic
 us||ultrasound
 usan||united states adopted name
 usp||united states pharmacopeia
-ut||dict. as directed
-ut.||dict. as directed
 uti||urinary tract infection
 uv||ultraviolet
-v||vein
 v/q||ventilation/perfusion
 va||visual acuity
 vc||vital capacity
@@ -1095,7 +902,6 @@ vma||vanillylmandelic acid
 voe||vista-office electronic health record
 vol||% volume percent
 vol||volume
-vol.||volume
 vorb||verbal order read back
 vs||vesicular sound
 vs||vital signs
@@ -1104,26 +910,19 @@ vsd||ventricular septal defect
 vt||ventricular tachycardia
 vv||veins
 vzig||varicella zoster immune globulin
-w||tungsten
-w||watt
 w/v||weight in volume
-w/v.||weight in volume
 wais||wechsler adult intelligence scale
 wap||written action plan
 wbc||white blood cell
 wbc||white blood count
+wd||withdrawal
 wdwn||well-developed
 wdwn||well-nourished
-wf/bf||white female/black female
 wh||well-hydrated
-wm/bm||white male/black male
 wn||well-nourished
 wnl||within normal limits
 wt||weight
-wt.||weight
-x||multiplied by
-y||yocto-
+xr||x-ray
 yo||years old
 yr||year
-z||atomic number
 zn||zinc

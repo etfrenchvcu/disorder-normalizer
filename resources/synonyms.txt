@@ -28,3 +28,6 @@ replacement||supplement
 cardiac||heart
 mid||middle
 drainage||discharge
+trauma||injury
+rehab||rehabilitation
+testing||screening
