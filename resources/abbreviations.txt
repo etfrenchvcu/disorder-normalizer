@@ -68,7 +68,6 @@ ami||acute myocardial infarction
 aml||acute myelogenous (myeloblastic) leukemia
 amls||advanced medical life support
 amp||ampules
-ana||antinuclear antibody
 anat||anatomy or anatomic
 anna||anti-neuronal nuclear antibody
 anp||atrial natriuretic peptide
@@ -201,7 +200,6 @@ cns||to be taken tomorrow night
 co||carbon monoxide
 co||cardiac output
 co||cobalt
-co2||carbon dioxide
 comp||compound
 comp||compounded of
 comt||catechol-o-methyltransferase
@@ -345,7 +343,6 @@ fl||flexor
 fld||fluid
 fp||family practice
 fp||family practitioner
-fsh||follicle-stimulating hormone
 ftt||failure to thrive
 fuo||fever of unknown origin
 g||gram
@@ -793,7 +790,6 @@ spf||skin protection factor
 sph||spherical
 spt||spirit
 sq||subcutaneous
-sr||strontium
 ss||a half
 ssri||selective serotonin reuptake inhibitor
 sss||sick sinus syndrome
@@ -835,7 +831,7 @@ tg||thyroglobulin
 th||thorium
 thr||total hip replacement
 tia||transient ischemic attack
-tibc||total iron-binding capacity
+tibc||total iron binding capacity
 tid||three times a day
 tin||three times a night
 tinct||tincture
@@ -869,7 +865,6 @@ trit||grind
 trit||triturate
 tsd||time since death
 tse||testicular self-examination
-tsh||thyroid stimulating hormone
 tte||transthoracic echocardiogram
 ttg||antitransglutaminase
 tuma||transurethral microwave antenna

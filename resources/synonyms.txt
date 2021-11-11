@@ -18,8 +18,6 @@ illness||disorder
 stitch||suture
 decubiti||pressure sores
 decubitus||pressure sore
-scan||imaging
-after||post
 tumor||cancer
 pertussis||whooping cough
 operative procedure||surgery
