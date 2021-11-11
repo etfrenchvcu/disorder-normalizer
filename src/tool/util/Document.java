@@ -78,8 +78,7 @@ public class Document {
 	public void addMention(String[] tokens) {
 		String[] cuis = tokens[4].contains("+") ? tokens[4].split("\\+") : tokens[4].split("\\|");
 		String MeSHorSNOMEDcuis = Terminology.getMeSHorSNOMEDCuis(cuis);
-		var name = Util.correctSpelling(tokens[3]);
-		Mention mention = new Mention(name, tokens[1], MeSHorSNOMEDcuis);
+		Mention mention = new Mention(tokens[3], tokens[1], MeSHorSNOMEDcuis);
 		mentions.add(mention);
 	}
 

@@ -29,7 +29,7 @@ public class Mention {
 
     public Mention(String name, String indexes, String goldCui) {
         this.indexes = indexes;
-        this.name = name.trim().toLowerCase();
+        this.name = Util.correctSpelling(name.trim().toLowerCase());
         this.goldCui = goldCui;
         this.normalizingSieveLevel = 0;
 

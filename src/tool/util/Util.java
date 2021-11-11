@@ -61,7 +61,7 @@ public class Util {
             if (spellingCorrectionMap.containsKey(phrase_token)) {
                 phrase_token = spellingCorrectionMap.get(phrase_token);
             }
-            
+
             phrase += phrase_token + " ";
         }
         phrase = phrase.trim();
