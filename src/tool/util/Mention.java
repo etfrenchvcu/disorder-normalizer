@@ -14,6 +14,7 @@ import java.util.List;
 public class Mention {
 
     public String name;
+    public String snippet;
     public String keyPhrase;
     public String cui = "";
     public boolean normalized = false;
@@ -45,7 +46,7 @@ public class Mention {
      */
     public String toString() {
         return name + "\t" + keyPhrase + "\t" + cui + "\t" + normalized + "\t" + normalizingSieveName + "\t" + 
-        normalizingSource + "\t" + goldCui + "\t" + normalizingName + "\t" + normalizingSieveLevel + "\t" + String.join(",",goldNames);
+        normalizingSource + "\t" + goldCui + "\t" + normalizingName + "\t" + normalizingSieveLevel + "\t" + String.join(",",goldNames) + "\t" + snippet;
     }
 
     /**

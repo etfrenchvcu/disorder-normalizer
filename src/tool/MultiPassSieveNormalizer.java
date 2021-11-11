@@ -15,11 +15,13 @@ import tool.sieves.AbbreviationExpansionSieve;
 import tool.sieves.AmbiguitySieve;
 import tool.sieves.ExactMatchSieve;
 import tool.sieves.HyphenationSieve;
+import tool.sieves.MeasurementSieve;
 import tool.sieves.PrepositionalTransformSieve;
 import tool.sieves.RemoveStopwordsSieve;
 import tool.sieves.Sieve;
 import tool.sieves.SuffixationSieve;
 import tool.sieves.SynonymSieve;
+import tool.sieves.UmlsEndingSieve;
 import tool.util.Document;
 import tool.util.HashListMap;
 import tool.util.Mention;
@@ -69,6 +71,7 @@ public class MultiPassSieveNormalizer {
     private ArrayList<Sieve> initializeSieves(Terminology trainTerminology) throws IOException {
         ArrayList<Sieve> sieves = new ArrayList<Sieve>();
 
+        sieves.add(new MeasurementSieve(standardTerminology, trainTerminology));
         sieves.add(new ExactMatchSieve(standardTerminology, trainTerminology));
         sieves.add(new AbbreviationExpansionSieve(standardTerminology, trainTerminology));
         sieves.add(new RemoveStopwordsSieve(standardTerminology, trainTerminology));
@@ -76,8 +79,8 @@ public class MultiPassSieveNormalizer {
         sieves.add(new SuffixationSieve(standardTerminology, trainTerminology));
         sieves.add(new PrepositionalTransformSieve(standardTerminology, trainTerminology));
         sieves.add(new HyphenationSieve(standardTerminology, trainTerminology));
-
         // sieves.add(new UmlsEndingSieve(standardTerminology, trainTerminology));
+
         // This one is slow...
         // sieves.add(new DiseaseTermSynonymsSieve(standardTerminology,
         // trainTerminology)); //Slow and bad

@@ -8,7 +8,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -190,36 +189,6 @@ public class Terminology {
                     String cui = !MeSHorSNOMEDcuis.equals("") ? MeSHorSNOMEDcuis : tokens[4].replaceAll("OMIM:", "");
 
                     cuiNamesMap.addKeyPair(cui, name);
-                }
-            }
-
-            // TODO: This section doesn't make sense...
-            var ncbi = true;
-            if (ncbi)
-                continue;
-            for (String cui : cuiNamesMap.keySet()) {
-                List<String> names = cuiNamesMap.get(cui);
-                List<String> namesToPrune = new ArrayList<>();
-                for (String name : names) {
-                    String[] nameTokens = name.split("\\s+");
-                    if (nameTokens.length < 3)
-                        continue;
-                    if (names.contains(nameTokens[0] + " " + nameTokens[1]))
-                        Util.addUnique(namesToPrune, nameTokens[0] + " " + nameTokens[1]);
-                    else if (names
-                            .contains(nameTokens[nameTokens.length - 2] + " " + nameTokens[nameTokens.length - 1]))
-                        Util.addUnique(namesToPrune,
-                                nameTokens[nameTokens.length - 2] + " " + nameTokens[nameTokens.length - 1]);
-                }
-                for (String nameToPrune : namesToPrune) {
-                    nameToCuiListMap.remove(nameToPrune);
-                    cuiToNameListMap.get(cui).remove(nameToPrune);
-                    String[] nameToPruneTokens = nameToPrune.split("\\s+");
-                    for (String nameToPruneToken : nameToPruneTokens) {
-                        if (stopwords.contains(nameToPruneToken))
-                            continue;
-                        tokenToNameListMap.get(nameToPruneToken).remove(nameToPrune);
-                    }
                 }
             }
         }

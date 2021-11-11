@@ -19,6 +19,7 @@ import tool.util.Terminology;
  */
 public class UmlsEndingSieve extends Sieve {
 
+    private List<String> beginnings;
     private List<String> endings;
 
     /**
@@ -31,6 +32,7 @@ public class UmlsEndingSieve extends Sieve {
     public UmlsEndingSieve(Terminology standardTerminology, Terminology trainTerminology) throws IOException {
         super(standardTerminology, trainTerminology);
 
+        beginnings = Arrays.asList("finding of");
         endings = Arrays.asList(", nos", " (procedure)", " test", " measurement", " (body structure)", " (finding)");
     }
 
@@ -46,6 +48,9 @@ public class UmlsEndingSieve extends Sieve {
         for (String name : mention.namePermutations) {
             for (String ending : endings) {
                 allPermutations.add(name + ending);
+            }
+            for (String beginning : beginnings) {
+                allPermutations.add(beginning + " " + name);
             }
         }
 

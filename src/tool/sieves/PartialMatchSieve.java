@@ -59,8 +59,6 @@ public class PartialMatchSieve extends Sieve {
                 if (standardTerminology.tokenToNameListMap.containsKey(token)) {
                     addCUIsWithToken(token, standardTerminology, cuis, names);
                 }
-
-                // TODO: Add CUIs from normalizedNameToCuiListMap?
             }
         }
 

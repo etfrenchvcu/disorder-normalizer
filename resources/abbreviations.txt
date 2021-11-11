@@ -213,7 +213,7 @@ cpd||cephalopelvic disproportion
 cphss||cincinnati prehospital stroke scale
 cpk||creatine phosphokinase
 cpm||continuous passive motion
-cpr||cardiopulmonary resuscitation
+cpr||c-reactive protein
 cr||creatinine
 crest||calcinosis
 crest||esophageal dysfunction

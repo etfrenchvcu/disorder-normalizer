@@ -2,6 +2,7 @@ blocker||agonist
 per||from
 double||bilateral
 treatment||therapy
+treatment||treatments
 decreased||impaired
 increased||high
 occasional||intermittent
@@ -16,7 +17,7 @@ three||triple
 extreme||severe
 illness||disorder
 stitch||suture
-decubiti||pressure sores
+decubiti||pressure sore
 decubitus||pressure sore
 tumor||cancer
 pertussis||whooping cough
@@ -29,3 +30,11 @@ drainage||discharge
 trauma||injury
 rehab||rehabilitation
 testing||screening
+levels||measurement
+infection||infections
+analgesics||analgesic
+time||times
+procedure||procedures
+seizure||seizures
+amount||amounts
+problem||problems
