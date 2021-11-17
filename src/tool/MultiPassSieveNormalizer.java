@@ -21,7 +21,6 @@ import tool.sieves.RemoveStopwordsSieve;
 import tool.sieves.Sieve;
 import tool.sieves.SuffixationSieve;
 import tool.sieves.SynonymSieve;
-import tool.sieves.UmlsEndingSieve;
 import tool.util.Document;
 import tool.util.HashListMap;
 import tool.util.Mention;
@@ -71,7 +70,7 @@ public class MultiPassSieveNormalizer {
     private ArrayList<Sieve> initializeSieves(Terminology trainTerminology) throws IOException {
         ArrayList<Sieve> sieves = new ArrayList<Sieve>();
 
-        sieves.add(new MeasurementSieve(standardTerminology, trainTerminology));
+        sieves.add(new MeasurementSieve(standardTerminology, trainTerminology));        
         sieves.add(new ExactMatchSieve(standardTerminology, trainTerminology));
         sieves.add(new AbbreviationExpansionSieve(standardTerminology, trainTerminology));
         sieves.add(new RemoveStopwordsSieve(standardTerminology, trainTerminology));
@@ -118,10 +117,6 @@ public class MultiPassSieveNormalizer {
                     // Skip already normalized
                     if (mention.normalized)
                         continue;
-
-                    // if (mention.name.equals("his non-q wave mi")) {
-                    //     var foo = 0;
-                    // }
 
                     if (sieveName.equals("AmbiguitySieve")) {
                         // Special case for AmbiguitySieve.
