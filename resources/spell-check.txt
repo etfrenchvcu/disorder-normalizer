@@ -40,3 +40,4 @@ tumour||tumor
 withdrawel||withdrawal
 xray||x-ray
 paslpitations||palpitations
+lungh||lung

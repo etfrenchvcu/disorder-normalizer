@@ -743,6 +743,7 @@ rn||radon
 rna||ribonucleic acid
 rom||range of motion
 ros||review of systems
+rp||retroperitoneal
 rpm||revolutions per minute
 rq||respiratory quotient
 rr||recovery room
@@ -820,7 +821,6 @@ t4||thyroxine
 t6||thoracic nerve pair 6
 ta||tantalum
 ta||toxin-antitoxin
-tachy||tachycardia
 tah||total abdominal hysterectomy
 tat||thematic apperception test
 tat||toxin-antitoxin

@@ -39,7 +39,6 @@ inability||unable
 air||gas
 changes||change
 temperatures||fever
-marrow||myelo
 complaints||complaint
 poor||impaired
 coumadin||warfarin
@@ -52,5 +51,11 @@ allergic||allergy to
 deficit||compromise
 acute||precipitous
 spike||spikes
+spike||spiking
 normal||non-elevated
 depressed||depression
+status||state
+defect||defects
+abdomin||abdominal
+creatinine||serum creatinine
+mass||lump

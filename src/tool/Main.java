@@ -27,7 +27,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         System.out.println("Starting run...");
         File trainDir = null;
-        File test_data_dir = null;
+        File testDir = null;
         File outputDir = null;
         File standardTerminologyFile = null;
         MultiPassSieveNormalizer multiPassSieve;
@@ -52,31 +52,19 @@ public class Main {
             if (args.length >= 3) {
                 // Parse test directory.
                 if (new File(args[2]).isDirectory()) {
-                    test_data_dir = new File(args[2]);
+                    testDir = new File(args[2]);
                 } else
                     throwIllegalDirectoryException(args[2]);
             }
         } else {
             System.out.println("Usage: java tool.Main <terminology/ontology-file> <training-data-dir> <test-data-dir>");
             System.out.println("---------------------");
-            System.out.println("Sieve levels:");
-            System.out.println("1 for exact match");
-            System.out.println("2 for abbreviation expansion");
-            System.out.println("3 for subject<->object conversion");
-            System.out.println("4 for numbers replacement");
-            System.out.println("5 for hyphenation");
-            System.out.println("6 for affixation");
-            System.out.println("7 for disorder synonyms replacement");
-            System.out.println("8 for stemming");
-            System.out.println("9 for composite disorder mentions");
-            System.out.println("10 for partial match");
-            System.out.println("---------------------");
             System.exit(1);
         }
 
         Evaluation eval = new Evaluation(outputDir);
         multiPassSieve = new MultiPassSieveNormalizer(eval, standardTerminologyFile);
-        if (test_data_dir == null) {
+        if (testDir == null) {
             // Run cross validation on training data
 
             // Set up train/test folders
@@ -116,7 +104,7 @@ public class Main {
             }
 
         } else {
-            throw new Exception("Running on test dataset not implemented yet.");
+            multiPassSieve.run(trainDir, testDir);
         }
 
         // Evaluate on all folds together.

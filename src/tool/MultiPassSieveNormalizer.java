@@ -79,18 +79,6 @@ public class MultiPassSieveNormalizer {
         sieves.add(new SuffixationSieve(standardTerminology, trainTerminology));
         sieves.add(new PrepositionalTransformSieve(standardTerminology, trainTerminology));
         sieves.add(new HyphenationSieve(standardTerminology, trainTerminology));
-        sieves.add(new RelativitySieve(standardTerminology, trainTerminology));
-        // sieves.add(new UmlsEndingSieve(standardTerminology, trainTerminology));
-
-        // This one is slow...
-        // sieves.add(new DiseaseTermSynonymsSieve(standardTerminology,
-        // trainTerminology)); //Slow and bad
-
-        // sieves.add(new CompoundPhraseSieve(standardTerminology, trainTerminology,
-        // normalizedNameToCuiListMap));
-        // sieves.add(new PartialMatchSieve(standardTerminology, trainTerminology,
-        // stopwords));
-        // sieves.add(new AmbiguitySieve(standardTerminology, trainTerminology));
 
         return sieves;
     }

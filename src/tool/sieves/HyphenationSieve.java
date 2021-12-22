@@ -59,6 +59,12 @@ public class HyphenationSieve extends Sieve {
                     allPermutations.add(permutation);
                     mention.keyPhrase = s;
                 }
+
+                if (permutation.contains("non-")) {
+                    permutation = permutation.replace("non-", "not ").trim();
+                    allPermutations.add(permutation);
+                    mention.keyPhrase = s;
+                }
             }
         }
 

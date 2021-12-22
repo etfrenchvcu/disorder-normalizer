@@ -55,6 +55,12 @@ public class PrepositionalTransformSieve extends Sieve {
                 var permutations = insertPrepositionsInPhrase(name);
                 allPermutations.addAll(permutations);
             }
+
+            // If name has length=2, switch first and last tokens.
+            var tokens = name.split(" ");
+            if(tokens.length == 2) {
+                allPermutations.add(tokens[1] + " " + tokens[0]);
+            }
         }
 
         // Append unique permutations to the mention object.

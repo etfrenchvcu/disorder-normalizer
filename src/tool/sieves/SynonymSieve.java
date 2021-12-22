@@ -55,6 +55,9 @@ public class SynonymSieve extends Sieve {
             for (String name : mention.namePermutations) {
                 var permutation = name.replaceAll(regex, replacement).trim();
                 if (!permutation.equals(name)) {
+                    if(name.equals("mental status")){
+                        var x = 9;
+                    }
                     permutations.add(permutation);
                     mention.keyPhrase = synonym + replacement;
                 }

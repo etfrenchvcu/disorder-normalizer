@@ -45,9 +45,6 @@ public class RelativitySieve extends Sieve {
         List<String> allPermutations = new ArrayList<>();
 
         for (String name : mention.namePermutations) {
-            if(name.equals("elevated inr")){
-                var x = 9;
-            }
             for (var increasingSynonym : increasingSynonyms) {
                 if (name.contains(increasingSynonym)) {
                     for (var replacement : increasingSynonyms) {
