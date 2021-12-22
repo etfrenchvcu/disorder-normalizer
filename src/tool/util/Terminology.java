@@ -181,6 +181,11 @@ public class Terminology {
                     line = line.trim();
                     String[] tokens = line.split("\\|\\|");
                     String name = Util.correctSpelling(tokens[3].toLowerCase().trim());
+                    try {
+                        String[] cuis = tokens[4].contains("+") ? tokens[4].split("\\+") : tokens[4].split("\\|");
+                    }catch(Exception e) {
+                        String[] cuis = tokens[4].contains("+") ? tokens[4].split("\\+") : tokens[4].split("\\|");
+                    }
                     String[] cuis = tokens[4].contains("+") ? tokens[4].split("\\+") : tokens[4].split("\\|");
                     String MeSHorSNOMEDcuis = getMeSHorSNOMEDCuis(cuis);
                     if (!MeSHorSNOMEDcuis.equals(""))

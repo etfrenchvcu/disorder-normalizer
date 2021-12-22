@@ -2,6 +2,7 @@ abcess||abscess
 abdominla||abdominal
 adomen||abdomen
 adressing||a dressing
+afberile||afebrile
 arrrest||arrest
 atelctasis||atelectasis
 atrialfibrillation||atrial fibrillation
@@ -28,10 +29,14 @@ parasthesias||paresthesias
 pneumococcl||pneumococcal
 pnuemonia||pneumonia
 processess||processes
+sequelae||sequela
 smallbowel||small bowel
+somnolenece||somnolence
 spien||spine
+splenomagaly||splenomegaly
 sytem||system
 tumours||tumors
 tumour||tumor
 withdrawel||withdrawal
 xray||x-ray
+paslpitations||palpitations

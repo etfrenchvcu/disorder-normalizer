@@ -137,6 +137,7 @@ brow||and wheat
 brow||barley
 brow||oats
 brow||rye
+bs||bowel sounds
 bsa||body surface area
 bse||breast self-examination
 bun||blood urea nitrogen
@@ -400,11 +401,13 @@ hf||heart failure
 hg||mercury
 hgb||hemoglobin
 hgsil||high-grade squamous intraepithelial lesion
+hi||homicidal ideation
 hib||haemophilus influenzae type b
 hida||hepatobiliary iminodiacetic acid (cholescintigraphy)
 hiv||human immunodeficiency virus
 hla||human leukocyteantigen
 hob||head of bed
+hoh||hard of hearing
 hpi||history of present illness
 hpv||human papillomavirus
 hr||heart rate
@@ -459,6 +462,7 @@ jnc||detection
 jnc||evaluation
 jra||juvenile rheumatoid arthritis
 jt||joint
+jvp||jugular venous pressure
 k||potassium
 kg||kilogram
 ki||potassium iodine
@@ -564,6 +568,7 @@ naa||nucleic acid amplification
 nad||no acute distress
 nb||note well
 nci||nanocurie
+nd||not distended
 ndc||national drug code
 ng||nasogastric
 ngt||nasogastric tube
@@ -585,6 +590,7 @@ nrc||normal retinal correspondence
 ns||normal saline
 nsaid||nonsteroidal anti-inflammatory drug
 nsr||normal sinus rhythm
+nt||not tender
 od||right eye
 os||left eye
 o2||oxygen
@@ -748,6 +754,7 @@ rue||right upper extremity
 rul||right upper lobe
 ruq||right upper quadrant
 rv||right ventricular
+rvr||rapid ventricular response
 s-a||sinoatrial
 s/a||sinoatrial
 s/p||no change after
@@ -760,15 +767,14 @@ sbp||systolic blood pressure
 sc||subcutaneous(ly)
 sci||spinal cord injury
 sd||standard deviation
-sdat||senile dementia of the alzheimer type
+sdat||senile dementia of the alzheimer typed
 se||selenium
 se||standard error
 sed||rate sedimentation rate
 semih||half an hour
 serm||selective estrogen receptor modulator
 sga||small for gestational age
-si||international system of units
-si||silicon
+si||suicidal ideation
 siadh||syndrome of inappropriate diuretic hormone
 sids||sudden infant death syndrome
 sig||write on label
@@ -814,6 +820,7 @@ t4||thyroxine
 t6||thoracic nerve pair 6
 ta||tantalum
 ta||toxin-antitoxin
+tachy||tachycardia
 tah||total abdominal hysterectomy
 tat||thematic apperception test
 tat||toxin-antitoxin
@@ -870,6 +877,7 @@ ttg||antitransglutaminase
 tuma||transurethral microwave antenna
 tur||transurethral resection
 turp||transurethral resection of the prostate
+twi||t wave inversion
 tx||treatment
 ua||urinalysis
 uc||ulcerative colitis

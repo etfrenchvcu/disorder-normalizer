@@ -17,6 +17,7 @@ import tool.sieves.ExactMatchSieve;
 import tool.sieves.HyphenationSieve;
 import tool.sieves.MeasurementSieve;
 import tool.sieves.PrepositionalTransformSieve;
+import tool.sieves.RelativitySieve;
 import tool.sieves.RemoveStopwordsSieve;
 import tool.sieves.Sieve;
 import tool.sieves.SuffixationSieve;
@@ -78,6 +79,7 @@ public class MultiPassSieveNormalizer {
         sieves.add(new SuffixationSieve(standardTerminology, trainTerminology));
         sieves.add(new PrepositionalTransformSieve(standardTerminology, trainTerminology));
         sieves.add(new HyphenationSieve(standardTerminology, trainTerminology));
+        sieves.add(new RelativitySieve(standardTerminology, trainTerminology));
         // sieves.add(new UmlsEndingSieve(standardTerminology, trainTerminology));
 
         // This one is slow...

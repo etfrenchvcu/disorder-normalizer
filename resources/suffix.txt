@@ -11,6 +11,7 @@ cula||culosis
 culi||culus
 dic||dia
 ed||e
+ed||ing
 elt||eeling
 erium||irium
 esoph||esophageal
@@ -19,10 +20,12 @@ evi||evus
 ged||gement
 gent||gency
 gliom||glioma
+i||us
 iate||ioid
 ies||ic
 ing||
 ing||e
+ing||ed
 ky||kes
 lent||lence
 lm||lmonary

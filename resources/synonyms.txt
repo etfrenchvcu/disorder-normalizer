@@ -3,10 +3,7 @@ per||from
 double||bilateral
 treatment||therapy
 treatment||treatments
-decreased||impaired
-increased||high
 occasional||intermittent
-decreased||reduced
 \d{2}%||partial
 100%||complete
 bleed||hemorrhage
@@ -38,3 +35,22 @@ procedure||procedures
 seizure||seizures
 amount||amounts
 problem||problems
+inability||unable
+air||gas
+changes||change
+temperatures||fever
+marrow||myelo
+complaints||complaint
+poor||impaired
+coumadin||warfarin
+debilitated||weak
+ekg||ecg
+sound||sounds
+pressure||pressures
+allergies||allergy to
+allergic||allergy to
+deficit||compromise
+acute||precipitous
+spike||spikes
+normal||non-elevated
+depressed||depression
