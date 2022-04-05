@@ -5,6 +5,5 @@ CUILESS2016-data
 **/output
 bin/*
 .project
-scripts/umls/*.rrf
-scripts/umls/*.txt
+scripts/umls/raw
 .DS_Store

@@ -1,3 +1,4 @@
-#Load the following UMLS files
--MRCONSO.RRF
--MRSTY.RRF
+# Load the following UMLS files into the /raw directory
+- MRCONSO.RRF
+- MRREL.RRF
+- MRSTY.RRF
